@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "C:\\Users\\m\\AndroidStudioProjects\\balkom-app\\build\\shared_preferences\\intermediates\\res\\merged\\debug\\drawable\\notification_tile_bg.xml",
+        "source": "C:\\Users\\m\\.gradle\\caches\\transforms-2\\files-2.1\\7c65d9ea536f2745ba282b6df0173a7c\\core-1.1.0\\res\\drawable\\notification_tile_bg.xml"
+    },
+    {
+        "merged": "C:\\Users\\m\\AndroidStudioProjects\\balkom-app\\build\\shared_preferences\\intermediates\\res\\merged\\debug\\drawable\\notification_bg_low.xml",
+        "source": "C:\\Users\\m\\.gradle\\caches\\transforms-2\\files-2.1\\7c65d9ea536f2745ba282b6df0173a7c\\core-1.1.0\\res\\drawable\\notification_bg_low.xml"
+    },
+    {
+        "merged": "C:\\Users\\m\\AndroidStudioProjects\\balkom-app\\build\\shared_preferences\\intermediates\\res\\merged\\debug\\drawable\\notification_bg.xml",
+        "source": "C:\\Users\\m\\.gradle\\caches\\transforms-2\\files-2.1\\7c65d9ea536f2745ba282b6df0173a7c\\core-1.1.0\\res\\drawable\\notification_bg.xml"
+    },
+    {
+        "merged": "C:\\Users\\m\\AndroidStudioProjects\\balkom-app\\build\\shared_preferences\\intermediates\\res\\merged\\debug\\drawable\\notification_icon_background.xml",
+        "source": "C:\\Users\\m\\.gradle\\caches\\transforms-2\\files-2.1\\7c65d9ea536f2745ba282b6df0173a7c\\core-1.1.0\\res\\drawable\\notification_icon_background.xml"
+    }
+]

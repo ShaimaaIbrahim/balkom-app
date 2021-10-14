@@ -1,0 +1,4 @@
+io/flutter/plugins/GeneratedPluginRegistrant.java
+ io.flutter.plugins.GeneratedPluginRegistrant
+com/tatbeqakum/bilqomapp/BuildConfig.java
+ com.tatbeqakum.bilqomapp.BuildConfig

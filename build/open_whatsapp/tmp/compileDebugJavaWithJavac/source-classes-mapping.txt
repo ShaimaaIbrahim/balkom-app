@@ -1,0 +1,4 @@
+infozenplus/com/flutter_open_whatsapp/BuildConfig.java
+ infozenplus.com.flutter_open_whatsapp.BuildConfig
+infozenplus/com/flutter_open_whatsapp/FlutterOpenWhatsappPlugin.java
+ infozenplus.com.flutter_open_whatsapp.FlutterOpenWhatsappPlugin
