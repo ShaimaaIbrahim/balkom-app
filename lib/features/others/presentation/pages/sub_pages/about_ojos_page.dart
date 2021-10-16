@@ -22,12 +22,12 @@ import 'package:ojos_app/features/others/domain/entity/about_app_result.dart';
 import 'package:ojos_app/features/others/domain/usecases/get_about_app.dart';
 import 'package:ojos_app/features/others/presentation/widgets/sectionAbout.dart';
 import 'package:ojos_app/features/others/presentation/widgets/section_about_with_custom_child.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../../../main.dart';
+import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:ojos_app/xternal_lib/flutter_icon/src/ant_design.dart';
 import 'package:ojos_app/xternal_lib/flutter_icon/src/entypo.dart';
 import 'package:ojos_app/xternal_lib/flutter_icon/src/material_community_icons.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import '../../../../../main.dart';
 
 class AboutOjosPage extends StatefulWidget {
   static const routeName = '/others/sub_pages/pages/AboutOjosPage';

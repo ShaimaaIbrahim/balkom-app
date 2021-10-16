@@ -8,7 +8,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ojos_app/core/res/text_style.dart';
 import 'package:ojos_app/core/res/width_height.dart';
 import 'package:ojos_app/core/ui/widget/image/image_caching.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class BrandsLensesSelectWidget extends StatefulWidget {
@@ -174,7 +173,7 @@ class _HomeSelectStyleWidgetState extends State<BrandsLensesSelectWidget> {
                               child: CircleAvatar(
                                 child: isSelected
                                     ? Icon(
-                                        MaterialIcons.check,
+                                        Icons.check,
                                         color: globalColor.black,
                                         size: 12,
                                       )

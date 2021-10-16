@@ -21,7 +21,6 @@ import 'package:ojos_app/features/product/domin/entities/general_item_entity.dar
 import 'package:ojos_app/features/product/presentation/args/product_details_args.dart';
 import 'package:ojos_app/features/product/presentation/args/select_lenses_args.dart';
 import 'package:ojos_app/features/product/presentation/widgets/lens_company_pages.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:ojos_app/features/product/presentation/widgets/lens_select_size_widget.dart';
 import 'package:get/get.dart' as Get;
 
@@ -430,7 +429,7 @@ class _SelectLensesPageState extends State<SelectLensesPage> {
                     ),
                   ),
                   Icon(
-                    MaterialIcons.keyboard_arrow_down,
+                    Icons.keyboard_arrow_down,
                     size: 25.w,
                     color: globalColor.black,
                   ),
@@ -478,8 +477,8 @@ class _SelectLensesPageState extends State<SelectLensesPage> {
             ),
             Icon(
               utils.getLang() == 'ar'
-                  ? MaterialIcons.keyboard_arrow_left
-                  : MaterialIcons.keyboard_arrow_right,
+                  ? Icons.keyboard_arrow_left
+                  : Icons.keyboard_arrow_right,
               size: 25.w,
               color: globalColor.black,
             ),
@@ -697,8 +696,8 @@ class _SelectLensesPageState extends State<SelectLensesPage> {
             ),
             Icon(
               utils.getLang() == 'ar'
-                  ? MaterialIcons.keyboard_arrow_left
-                  : MaterialIcons.keyboard_arrow_right,
+                  ? Icons.keyboard_arrow_left
+                  : Icons.keyboard_arrow_right,
               size: 25.w,
               color: globalColor.black,
             ),
@@ -726,7 +725,7 @@ class _SelectLensesPageState extends State<SelectLensesPage> {
                         border: Border.all(
                             width: 1.0, color: globalColor.primaryColor)),
                     child: Icon(
-                      MaterialIcons.check,
+                      Icons.check,
                       color: globalColor.black,
                       size: 14,
                     ),

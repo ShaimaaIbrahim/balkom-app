@@ -373,7 +373,8 @@ class _EnterCartInfoPageState extends State<EnterCartInfoPage> {
                                                       dest_name: args.dest_name,
                                                       guard_number:
                                                           args.guard_number,
-                                                      dest_type: args.dest_type,
+                                                      dest_type:
+                                                          args.dest_type ?? 259,
                                                     ));
                                               } else {
                                                 OrderRequest request =
@@ -459,7 +460,8 @@ class _EnterCartInfoPageState extends State<EnterCartInfoPage> {
                                                   dest_name: args.dest_name,
                                                   guard_number:
                                                       args.guard_number,
-                                                  dest_type: args.dest_type,
+                                                  dest_type:
+                                                      args.dest_type ?? 259,
                                                 );
                                                 print(
                                                     'Order Request ${request.toJson()}');
@@ -474,11 +476,11 @@ class _EnterCartInfoPageState extends State<EnterCartInfoPage> {
                                           child: Container(
                                             child: Center(
                                               child: Text(
-                                                args.paymentMethods != 8
+                                                args.paymentMethods == 2
                                                     ? Translations.of(context)
-                                                        .translate('continue')
+                                                        .translate('add')
                                                     : Translations.of(context)
-                                                        .translate('add'),
+                                                        .translate('continue'),
                                                 style: textStyle.smallTSBasic
                                                     .copyWith(
                                                         color:

@@ -492,11 +492,10 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
                     EdgeMargin.verySub,
                     EdgeMargin.subSubMin,
                     EdgeMargin.verySub),
-                child: _buildPriceWidget(
-                    discountPrice: discountPrice,
+                child: _buildPrice2Widget(
                     price: price,
                     width: width,
-                    height: height),
+                    discountPrice: discountPrice ?? 0.0),
               ),
             ],
           ),
@@ -548,7 +547,7 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
     //  print('listOfYourSelected ${listOfColorSelected.toString()}');
   }
 
-  _buildAddToCartAndFavoriteWidget(
+/*  _buildAddToCartAndFavoriteWidget(
       {required BuildContext context,
       required double width,
       required double height,
@@ -573,11 +572,7 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
                 if (result.hasDataOnly) {
                   if (mounted)
                     setState(() {
-                      // isRemoveFromFavorite = true;
-                      //
-                      // BlocProvider.of<ApplicationBloc>(context)
-                      //     .state
-                      //     .setRefreshFavoritePath(true);
+                      setRefreshFavoritePath(true);
                       widget.productDetails!.isFavorite =
                           !widget.productDetails!.isFavorite!;
                       // widget.path.setIsFav(!widget.path.isFav);
@@ -702,7 +697,7 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
         ],
       ),
     );
-  }
+  }*/
 
   _buildSimilarProducts(
       {required BuildContext context,
@@ -804,6 +799,76 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
                     ),
                   ),
                 )),
+        ],
+      ),
+    );
+  }
+
+  _buildPrice2Widget(
+      {required double? price,
+      required double? discountPrice,
+      required double width}) {
+    return Container(
+      width: width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+              child: Flexible(
+            child: RichText(
+              text: TextSpan(
+                text: '${discountPrice.toString()}',
+                style: textStyle.smallTSBasic.copyWith(
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.lineThrough,
+                    color: globalColor.grey),
+                children: <TextSpan>[
+                  new TextSpan(
+                      text: ' ${Translations.of(context).translate('rail')}',
+                      style: textStyle.subMinTSBasic
+                          .copyWith(color: globalColor.grey)),
+                ],
+              ),
+            ),
+          )),
+          SizedBox(width: 10),
+          Container(
+              child: Flexible(
+            child: RichText(
+              text: TextSpan(
+                text: price.toString(),
+                style: textStyle.smallTSBasic.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: globalColor.primaryColor),
+                children: <TextSpan>[
+                  new TextSpan(
+                      text: ' ${Translations.of(context).translate('rail')}',
+                      style: textStyle.subMinTSBasic
+                          .copyWith(color: globalColor.black)),
+                ],
+              ),
+            ),
+          )),
+          /* discountPrice != null && discountPrice.toString().isNotEmpty
+              ? Container(
+                  child: FittedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        discountPrice.toString(),
+                        style: textStyle.smallTSBasic.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: globalColor.primaryColor),
+                      ),
+                      Text(' ${Translations.of(context).translate('rail')}',
+                          style: textStyle.subMinTSBasic
+                              .copyWith(color: globalColor.primaryColor)),
+                    ],
+                  ),
+                ))
+              : SizedBox.shrink(),*/
         ],
       ),
     );

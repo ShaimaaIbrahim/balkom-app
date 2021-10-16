@@ -29,7 +29,6 @@ import 'package:ojos_app/features/others/presentation/pages/sub_pages/questions_
 import 'package:ojos_app/features/others/presentation/pages/sub_pages/use_policy_page.dart';
 import 'package:ojos_app/features/profile/domin/entities/profile_entity.dart';
 import 'package:ojos_app/main.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:share/share.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -319,8 +318,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               EdgeMargin.sub, EdgeMargin.sub, EdgeMargin.sub),
                           child: Icon(
                             utils.getLang() == 'ar'
-                                ? MaterialIcons.keyboard_arrow_left
-                                : MaterialIcons.keyboard_arrow_right,
+                                ? Icons.keyboard_arrow_left
+                                : Icons.keyboard_arrow_right,
                             color: globalColor.black,
                           ),
                         ),
@@ -622,7 +621,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                               ),
                               Icon(
-                                MaterialIcons.keyboard_arrow_down,
+                                Icons.keyboard_arrow_down,
                                 color: globalColor.black,
                               ),
                             ],

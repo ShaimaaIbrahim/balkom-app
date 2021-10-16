@@ -40,8 +40,6 @@ import 'package:ojos_app/features/reviews/presentation/pages/reviews_page.dart';
 import 'package:ojos_app/features/section/presentation/pages/section_page.dart';
 import 'package:ojos_app/features/user_management/domain/repositories/user_repository.dart';
 import 'package:ojos_app/features/user_management/presentation/pages/sign_in_page.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/font_awesome.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -105,6 +103,9 @@ class _MainRootPageState extends State<MainRootPage>
   TabController? tabController;
   DateTime? currentBackPressTime;
   bool? isAuth;
+  String stateLog = '';
+  String? stateAsset;
+  MenuSpecItem? stateMenu;
 
   @override
   void initState() {
@@ -126,73 +127,83 @@ class _MainRootPageState extends State<MainRootPage>
     return [HomePage(), BrandPage(), CartPage(), SectionPage(), MyOrderPage()];
   }
 
-  List<PersistentBottomNavBarItem> _navBarsItems() {
-    return [
-      PersistentBottomNavBarItem(
-          icon: SvgPicture.asset(
-            AppAssets.home_btnv_svg,
-            width: 22,
-            height: 22,
-          ),
-          title: "الرئيسية",
-          iconSize: 26,
-          activeColorPrimary: Color(0xFF2A357C),
-          inactiveColorPrimary: Colors.black,
-          textStyle: TextStyle(
-              height: .7, color: Colors.black, fontWeight: FontWeight.w300)),
-      PersistentBottomNavBarItem(
-        icon: SvgPicture.asset(
-          AppAssets.brand_btnv_svg,
-          width: 22,
-          height: 22,
-        ),
-        title: ("الماركات"),
-        iconSize: 26,
-        activeColorPrimary: Color(0xFF2A357C),
-        inactiveColorPrimary: Colors.black,
-      ),
-      PersistentBottomNavBarItem(
-        icon: SvgPicture.asset(
-          AppAssets.cart_btnv_svg,
-          width: 22,
-          height: 22,
-        ),
-        title: (""),
-        contentPadding: 20.0,
-        activeColorPrimary: Color(0xFF2A357C),
-        inactiveColorPrimary: Colors.grey,
-        inactiveColorSecondary: Colors.red,
-      ),
-      PersistentBottomNavBarItem(
-        icon: SvgPicture.asset(
-          AppAssets.sections_btnv_svg,
-          width: 22,
-          height: 22,
-        ),
-        title: ("الأقسام"),
-        iconSize: 26,
-        activeColorPrimary: Color(0xFF2A357C),
-        inactiveColorPrimary: Colors.black,
-      ),
-      PersistentBottomNavBarItem(
-        icon: SvgPicture.asset(
-          AppAssets.user_btnv_svg,
-          width: 22,
-          height: 22,
-        ),
-        title: ("الطلبات"),
-        iconSize: 26,
-        activeColorPrimary: Color(0xFF2A357C),
-        inactiveColorPrimary: Colors.black,
-      ),
-    ];
-  }
+  // List<PersistentBottomNavBarItem> _navBarsItems() {
+  //   return [
+  //     PersistentBottomNavBarItem(
+  //         icon: SvgPicture.asset(
+  //           AppAssets.home_btnv_svg,
+  //           width: 22,
+  //           height: 22,
+  //         ),
+  //         title: "الرئيسية",
+  //         iconSize: 26,
+  //         activeColorPrimary: Color(0xFF2A357C),
+  //         inactiveColorPrimary: Colors.black,
+  //         textStyle: TextStyle(
+  //             height: .7, color: Colors.black, fontWeight: FontWeight.w300)),
+  //     PersistentBottomNavBarItem(
+  //       icon: SvgPicture.asset(
+  //         AppAssets.brand_btnv_svg,
+  //         width: 22,
+  //         height: 22,
+  //       ),
+  //       title: ("الماركات"),
+  //       iconSize: 26,
+  //       activeColorPrimary: Color(0xFF2A357C),
+  //       inactiveColorPrimary: Colors.black,
+  //     ),
+  //     PersistentBottomNavBarItem(
+  //       icon: SvgPicture.asset(
+  //         AppAssets.cart_btnv_svg,
+  //         width: 22,
+  //         height: 22,
+  //       ),
+  //       title: (""),
+  //       contentPadding: 20.0,
+  //       activeColorPrimary: Color(0xFF2A357C),
+  //       inactiveColorPrimary: Colors.grey,
+  //       inactiveColorSecondary: Colors.red,
+  //     ),
+  //     PersistentBottomNavBarItem(
+  //       icon: SvgPicture.asset(
+  //         AppAssets.sections_btnv_svg,
+  //         width: 22,
+  //         height: 22,
+  //       ),
+  //       title: ("الأقسام"),
+  //       iconSize: 26,
+  //       activeColorPrimary: Color(0xFF2A357C),
+  //       inactiveColorPrimary: Colors.black,
+  //     ),
+  //     PersistentBottomNavBarItem(
+  //       icon: SvgPicture.asset(
+  //         AppAssets.user_btnv_svg,
+  //         width: 22,
+  //         height: 22,
+  //       ),
+  //       title: ("الطلبات"),
+  //       iconSize: 26,
+  //       activeColorPrimary: Color(0xFF2A357C),
+  //       inactiveColorPrimary: Colors.black,
+  //     ),
+  //   ];
+  // }
 
   @override
   Widget build(BuildContext context) {
     double height = globalSize.setHeightPercentage(100, context) -
         // appBar().preferredSize.height -
         MediaQuery.of(context).viewPadding.top;
+    if (BlocProvider.of<ApplicationBloc>(context).state.isUserAuthenticated ||
+        BlocProvider.of<ApplicationBloc>(context).state.isUserVerified) {
+      stateLog = 'logout';
+      stateAsset = AppAssets.logout_svg;
+      stateMenu = MenuSpecItem.SignOut;
+    } else {
+      stateLog = 'login';
+      stateAsset = AppAssets.login_svg;
+      stateMenu = MenuSpecItem.SignInPage;
+    }
     return BlocListener<RootPageBloc, RootPageState>(
       listener: (context, state) {
         if (state is PageIndexState) {
@@ -203,131 +214,134 @@ class _MainRootPageState extends State<MainRootPage>
         }
       },
       child: BlocBuilder(
-        bloc: BlocProvider.of<ApplicationBloc>(context),
-        builder: (BuildContext context, state) => Scaffold(
-          backgroundColor: globalColor.scaffoldBackGroundGreyColor,
-          bottomNavigationBar: ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(14)),
-            child: Material(
-              color: Colors.transparent,
-              child: Stack(
-                overflow: Overflow.visible,
-                children: <Widget>[
-                  Container(
-                    padding: const EdgeInsets.only(
-                        left: 05.0, right: 5.0, bottom: 5.0),
-                    color: globalColor.transparent,
-                    child: Container(
-                      height: 60.h,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(14)),
-                          color: globalColor.white),
-                      child: TabBar(
-                        controller: tabController,
-                        indicatorColor: Colors.transparent,
-                        indicatorPadding: EdgeInsets.all(0.0),
-                        labelPadding: EdgeInsets.all(0.0),
-                        indicatorSize: TabBarIndicatorSize.label,
-                        tabs: <Widget>[
-                          _buildTabItem(
-                              Translations.of(context).translate('home'),
-                              AppAssets.home_btnv_png,
-                              PagesEnum.HOME_PAGE,
-                              true),
-                          _buildTabItem(
-                              Translations.of(context).translate('brand'),
-                              AppAssets.brand_btnv_svg,
-                              PagesEnum.BRAND_PAGE),
+          bloc: BlocProvider.of<ApplicationBloc>(context),
+          builder: (BuildContext context, state) {
+            return Scaffold(
+              backgroundColor: globalColor.scaffoldBackGroundGreyColor,
+              bottomNavigationBar: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(14)),
+                child: Material(
+                  color: Colors.transparent,
+                  child: Stack(
+                    overflow: Overflow.visible,
+                    children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.only(
+                            left: 05.0, right: 5.0, bottom: 5.0),
+                        color: globalColor.transparent,
+                        child: Container(
+                          height: 60.h,
+                          decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(14)),
+                              color: globalColor.white),
+                          child: TabBar(
+                            controller: tabController,
+                            indicatorColor: Colors.transparent,
+                            indicatorPadding: EdgeInsets.all(0.0),
+                            labelPadding: EdgeInsets.all(0.0),
+                            indicatorSize: TabBarIndicatorSize.label,
+                            tabs: <Widget>[
+                              _buildTabItem(
+                                  Translations.of(context).translate('home'),
+                                  AppAssets.home_btnv_png,
+                                  PagesEnum.HOME_PAGE,
+                                  true),
+                              _buildTabItem(
+                                  Translations.of(context).translate('brand'),
+                                  AppAssets.brand_btnv_svg,
+                                  PagesEnum.BRAND_PAGE),
 
-                          // Container(
-                          //   width: 55.w,
-                          //   height: 55.w,
-                          //   decoration: BoxDecoration(
-                          //       shape: BoxShape.circle,
-                          //       color: globalColor.white,
-                          //       boxShadow: [
-                          //         BoxShadow(
-                          //           color: Colors.grey.withOpacity(0.5),
-                          //           blurRadius: 10.0,
-                          //           // has the effect of softening the shadow
-                          //           spreadRadius: 3,
-                          //           offset: Offset(0,
-                          //               3), // has the effect of extending the shadow
-                          //         ),
-                          //       ]),
-                          //   child: Center(
-                          //     child: Container(
-                          //       width: 45.w,
-                          //       height: 45.w,
-                          //       decoration: BoxDecoration(
-                          //           shape: BoxShape.circle,
-                          //           color: globalColor.primaryColor,
-                          //           border: Border.all(
-                          //               width: 1.0,
-                          //               color: globalColor.goldColor)),
-                          //       child: Center(
-                          //         child:
-                          //             SvgPicture.asset(AppAssets.cart_btnv_svg,color: globalColor.white,),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                          // _buildTabItem(
-                          //     Translations.of(context).translate('cart'),
-                          //     AppAssets.cart_btnv_svg,
-                          //     PagesEnum.CART_PAGE),
-                          _buildTabItem(
-                              Translations.of(context)
-                                  .translate('order_drawer'),
-                              AppAssets.order_drawer,
-                              PagesEnum.CART_PAGE),
-                          // SvgPicture.asset(
-                          //   AppAssets.user,
-                          //   width: 16,
-                          // ),
-                          InkWell(
-                            onTap: () {
-                              Get.Get.to(GetDrawer(state, height,
-                                  getListMaterialResideMenuItem1));
+                              // Container(
+                              //   width: 55.w,
+                              //   height: 55.w,
+                              //   decoration: BoxDecoration(
+                              //       shape: BoxShape.circle,
+                              //       color: globalColor.white,
+                              //       boxShadow: [
+                              //         BoxShadow(
+                              //           color: Colors.grey.withOpacity(0.5),
+                              //           blurRadius: 10.0,
+                              //           // has the effect of softening the shadow
+                              //           spreadRadius: 3,
+                              //           offset: Offset(0,
+                              //               3), // has the effect of extending the shadow
+                              //         ),
+                              //       ]),
+                              //   child: Center(
+                              //     child: Container(
+                              //       width: 45.w,
+                              //       height: 45.w,
+                              //       decoration: BoxDecoration(
+                              //           shape: BoxShape.circle,
+                              //           color: globalColor.primaryColor,
+                              //           border: Border.all(
+                              //               width: 1.0,
+                              //               color: globalColor.goldColor)),
+                              //       child: Center(
+                              //         child:
+                              //             SvgPicture.asset(AppAssets.cart_btnv_svg,color: globalColor.white,),
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
+                              // _buildTabItem(
+                              //     Translations.of(context).translate('cart'),
+                              //     AppAssets.cart_btnv_svg,
+                              //     PagesEnum.CART_PAGE),
+                              _buildTabItem(
+                                  Translations.of(context)
+                                      .translate('order_drawer'),
+                                  AppAssets.order_drawer,
+                                  PagesEnum.CART_PAGE),
+                              // SvgPicture.asset(
+                              //   AppAssets.user,
+                              //   width: 16,
+                              // ),
+                              InkWell(
+                                onTap: () {
+                                  Get.Get.to(GetDrawer(state, height,
+                                      getListMaterialResideMenuItem1));
 // Navigator.push(context, MaterialPageRoute(builder: (context) =>                           GetDrawer(),))                          print("aaaaaaa");
-                            },
-                            child: _buildTabItem(
-                              Translations.of(context).translate('settings'),
-                              AppAssets.settings_drawer,
-                              PagesEnum.SettingsPage,
-                            ),
-                          ),
+                                },
+                                child: _buildTabItem(
+                                  Translations.of(context)
+                                      .translate('settings'),
+                                  AppAssets.settings_drawer,
+                                  PagesEnum.SettingsPage,
+                                ),
+                              ),
 
 //                  if(!appSharedPrefs.isGuest)
-                        ],
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-          body: WillPopScope(
-            onWillPop: _onWillPop,
-            child: Container(
-              child: TabBarView(
-                controller: tabController,
-                physics: NeverScrollableScrollPhysics(),
-                children: <Widget>[
-                  HomePage(
-                    tabController: tabController!,
-                  ),
-                  BrandPage(),
-                  // CartPage(tabController: tabController,),
-                  MyOrderPage(),
+              body: WillPopScope(
+                onWillPop: _onWillPop,
+                child: Container(
+                  child: TabBarView(
+                    controller: tabController,
+                    physics: NeverScrollableScrollPhysics(),
+                    children: <Widget>[
+                      HomePage(
+                        tabController: tabController!,
+                      ),
+                      BrandPage(),
+                      // CartPage(tabController: tabController,),
+                      MyOrderPage(),
 
-                  GetDrawer(state, height, getListMaterialResideMenuItem1),
-                ],
+                      GetDrawer(state, height, getListMaterialResideMenuItem1),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),
-      ),
+            );
+          }),
     );
   }
 
@@ -347,10 +361,6 @@ class _MainRootPageState extends State<MainRootPage>
           }
         },
         child: Container(
-            //
-            // margin: EdgeInsets.only(
-            //   right: isRtl(context) ? 10.0 : 0.0,
-            // ),
             child: new Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -381,8 +391,8 @@ class _MainRootPageState extends State<MainRootPage>
                       child: leadingWidget == null
                           ? Icon(
                               utils.getLang() == 'ar'
-                                  ? MaterialIcons.keyboard_arrow_left
-                                  : MaterialIcons.keyboard_arrow_right,
+                                  ? Icons.keyboard_arrow_left
+                                  : Icons.keyboard_arrow_right,
                               color: globalColor.primaryColor,
                               size: 25,
                             )
@@ -498,8 +508,13 @@ class _MainRootPageState extends State<MainRootPage>
             confirmMessage:
                 Translations.of(context).translate('are_you_sure_logout'),
             actionYes: () {
-              // logoutFromFacebookIfLoggedIn();
               BlocProvider.of<ApplicationBloc>(context).add(UserLogoutEvent());
+              setState(() {
+                this.stateLog = 'login';
+                this.stateMenu = MenuSpecItem.SignInPage;
+                this.stateAsset = AppAssets.login_svg;
+                BlocProvider.of<ApplicationBloc>(context).state.clearProfile();
+              });
               Get.Get.back();
             },
             actionNo: () {
@@ -857,11 +872,8 @@ class _MainRootPageState extends State<MainRootPage>
               );
             },
           ),
-          (state.isUserAuthenticated || state.isUserVerified)
-              ? getMaterialResideMenuItem2('logout', AppAssets.logout_svg,
-                  state: MenuSpecItem.SignOut, ishideArrow: true)
-              : getMaterialResideMenuItem2('login', AppAssets.login_svg,
-                  state: MenuSpecItem.SignInPage, ishideArrow: true),
+          getMaterialResideMenuItem2(stateLog, stateAsset!,
+              state: stateMenu, ishideArrow: true)
         ],
       ),
     ];

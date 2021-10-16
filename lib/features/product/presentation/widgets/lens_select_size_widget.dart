@@ -6,7 +6,6 @@ import 'package:ojos_app/core/res/global_color.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ojos_app/core/res/screen/horizontal_padding.dart';
 import 'package:ojos_app/core/res/text_style.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 
 class LensSelectSizeWidget extends StatefulWidget {
   final Function(LensesSelectedEnum)? onSelected;
@@ -96,7 +95,7 @@ class _LensSelectSizeWidgetState extends State<LensSelectSizeWidget> {
                 ? Container(
                     height: 15.h,
                     child: Icon(
-                      MaterialIcons.keyboard_arrow_down,
+                      Icons.keyboard_arrow_down,
                       size: 15.h,
                     ),
                   )

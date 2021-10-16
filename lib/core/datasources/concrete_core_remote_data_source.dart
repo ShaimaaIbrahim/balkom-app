@@ -247,7 +247,7 @@ class ConcreteCoreRemoteDataSource extends CoreRemoteDataSource {
 
   @override
   Future<Either<BaseError, Object>> deleteNotification({
-    required String id,
+    required int id,
     required CancelToken cancelToken,
   }) {
     return request<Object, EmptyResponse>(

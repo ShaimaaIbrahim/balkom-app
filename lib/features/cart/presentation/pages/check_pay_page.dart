@@ -31,7 +31,6 @@ import 'package:ojos_app/features/cart/presentation/widgets/item_pay_widget.dart
 import 'package:ojos_app/features/main_root.dart';
 import 'package:ojos_app/features/order/data/requests/order_request.dart';
 import 'package:ojos_app/features/order/presentation/blocs/send_order_bloc.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:ojos_app/xternal_lib/model_progress_hud.dart';
 import 'package:provider/provider.dart';
 

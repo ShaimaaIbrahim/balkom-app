@@ -351,7 +351,7 @@ class _ItemProductHomeWidgetState extends State<ItemProductHomeWidget> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          discountPrice != null && discountPrice != 0.0
+          discountPrice != null
               ? Container(
                   child: Flexible(
                   child: RichText(

@@ -32,37 +32,10 @@ class ItemProductCartWidget extends StatefulWidget {
 }
 
 class _ItemProductHomeWidgetState extends State<ItemProductCartWidget> {
-  // /// add parameters
-  // bool _addValidation = false;
-  // String _add = '';
-  // TextEditingController addEditingController= new TextEditingController();
-  //
-  // /// ipd parameters
-  // bool _ipdWidthValidation = false;
-  // String _ipd = '';
-  // TextEditingController ipdEditingController= new TextEditingController() ;
-
-  LensesSelectedEnum? _selectedForRightEye;
-  LensesSelectedEnum? _selectedForLeftEye;
-  LensesIpdAddEnum? _selectedForAddIPD;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    // if(!widget.item.isGlasses){
-    //   _selectedForRightEye = widget.item.sizeForRightEye;
-    //   _selectedForLeftEye = widget.item.sizeForLeftEye;
-    //   _selectedForAddIPD = widget.item?.lensSize;
-    //   // addEditingController.text =widget.item.addSize??'' ;
-    //   // ipdEditingController.text = widget.item.ipdSize ??'';
-    // }else{
-    //   _selectedForRightEye =widget.item?.argsForGlasses?.sizeForRightEye;
-    //   _selectedForLeftEye = widget.item?.argsForGlasses?.sizeForLeftEye;
-    //   _selectedForAddIPD = widget.item?.argsForGlasses?.lensSize;
-    //   // addEditingController.text =widget.item?.argsForGlasses?.addSize??'' ;
-    //   // ipdEditingController.text = widget.item?.argsForGlasses?.ipdSize??'';
-    // }
   }
 
   @override
@@ -124,7 +97,7 @@ class _ItemProductHomeWidgetState extends State<ItemProductCartWidget> {
                                       imageHeight: 110.h,
                                       imageWidth: 110.h,
                                     ),
-                                    Positioned(
+                                    /*   Positioned(
                                       left: 4.0,
                                       top: 4.0,
                                       child: Row(
@@ -150,13 +123,6 @@ class _ItemProductHomeWidgetState extends State<ItemProductCartWidget> {
                                                 children: [
                                                   SizedBox(
                                                     width: 1.w,
-                                                  ),
-                                                  SvgPicture.asset(
-                                                    AppAssets.star,
-                                                    width: 10.w,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 2.w,
                                                   ),
                                                   Text(
                                                     '${appConfig.notNullOrEmpty(widget.item!.productEntity!.rate) ? widget.item!.productEntity!.rate : '-'}',
@@ -263,7 +229,7 @@ class _ItemProductHomeWidgetState extends State<ItemProductCartWidget> {
                                           : Container(
                                               child: Text(''),
                                             ),
-                                    ),
+                                    ),*/
                                   ],
                                 ),
                               ),

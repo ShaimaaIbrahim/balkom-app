@@ -149,19 +149,9 @@ class _SignInBoxState extends State<SignInBox> {
                                       fit: BoxFit.fill,
                                     ),
                                   ),
-                                  //
                                   VerticalPadding(
                                     percentage: 5.5,
                                   ),
-                                  //
-                                  // // Container(
-                                  // //   child: Image.asset(AppAssets.splashLogo),
-                                  // // ),
-                                  //
-                                  // VerticalPadding(
-                                  //   percentage: 16.5,
-                                  // ),
-
                                   Container(
                                     padding: const EdgeInsets.only(
                                         left: EdgeMargin.min,
@@ -267,7 +257,6 @@ class _SignInBoxState extends State<SignInBox> {
                                   VerticalPadding(
                                     percentage: 2.5,
                                   ),
-
                                   Container(
                                       padding: const EdgeInsets.only(
                                           left: EdgeMargin.min,
@@ -349,11 +338,9 @@ class _SignInBoxState extends State<SignInBox> {
                                       ),
                                     ),
                                   ),
-
                                   VerticalPadding(
                                     percentage: 5.5,
                                   ),
-
                                   _buildSignUpButton(context)
                                 ],
                               ),
@@ -412,63 +399,35 @@ class _SignInBoxState extends State<SignInBox> {
   }
 
   Widget _buildSignUpButton(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Wrap(
-          children: <Widget>[
-            Text(
-              Translations.of(context).translate('not_you_have_account'),
-              style: textStyle.middleTSBasic,
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Wrap(
-              children: <Widget>[
-                InkWell(
-                  child: Text(
-                    Translations.of(context).translate('create_account'),
-                    style: textStyle.middleTSBasic,
-                  ),
-                  onTap: () {
-                    Get.Get.toNamed(SignUpPage.routeName);
-                  },
-                )
-              ],
-            ),
-            cardDivider(),
-            // Wrap(
-            //   children: <Widget>[
-            //     InkWell(
-            //       child: Text(
-            //         Translations.of(context).translate('register_as_guest'),
-            //         style: textStyle.middleTSBasic,
-            //       ),
-            //       onTap: () {
-            //         appConfig.check().then((internet) {
-            //           if (internet != null && internet) {
-            //             BlocProvider.of<ApplicationBloc>(context).add(UserLogoutEvent());
-            //             Navigator.of(context).push(
-            //               MaterialPageRoute(
-            //                 builder: (ctx) => HomePage(),
-            //               ),
-            //             );
-            //           } else {
-            //             appConfig.showToast(
-            //                 msg: Translations.of(context)
-            //                     .translate('make_sure_internet_connection'));
-            //           }
-            //           // No-Internet Case
-            //         });
-            //       },
-            //     )
-            //   ],
-            // ),
-          ],
-        )
-      ],
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Wrap(
+            children: <Widget>[
+              Text(
+                Translations.of(context).translate('not_you_have_account'),
+                style: textStyle.middleTSBasic,
+              ),
+            ],
+          ),
+          SizedBox(width: 2),
+          Wrap(
+            children: <Widget>[
+              InkWell(
+                child: Text(
+                  Translations.of(context).translate('create_account'),
+                  style: textStyle.middleTSBasic,
+                ),
+                onTap: () {
+                  Get.Get.toNamed(SignUpPage.routeName);
+                },
+              )
+            ],
+          ),
+          cardDivider()
+        ],
+      ),
     );
   }
 

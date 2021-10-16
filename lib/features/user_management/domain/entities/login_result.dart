@@ -17,7 +17,7 @@ class LoginResult extends BaseEntity {
   final String tokenType;
   final String expiresAt;
   final int credit;
-  final int debit;
+  final String debit;
   final int balance;
 
   // final String msg;

@@ -23,7 +23,6 @@ import 'package:ojos_app/core/ui/button/arrow_back_button_widget.dart';
 import 'package:ojos_app/core/ui/widget/image/image_caching.dart';
 import 'package:ojos_app/features/order/data/models/order_detaill.dart';
 import 'package:ojos_app/features/order/domain/entities/general_order_item_entity.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../domain/entities/order_item_entity.dart';
 
@@ -206,8 +205,6 @@ class _CartPageState extends State<OrderDetailsPage> {
                       _buildOrderInfoWidget(
                         context: context,
                         name: args.paymentmehtod!,
-                        //billing_name,
-                        // date: args.order_items[0]?.created_at ?? '',
                         height: height,
                         width: width,
                         price: args.total.toString(),
@@ -220,10 +217,10 @@ class _CartPageState extends State<OrderDetailsPage> {
                         padding: const EdgeInsets.only(
                             left: EdgeMargin.min, right: EdgeMargin.min),
                         child: _buildMap(
-                          width: width,
-                          height: height,
-                          context: context,
-                        ),
+                            width: width,
+                            height: height,
+                            context: context,
+                            args: args),
                       ),
                       VerticalPadding(
                         percentage: 2.0,
@@ -617,11 +614,11 @@ _buildOrderInfoWidget({
   );
 }
 
-_buildMap({
-  required BuildContext context,
-  required double width,
-  required double height,
-}) {
+_buildMap(
+    {required BuildContext context,
+    required double width,
+    required double height,
+    required GeneralOrderItemEntity args}) {
   return ClipRRect(
     borderRadius: BorderRadius.all(Radius.circular(12.w)),
     child: Container(
@@ -633,8 +630,9 @@ _buildMap({
       ),
       //   margin: const EdgeInsets.only(left: EdgeMargin.verySub,),
       width: width,
-
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           VerticalPadding(
             percentage: 0.5,
@@ -684,28 +682,53 @@ _buildMap({
               ),
             ],
           ),
+          VerticalPadding(
+            percentage: 0.5,
+          ),
           Container(
-            height: 180,
-            padding: const EdgeInsets.all(EdgeMargin.small),
-            child: GoogleMap(
-              initialCameraPosition: _initialLocation,
-              myLocationEnabled: false,
-              myLocationButtonEnabled: false,
-              mapType: MapType.normal,
-              zoomGesturesEnabled: true,
-              zoomControlsEnabled: false,
-              polylines: Set<Polyline>.of(polylines.values),
-              markers: Set<Marker>.from(markers),
-              onMapCreated: (GoogleMapController controller) async {
-                mapController = controller;
-                // controller.setMapStyle(_mapStyle);
-                // await  createMArker();
-              },
-            ),
-          )
+              child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    EdgeMargin.subMin,
+                    EdgeMargin.verySub,
+                    EdgeMargin.subMin,
+                    EdgeMargin.verySub,
+                  ),
+                  child: _buildLocatinText(args)))
         ],
       ),
     ),
+  );
+}
+
+_buildLocatinText(GeneralOrderItemEntity args) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: [
+      Text(
+        '- ${args.cityname} , ${args.neighborhood} ',
+        style: textStyle.middleTSBasic.copyWith(color: globalColor.black),
+      ),
+      SizedBox(height: 5),
+      Text(
+        '- ${args.deliveryto} ${args.dest_name == null ? '' : args.dest_name}',
+        style: textStyle.middleTSBasic.copyWith(color: globalColor.black),
+      ),
+      SizedBox(height: 5),
+      (args.load_product != null && args.quantity_name != null)
+          ? Text(
+              '- ${args.load_product} ${args.quantity_name == null ? '' : args.quantity_name}',
+              style: textStyle.middleTSBasic.copyWith(color: globalColor.black),
+            )
+          : Container(),
+      SizedBox(height: 5),
+      (args.guard_number != null)
+          ? Text(
+              '- ${args.guard_number}',
+              style: textStyle.middleTSBasic.copyWith(color: globalColor.black),
+            )
+          : Container()
+    ],
   );
 }
 
@@ -1079,22 +1102,27 @@ _buildPriceSummeryWidget({
                 height: height,
                 context: context,
                 title: Translations.of(context).translate('order_delivery_fee'),
-                value: order.shipping_fee.toString(),
+                value: order.shipping_fee != null
+                    ? order.shipping_fee!.toDouble().toString()
+                    : '0.0',
               ),
               _buildPriceItem(
                 width: width,
                 height: height,
                 context: context,
                 title: Translations.of(context).translate('order_discount'),
-                value: order.discount.toString(),
+                value: order.discount != null
+                    ? order.discount!.toDouble().toString()
+                    : '0.0',
               ),
               _buildPriceItem(
-                width: width,
-                height: height,
-                context: context,
-                title: Translations.of(context).translate('order_total'),
-                value: order.total.toString(),
-              ),
+                  width: width,
+                  height: height,
+                  context: context,
+                  title: Translations.of(context).translate('order_total'),
+                  value: order.total != null
+                      ? order.total!.toDouble().toString()
+                      : '0.0'),
             ],
           ),
         )

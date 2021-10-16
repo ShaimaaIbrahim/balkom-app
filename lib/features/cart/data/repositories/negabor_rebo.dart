@@ -17,7 +17,7 @@ Future<List<NegaItem>> getNega({city_id = 1}) async {
   }
 }
 
-Future<Attrbuotmodel?>? getAttrbuot() async {
+Future<Attrbuotmodel> getAttrbuot() async {
   Dio dio = Dio();
   Response response = await dio.get(atteripiot_APi);
   try {
@@ -30,11 +30,11 @@ Future<Attrbuotmodel?>? getAttrbuot() async {
     }
   } catch (e) {
     print(e);
+    return Attrbuotmodel();
   }
 }
 
-//Future<List<Deliveryto>?>
-getAttrbuotloadproduct() async {
+Future<List<Deliveryto>> getAttrbuotloadproduct() async {
   Dio dio = Dio();
   Response response = await dio.get(atteripiot_APi);
 
@@ -47,11 +47,11 @@ getAttrbuotloadproduct() async {
     }
   } catch (e) {
     print(e);
+    return [];
   }
 }
 
-//Future<List<Deliveryto>?>
-getAttrbuotprayerPlace() async {
+Future<List<Deliveryto>> getAttrbuotprayerPlace() async {
   Dio dio = Dio();
   Response response = await dio.get(atteripiot_APi);
   try {
@@ -60,8 +60,10 @@ getAttrbuotprayerPlace() async {
       return Attrbuotmodel.fromJson(response.data!).result!.desttype!;
     } else {
       throw "Cant get Data";
+      return [];
     }
   } catch (e) {
     print(e);
+    return [];
   }
 }

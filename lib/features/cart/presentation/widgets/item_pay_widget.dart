@@ -8,7 +8,6 @@ import 'package:ojos_app/core/res/text_style.dart';
 import 'package:ojos_app/core/ui/dailog/soon_dailog.dart';
 import 'package:ojos_app/core/ui/widget/image/image_caching.dart';
 import 'package:ojos_app/features/cart/domin/entities/payment_method_entity.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 
 class ItemPayWidget extends StatefulWidget {
   final PaymentMethodEntity? item;

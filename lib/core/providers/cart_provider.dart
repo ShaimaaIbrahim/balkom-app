@@ -83,7 +83,7 @@ class CartProvider with ChangeNotifier {
     }
     return total;
   }*/
-  getTotalPrices() {
+  getTotalPricesAfterDiscount() {
     double total = 0;
     if (listOfCart.isNotEmpty) {
       for (CartEntity item in listOfCart) {
@@ -105,12 +105,9 @@ class CartProvider with ChangeNotifier {
     double total = 0;
     if (listOfCart.isNotEmpty) {
       for (CartEntity item in listOfCart) {
-        if ((item.productEntity!.discountPrice != null) ||
-            item.productEntity!.discountPrice != '0') {
-          total += ((item.productEntity!.discountPrice ?? 0.0) -
-                      (item.productEntity!.price!))
-                  .abs() *
-              (item.count!);
+        if (item.productEntity!.price == null) {
+          item.productEntity!.price = 0.0;
+          total += (item.productEntity!.price!).abs() * (item.count!);
         } else {
           total += (item.productEntity!.price!) * (item.count!);
         }

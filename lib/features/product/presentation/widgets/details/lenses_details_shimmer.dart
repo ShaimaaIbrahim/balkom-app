@@ -16,7 +16,6 @@ import 'package:ojos_app/core/ui/widget/image/image_caching.dart';
 import 'package:ojos_app/core/ui/widget/title_with_view_all_widget.dart';
 import 'package:ojos_app/features/product/domin/entities/image_info_entity.dart';
 import 'package:ojos_app/features/product/domin/entities/product_entity.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class LensesDetailsShimmer extends StatefulWidget {
@@ -342,132 +341,6 @@ class _LensesDetailsShimmerState extends State<LensesDetailsShimmer> {
                         ),
                       ),
                 Positioned(
-                  left: 4.0,
-                  top: 4.0,
-                  child: Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          //Get.Get.toNamed(AddReviewPage.routeName);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: globalColor.white,
-                            borderRadius: BorderRadius.circular(12.0.w),
-                          ),
-                          height: height * .035,
-                          constraints: BoxConstraints(minWidth: width * .09),
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: EdgeMargin.verySub,
-                                right: EdgeMargin.verySub),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 2,
-                                ),
-                                SvgPicture.asset(
-                                  AppAssets.star,
-                                  width: 12,
-                                ),
-                                SizedBox(
-                                  width: 4,
-                                ),
-                                Text(
-                                  '${appConfig.notNullOrEmpty(product.rate) ? product.rate : '-'}',
-                                  style: textStyle.smallTSBasic.copyWith(
-                                      color: globalColor.black,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 5.0,
-                      ),
-                      product.isNew ?? false
-                          ? Container(
-                              decoration: BoxDecoration(
-                                color: globalColor.primaryColor,
-                                borderRadius: BorderRadius.circular(12.0.w),
-                              ),
-                              height: height * .035,
-                              constraints:
-                                  BoxConstraints(minWidth: width * .15),
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: EdgeMargin.verySub,
-                                    right: EdgeMargin.verySub),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    // SizedBox(
-                                    //   width: 2,
-                                    // ),
-                                    SvgPicture.asset(
-                                      AppAssets.newww,
-                                      width: 12,
-                                    ),
-                                    SizedBox(
-                                      width: 4,
-                                    ),
-                                    Text(
-                                      '${Translations.of(context).translate('new')}',
-                                      style: textStyle.smallTSBasic.copyWith(
-                                          color: globalColor.white,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                          : Container(
-                              child: Text(''),
-                            ),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  bottom: 4.0,
-                  right: 4.0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: globalColor.white,
-                      borderRadius: BorderRadius.circular(12.0.w),
-                    ),
-                    height: height * .035,
-                    constraints: BoxConstraints(minWidth: width * .1),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 2,
-                          ),
-                          // SvgPicture.asset(
-                          //   AppAssets.user,
-                          //   width: 16,
-                          // ),
-                          // SizedBox(
-                          //   width: 4,
-                          // ),
-                          Text(
-                            '${product.typeProduct ?? ''}',
-                            style: textStyle.minTSBasic.copyWith(
-                              color: globalColor.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
                   bottom: 4.0,
                   left: 4.0,
                   child: discountType != null
@@ -672,7 +545,7 @@ class _LensesDetailsShimmerState extends State<LensesDetailsShimmer> {
                 percentage: 1.5,
               ),
               Container(
-                width: 50,
+                width: 100,
                 height: 10,
                 decoration: BoxDecoration(
                     color: globalColor.white,

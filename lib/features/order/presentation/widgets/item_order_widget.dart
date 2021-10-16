@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -16,17 +17,21 @@ import 'package:ojos_app/features/order/domain/entities/general_order_item_entit
 import 'package:get/get.dart' as Get;
 import 'package:ojos_app/features/order/domain/repositories/order_repository.dart';
 import 'package:ojos_app/features/order/domain/usecases/delete_order.dart';
+import 'package:ojos_app/features/order/presentation/blocs/order_bloc.dart';
 import 'package:ojos_app/features/order/presentation/pages/order_details_page.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/ant_design.dart';
 
 import '../../../../main.dart';
 
 class ItemOrderWidget extends StatefulWidget {
+
   final GeneralOrderItemEntity? orderItem;
   final CancelToken? cancelToken;
   final Function? onUpdate;
+  final OrderBloc? orderBloc;
+  final Map<String, String>? filterparams;
 
-  const ItemOrderWidget({this.orderItem, this.onUpdate, this.cancelToken});
+  const ItemOrderWidget({this.orderItem, this.onUpdate,
+    this.cancelToken, required this.orderBloc, this.filterparams});
 
   @override
   _ItemOrderWidgetState createState() => _ItemOrderWidgetState();
@@ -34,6 +39,7 @@ class ItemOrderWidget extends StatefulWidget {
 
 class _ItemOrderWidgetState extends State<ItemOrderWidget> {
   bool isDeleted = false;
+  var _cancelToken = CancelToken();
 
   @override
   Widget build(BuildContext context) {
@@ -93,45 +99,6 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                         ),
                                       ],
                                     ),
-                                    // Positioned(
-                                    //   bottom: 4.0,
-                                    //   right: 4.0,
-                                    //   child: Container(
-                                    //     decoration: BoxDecoration(
-                                    //       color: globalColor.white,
-                                    //       borderRadius:
-                                    //           BorderRadius.circular(12.0.w),
-                                    //     ),
-                                    //     constraints: BoxConstraints(
-                                    //         minWidth: width * .1),
-                                    //     child: Padding(
-                                    //       padding: const EdgeInsets.only(
-                                    //           left: 4.0, right: 4.0),
-                                    //       child: Row(
-                                    //         mainAxisAlignment:
-                                    //             MainAxisAlignment.center,
-                                    //         children: [
-                                    //           Text(
-                                    //             '${Translations.of(context).translate('order_no')}',
-                                    //             style: textStyle.minTSBasic
-                                    //                 .copyWith(
-                                    //               color: globalColor.black,
-                                    //             ),
-                                    //           ),
-                                    //           Text(
-                                    //             widget.orderItem
-                                    //                     ?.order_number ??
-                                    //                 "",
-                                    //             style: textStyle.minTSBasic
-                                    //                 .copyWith(
-                                    //               color: globalColor.black,
-                                    //             ),
-                                    //           ),
-                                    //         ],
-                                    //       ),
-                                    //     ),
-                                    //   ),
-                                    // ),
                                     Positioned(
                                       left: 4.0,
                                       top: 4.0,
@@ -146,52 +113,29 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                   ],
                                 ),
                               ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                      flex: 2,
-                                      child: Container(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            Container(
-                                              child: Text(
-                                                '${widget.orderItem!.billing_name ?? ''}',
-                                                style: textStyle.smallTSBasic
-                                                    .copyWith(
-                                                  color: globalColor.black,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 2,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )),
-                                  Container(
-                                      alignment: AlignmentDirectional.centerEnd,
-                                      padding: const EdgeInsets.fromLTRB(
-                                          EdgeMargin.verySub,
-                                          EdgeMargin.sub,
-                                          EdgeMargin.verySub,
-                                          EdgeMargin.sub),
-                                      child: FittedBox(
+                              Container(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      EdgeMargin.verySub,
+                                      EdgeMargin.sub,
+                                      EdgeMargin.verySub,
+                                      EdgeMargin.sub),
+                                  child: Stack(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.centerRight,
                                         child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Container(
                                               height: 25,
                                               decoration: BoxDecoration(
                                                   color: globalColor.white,
                                                   borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(
-                                                              12.w)),
+                                                  BorderRadius.all(
+                                                      Radius.circular(
+                                                          12.w)),
                                                   border: Border.all(
                                                       color: globalColor.grey
                                                           .withOpacity(0.3),
@@ -203,20 +147,20 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                                     left: 4.0, right: 4.0),
                                                 child: Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment.center,
+                                                  MainAxisAlignment.center,
                                                   mainAxisSize:
-                                                      MainAxisSize.min,
+                                                  MainAxisSize.min,
                                                   children: [
                                                     SizedBox(
                                                       width: 2,
                                                     ),
                                                     Text(
-                                                      '${widget.orderItem?.total?.toString() ?? ''}',
+                                                      '${widget.orderItem?.subtotal?.toString() ?? ''}',
                                                       style: textStyle
                                                           .minTSBasic
                                                           .copyWith(
                                                         color:
-                                                            globalColor.black,
+                                                        globalColor.black,
                                                       ),
                                                     ),
                                                     Text(
@@ -224,97 +168,108 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                                         style: textStyle
                                                             .minTSBasic
                                                             .copyWith(
-                                                                color:
-                                                                    globalColor
-                                                                        .black)),
+                                                            color:
+                                                            globalColor
+                                                                .black)),
                                                   ],
                                                 ),
                                               ),
                                             ),
+                                            SizedBox(width: 5),
                                             Container(
                                                 height: 25,
                                                 decoration: BoxDecoration(
                                                     color: globalColor.white,
                                                     borderRadius:
-                                                        BorderRadius.all(
-                                                            Radius.circular(
-                                                                12.w)),
+                                                    BorderRadius.all(
+                                                        Radius.circular(
+                                                            12.w)),
                                                     border: Border.all(
                                                         color: globalColor.grey
                                                             .withOpacity(0.3),
                                                         width: 0.5)),
                                                 padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        EdgeMargin.subSubMin,
-                                                        EdgeMargin.verySub,
-                                                        EdgeMargin.subSubMin,
-                                                        EdgeMargin.verySub),
+                                                const EdgeInsets.fromLTRB(
+                                                    EdgeMargin.subSubMin,
+                                                    EdgeMargin.verySub,
+                                                    EdgeMargin.subSubMin,
+                                                    EdgeMargin.verySub),
                                                 child:
-                                                    //  widget.orderItem.order_items.product.discountTypeInt != null &&widget.orderItem.order_items.product.discountTypeInt ==1  ?
-                                                    Row(
+                                                //  widget.orderItem.order_items.product.discountTypeInt != null &&widget.orderItem.order_items.product.discountTypeInt ==1  ?
+                                                Row(
                                                   mainAxisSize:
-                                                      MainAxisSize.min,
+                                                  MainAxisSize.min,
                                                   crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
+                                                  CrossAxisAlignment.center,
                                                   children: [
                                                     SvgPicture.asset(
                                                       AppAssets.sales_svg,
                                                       width: 12,
                                                     ),
+                                                    SizedBox(width: 5),
                                                     Text(
                                                       '${widget.orderItem!.price_discount ?? '-'} ${Translations.of(context).translate('rail')}',
                                                       style: textStyle
                                                           .minTSBasic
                                                           .copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color: globalColor
-                                                                  .primaryColor),
+                                                          fontWeight:
+                                                          FontWeight
+                                                              .bold,
+                                                          color: globalColor
+                                                              .primaryColor),
                                                     ),
                                                     Text(
                                                         ' ${Translations.of(context).translate('discount')}',
                                                         style: textStyle
                                                             .minTSBasic
                                                             .copyWith(
-                                                                color:
-                                                                    globalColor
-                                                                        .black)),
+                                                            color:
+                                                            globalColor
+                                                                .black)),
                                                   ],
                                                 )
-                                                //     : Row(
-                                                //   mainAxisSize: MainAxisSize.min,
-                                                //   crossAxisAlignment:
-                                                //   CrossAxisAlignment.center,
-                                                //   children: [
-                                                //     SvgPicture.asset(
-                                                //       AppAssets.sales_svg,
-                                                //       width: 12,
-                                                //     ),
-                                                //     Text(
-                                                //       '${widget.orderItem.order_items.product.discountPrice ?? '-'} %' ?? '',
-                                                //       style: textStyle.minTSBasic
-                                                //           .copyWith(
-                                                //           fontWeight:
-                                                //           FontWeight.bold,
-                                                //           color: globalColor
-                                                //               .primaryColor),
-                                                //     ),
-                                                //     Text(
-                                                //         ' ${Translations.of(context).translate('discount')}',
-                                                //         style: textStyle
-                                                //             .minTSBasic
-                                                //             .copyWith(
-                                                //             color: globalColor
-                                                //                 .black)),
-                                                //   ],
-                                                // ) ,
-                                                )
-                                          ],
+                                            ),
+                                          ]
                                         ),
-                                      ))
-                                ],
-                              ),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Container(
+                                                child: InkWell(
+                                                    onTap: () {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (ctx) => ConfirmDialog(
+                                                              title: Translations
+                                                                  .of(context)
+                                                                  .translate(
+                                                                  'delete_order'),
+                                                              confirmMessage: Translations
+                                                                  .of(context)
+                                                                  .translate(
+                                                                  'are_you_sure_delete_order'),
+                                                              actionYes: () {
+                                                                widget.orderBloc!.add(
+                                                                    DeleteOrderEvent(
+                                                                     filterparams: widget.filterparams,
+                                                                     cancelToken: _cancelToken,
+                                                                     id: widget.orderItem!.id));
+                                                                },
+                                                              actionNo: () {
+                                                                setState(() {
+                                                                  Get.Get.back();
+                                                                });
+                                                              },
+                                                            ),
+                                                      );
+                                                    },
+                                                    child: Icon(Icons.delete,
+                                                        size: 30,
+                                                        color: globalColor
+                                                            .red)),),
+                                      )
+                                    ],
+                                  )),
                             ],
                           ),
                         ),
@@ -506,7 +461,7 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Icon(
-                                                    AntDesign.delete,
+                                                    Icons.delete,
                                                     color: globalColor.red,
                                                   ),
                                                 ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:ojos_app/core/localization/translations.dart';
 import 'package:ojos_app/core/res/global_color.dart';
 import 'package:ojos_app/core/res/text_style.dart';
 import 'package:ojos_app/core/res/utils.dart';
@@ -45,7 +46,7 @@ class TitleWithViewAllWidget extends StatelessWidget {
                     child: Row(
                       children: [
                         Text(
-                          strViewAll,
+                          Translations.of(context).translate("view_all"),
                           style: textStyle.smallTSBasic.copyWith(
                               color: globalColor.grey,
                               fontWeight: FontWeight.w600),

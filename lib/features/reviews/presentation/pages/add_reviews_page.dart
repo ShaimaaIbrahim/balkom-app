@@ -26,7 +26,6 @@ import 'package:ojos_app/features/product/domin/usecases/add_review.dart';
 import 'package:ojos_app/features/reviews/data/models/review_model.dart';
 import 'package:ojos_app/features/user_management/presentation/widgets/user_management_text_field_widget.dart';
 import 'package:get/get.dart' as Get;
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:ojos_app/xternal_lib/model_progress_hud.dart';
 import '../../../../main.dart';
 
@@ -675,7 +674,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
                                           width: 1.0,
                                           color: globalColor.primaryColor)),
                                   child: Icon(
-                                    MaterialIcons.check,
+                                    Icons.check,
                                     color: globalColor.black,
                                     size: 10.w,
                                   ),

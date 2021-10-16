@@ -18,7 +18,6 @@ import 'package:ojos_app/features/order/presentation/widgets/basic_order_list_pa
 import 'package:ojos_app/core/res/screen/vertical_padding.dart';
 import 'package:ojos_app/features/user_management/presentation/pages/sign_in_page.dart';
 import 'package:get/get.dart' as Get;
-import 'package:ojos_app/xternal_lib/flutter_icon/src/evil_icons.dart';
 
 class MyOrderPage extends StatefulWidget {
   static const routeName = '/order/pages/MyOrderPage';

@@ -43,7 +43,6 @@ import 'package:ojos_app/features/cart/presentation/blocs/coupon_bloc.dart';
 import 'package:ojos_app/features/cart/presentation/widgets/item_product_cart_widget.dart';
 import 'package:ojos_app/features/order/domain/entities/city_order_entity.dart';
 import 'package:ojos_app/features/user_management/presentation/widgets/user_management_text_field_widget.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:ojos_app/xternal_lib/model_progress_hud.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -96,7 +95,10 @@ class _CartPageState extends State<CartPage> {
   List<CityOrderEntity> _listOfCities = [];
 
   late List<ShippingCarriersEntity> _listOfPaymentMethods;
-  late ShippingCarriersEntity _paymentMethods; //n
+  ShippingCarriersEntity _paymentMethods = ShippingCarriersEntity(
+    id: 2,
+    name: '',
+  ); //n
 
   CustomDrobDowenField deliveryTo =
       CustomDrobDowenField(ar: "المنزل", en: "home", key: "home");
@@ -110,8 +112,9 @@ class _CartPageState extends State<CartPage> {
   GlobalKey<DropdownSearchState> _fbKey = GlobalKey();
 
   // Deliveryto attrbuotmodel;
-  late Deliveryto prayerPlace;
-  // late Deliveryto loadedAt;
+  Deliveryto prayerPlace = Deliveryto(id: 259, name: '', value: '', image: '');
+
+  Deliveryto loadedAt = Deliveryto(id: 110, name: '');
   late List<Deliveryto> attrbuotmodelList = [];
 
   // List<CustomDrobDowenField>
@@ -152,7 +155,7 @@ class _CartPageState extends State<CartPage> {
     ];
 
     setCustomMapPin();
-    _listenForPermissionStatus();
+    //_listenForPermissionStatus();
   }
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -178,8 +181,8 @@ class _CartPageState extends State<CartPage> {
   Position? _currentPosition;
   String? _currentAddress;
 
-  Permission _permission = Permission.location;
-  PermissionStatus _permissionStatus = PermissionStatus.denied;
+/*  Permission _permission = Permission.location;
+  PermissionStatus _permissionStatus = PermissionStatus.denied;*/
   final _formKey = GlobalKey<FormState>();
 
   // Method for retrieving the current location
@@ -235,7 +238,7 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-  void _listenForPermissionStatus() async {
+/*  void _listenForPermissionStatus() async {
     final status = await _permission.status;
     setState(() => _permissionStatus = status);
     if (_permissionStatus.isGranted) {
@@ -256,7 +259,7 @@ class _CartPageState extends State<CartPage> {
     if (_permissionStatus.isGranted) {
       await _getCurrentLocation();
     }
-  }
+  }*/
 
   ///===========================================================================
 
@@ -399,19 +402,6 @@ class _CartPageState extends State<CartPage> {
                                                             _couponInfoSuccess),
                                                   )
                                                 : Container(),
-                                            VerticalPadding(
-                                              percentage: 2.0,
-                                            ),
-                                            Container(
-                                              padding: const EdgeInsets.only(
-                                                  left: EdgeMargin.min,
-                                                  right: EdgeMargin.min),
-                                              child: _buildMap(
-                                                width: width,
-                                                height: height,
-                                                context: context,
-                                              ),
-                                            ),
                                             VerticalPadding(
                                               percentage: 2.0,
                                             ),
@@ -586,6 +576,8 @@ class _CartPageState extends State<CartPage> {
                                                             EdgeInsets.zero),
                                               ),
                                             ),
+                                            buildSelecteddeliveryTo(
+                                                context, width),
                                             VerticalPadding(
                                               percentage: 2.0,
                                             ),
@@ -788,8 +780,9 @@ class _CartPageState extends State<CartPage> {
                     _couponBloc.add(ApplyCouponEvent(
                         cancelToken: _cancelToken,
                         couponCode: _copon,
-                        total:
-                            cartProvider.getTotalPrices().toStringAsFixed(2)));
+                        total: cartProvider
+                            .getTotalPricesAfterDiscount()
+                            .toStringAsFixed(2)));
                     // _applyCoupon(
                     //     couponCode: _copon,
                     //     total:
@@ -908,7 +901,7 @@ class _CartPageState extends State<CartPage> {
           _buildPricesInfoItem(
               height: height,
               width: width,
-              value: cartProvider.getTotalPrices().toStringAsFixed(2),
+              value: cartProvider.getTotalPricesint().toString(),
               title:
                   Translations.of(context).translate('total_original_price')),
           VerticalPadding(
@@ -930,16 +923,19 @@ class _CartPageState extends State<CartPage> {
           //         ],
           //       )
           //     : Container(),
-          _paymentMethods != null &&
-                  _paymentMethods.id != null &&
-                  _paymentMethods.id == 8
+          _paymentMethods.id == 1
               ? _buildPricesInfoItem(
                   height: height,
                   width: width,
-                  value: '25',
+                  value: cartProvider.getTotalPricesAfterDiscount().toString(),
+                  title: Translations.of(context)
+                      .translate('price_after_discount'))
+              : _buildPricesInfoItem(
+                  height: height,
+                  width: width,
+                  value: '25.0',
                   title: Translations.of(context)
                       .translate('payment_fees_on_receipt'))
-              : Container(),
         ],
       ),
     );
@@ -1387,366 +1383,6 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-/*  buildSelecteddeliveryTo(context, width) {
-    if (deliveryTo.key == "mosque") {
-      return buildMosque(context, width);
-    } else if (deliveryTo.key == "home") {
-      return buildHome(context, width);
-    } else if (deliveryTo.key == "work") {
-      return buildWork(context, width);
-    } else if (deliveryTo.key == "rest") {
-      return buildRest(context, width);
-    } else {
-      return SizedBox();
-    }
-  }*/
-
-  buildRest(context, width) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.only(
-              left: EdgeMargin.min, right: EdgeMargin.min),
-          child: NormalOjosTextFieldWidget(
-            controller: mosqueEditingController,
-            maxLines: 1,
-            filled: true,
-            style: textStyle.smallTSBasic.copyWith(
-                color: globalColor.black, fontWeight: FontWeight.bold),
-            contentPadding: const EdgeInsets.fromLTRB(
-              EdgeMargin.small,
-              EdgeMargin.middle,
-              EdgeMargin.small,
-              EdgeMargin.small,
-            ),
-            fillColor: globalColor.white,
-            backgroundColor: globalColor.white,
-            labelBackgroundColor: globalColor.white,
-            validator: (value) {
-              if (value!.length == 0 || value == null) {
-                return Translations.of(context).translate('v_required');
-              } else {
-                return null;
-              }
-            },
-            hintText: Translations.of(context).translate('rest name'),
-            label: Translations.of(context).translate('rest name'),
-            keyboardType: TextInputType.text,
-            borderRadius: width * .02,
-            onChanged: (value) {
-              setState(() {
-                mosqueNameValidation = true;
-                mosqueName = value;
-              });
-            },
-            borderColor: globalColor.grey.withOpacity(0.3),
-            textInputAction: TextInputAction.next,
-            onFieldSubmitted: (_) {
-              FocusScope.of(context).nextFocus();
-            },
-          ),
-        ),
-        VerticalPadding(
-          percentage: 2.0,
-        ),
-        Container(
-          padding: const EdgeInsets.only(
-              left: EdgeMargin.min, right: EdgeMargin.min),
-          child: NormalOjosTextFieldWidget(
-            controller: workerEditingController,
-            maxLines: 1,
-            filled: true,
-            style: textStyle.smallTSBasic.copyWith(
-                color: globalColor.black, fontWeight: FontWeight.bold),
-            contentPadding: const EdgeInsets.fromLTRB(
-              EdgeMargin.small,
-              EdgeMargin.middle,
-              EdgeMargin.small,
-              EdgeMargin.small,
-            ),
-            fillColor: globalColor.white,
-            backgroundColor: globalColor.white,
-            labelBackgroundColor: globalColor.white,
-            //validator: (value) => phoneValidation(context, value),
-            hintText: Translations.of(context).translate('recipient number'),
-            label: Translations.of(context).translate('recipient number'),
-            keyboardType: TextInputType.phone,
-            borderRadius: width * .02,
-            onChanged: (value) {
-              setState(() {
-                recipientnumberValidation = true;
-                recipientnumberName = value;
-              });
-            },
-            borderColor: globalColor.grey.withOpacity(0.3),
-            textInputAction: TextInputAction.next,
-            onFieldSubmitted: (_) {
-              FocusScope.of(context).nextFocus();
-            },
-          ),
-        )
-      ],
-    );
-  }
-
-  buildHome(context, width) {
-    return Column(
-      children: [
-        Container(
-          width: MediaQuery.of(context).size.width - 20,
-          child: DropdownSearch<Deliveryto>(
-            validator: (value) => vRequired(context, value),
-            dropdownButtonBuilder: (context) => SizedBox.shrink(),
-            mode: Mode.BOTTOM_SHEET,
-            showSearchBox: true,
-            dropdownBuilder: drobDowenLocal,
-            emptyBuilder: (context, searchEntry) => Text("لا يوجد بيانات الان"),
-            items: attrbuotmodelList,
-            itemAsString: (item) => item!.name!,
-            onChanged: (value) {
-              setState(() {
-                //  loadedAt = value!;
-              });
-              print("loadedAt.id");
-              //print(loadedAt.id);
-            },
-            onFind: (text) => getAttrbuotloadproduct(),
-            dropdownSearchDecoration: InputDecoration(
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                contentPadding: EdgeInsets.zero),
-          ),
-        ),
-        VerticalPadding(
-          percentage: 2.0,
-        ),
-        Container(
-          padding: const EdgeInsets.only(
-              left: EdgeMargin.min, right: EdgeMargin.min),
-          child: NormalOjosTextFieldWidget(
-            controller: workerEditingController,
-            maxLines: 1,
-            filled: true,
-            style: textStyle.smallTSBasic.copyWith(
-                color: globalColor.black, fontWeight: FontWeight.bold),
-            contentPadding: const EdgeInsets.fromLTRB(
-              EdgeMargin.small,
-              EdgeMargin.middle,
-              EdgeMargin.small,
-              EdgeMargin.small,
-            ),
-            fillColor: globalColor.white,
-            backgroundColor: globalColor.white,
-            labelBackgroundColor: globalColor.white,
-            //validator: (value) => phoneValidation(context, value),
-            hintText: Translations.of(context).translate('recipient number'),
-            label: Translations.of(context).translate('recipient number'),
-            keyboardType: TextInputType.phone,
-            borderRadius: width * .02,
-            onChanged: (value) {
-              setState(() {
-                recipientnumberValidation = true;
-                recipientnumberName = value;
-              });
-            },
-            borderColor: globalColor.grey.withOpacity(0.3),
-            textInputAction: TextInputAction.next,
-            onFieldSubmitted: (_) {
-              FocusScope.of(context).nextFocus();
-            },
-          ),
-        ),
-        VerticalPadding(
-          percentage: 2.0,
-        ),
-      ],
-    );
-  }
-
-  buildWork(context, width) {
-    return Column(
-      children: [
-        Container(
-          width: MediaQuery.of(context).size.width - 20,
-          child: DropdownSearch<Deliveryto>(
-            validator: (value) => vRequired(context, value),
-            dropdownButtonBuilder: (context) => SizedBox.shrink(),
-            mode: Mode.BOTTOM_SHEET,
-            showSearchBox: true,
-            dropdownBuilder: drobDowenLocal,
-            emptyBuilder: (context, searchEntry) => Text("لا يوجد بيانات الان"),
-            items: attrbuotmodelList,
-            itemAsString: (item) => item!.name!,
-            onChanged: (value) {
-              setState(() {
-                //loadedAt = value!;
-              });
-              print("loadedAt.id");
-              //print(loadedAt.id);
-            },
-            onFind: (text) => getAttrbuotloadproduct(),
-            dropdownSearchDecoration: InputDecoration(
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                contentPadding: EdgeInsets.zero),
-          ),
-        ),
-        VerticalPadding(
-          percentage: 2.0,
-        ),
-        Container(
-          padding: const EdgeInsets.only(
-              left: EdgeMargin.min, right: EdgeMargin.min),
-          child: NormalOjosTextFieldWidget(
-            controller: workerEditingController,
-            maxLines: 1,
-            filled: true,
-            style: textStyle.smallTSBasic.copyWith(
-                color: globalColor.black, fontWeight: FontWeight.bold),
-            contentPadding: const EdgeInsets.fromLTRB(
-              EdgeMargin.small,
-              EdgeMargin.middle,
-              EdgeMargin.small,
-              EdgeMargin.small,
-            ),
-            fillColor: globalColor.white,
-            backgroundColor: globalColor.white,
-            labelBackgroundColor: globalColor.white,
-            //validator: (value) => phoneValidation(context, value),
-            hintText: Translations.of(context).translate('recipient number'),
-            label: Translations.of(context).translate('recipient number'),
-            keyboardType: TextInputType.phone,
-            borderRadius: width * .02,
-            onChanged: (value) {
-              setState(() {
-                recipientnumberValidation = true;
-                recipientnumberName = value;
-              });
-            },
-            borderColor: globalColor.grey.withOpacity(0.3),
-            textInputAction: TextInputAction.next,
-            onFieldSubmitted: (_) {
-              FocusScope.of(context).nextFocus();
-            },
-          ),
-        ),
-        VerticalPadding(
-          percentage: 2.0,
-        ),
-      ],
-    );
-  }
-
-  buildMosque(context, width) {
-    return Column(children: [
-      Container(
-        width: MediaQuery.of(context).size.width - 20,
-        child: DropdownSearch<Deliveryto>(
-          validator: (value) => vRequired(context, value),
-          dropdownButtonBuilder: (context) => SizedBox.shrink(),
-          mode: Mode.BOTTOM_SHEET,
-          // showAsSuffixIcons: false,
-          showSearchBox: true,
-          dropdownBuilder: drobDowenLocal,
-
-          emptyBuilder: (context, searchEntry) => Text("لا يوجد بيانات الان"),
-
-          items: attrbuotmodelList,
-          itemAsString: (item) => item!.name!,
-          onFind: (text) => getAttrbuotprayerPlace(),
-          onChanged: (value) {
-            setState(() {
-              prayerPlace = value!;
-            });
-            print(prayerPlace.name);
-          },
-          dropdownSearchDecoration: InputDecoration(
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              contentPadding: EdgeInsets.zero),
-        ),
-      ),
-      VerticalPadding(
-        percentage: 2.0,
-      ),
-      Container(
-        padding:
-            const EdgeInsets.only(left: EdgeMargin.min, right: EdgeMargin.min),
-        child: NormalOjosTextFieldWidget(
-          controller: mosqueEditingController,
-          maxLines: 1,
-          filled: true,
-          style: textStyle.smallTSBasic
-              .copyWith(color: globalColor.black, fontWeight: FontWeight.bold),
-          contentPadding: const EdgeInsets.fromLTRB(
-            EdgeMargin.small,
-            EdgeMargin.middle,
-            EdgeMargin.small,
-            EdgeMargin.small,
-          ),
-          fillColor: globalColor.white,
-          backgroundColor: globalColor.white,
-          labelBackgroundColor: globalColor.white,
-          //validator: (value) => requiredValidation(context, value),
-          hintText: Translations.of(context).translate('mosqueName'),
-          label: Translations.of(context).translate('mosqueName'),
-          keyboardType: TextInputType.text,
-          borderRadius: width * .02,
-          onChanged: (value) {
-            setState(() {
-              mosqueNameValidation = true;
-              mosqueName = value;
-            });
-          },
-          borderColor: globalColor.grey.withOpacity(0.3),
-          textInputAction: TextInputAction.next,
-          onFieldSubmitted: (_) {
-            FocusScope.of(context).nextFocus();
-          },
-        ),
-      ),
-      VerticalPadding(
-        percentage: 2.0,
-      ),
-      Container(
-        padding:
-            const EdgeInsets.only(left: EdgeMargin.min, right: EdgeMargin.min),
-        child: NormalOjosTextFieldWidget(
-          controller: workerEditingController,
-          maxLines: 1,
-          filled: true,
-          style: textStyle.smallTSBasic
-              .copyWith(color: globalColor.black, fontWeight: FontWeight.bold),
-          contentPadding: const EdgeInsets.fromLTRB(
-            EdgeMargin.small,
-            EdgeMargin.middle,
-            EdgeMargin.small,
-            EdgeMargin.small,
-          ),
-          fillColor: globalColor.white,
-          backgroundColor: globalColor.white,
-          labelBackgroundColor: globalColor.white,
-          //validator: (value) => phoneValidation(context, value),
-          hintText: Translations.of(context).translate('recipient number'),
-          label: Translations.of(context).translate('recipient number'),
-          keyboardType: TextInputType.phone,
-          borderRadius: width * .02,
-          onChanged: (value) {
-            setState(() {
-              recipientnumberValidation = true;
-              recipientnumberName = value;
-            });
-          },
-          borderColor: globalColor.grey.withOpacity(0.3),
-          textInputAction: TextInputAction.next,
-          onFieldSubmitted: (_) {
-            FocusScope.of(context).nextFocus();
-          },
-        ),
-      ),
-    ]);
-  }
-
   _buildTotalWidget(
       {BuildContext? context,
       double? width,
@@ -1791,12 +1427,19 @@ class _CartPageState extends State<CartPage> {
                       HorizontalPadding(
                         percentage: 1.0,
                       ),
-                      Text(
-                        _finalTotalPrice(cartProvider: cartProvider),
-                        style: textStyle.normalTSBasic.copyWith(
-                            color: globalColor.goldColor,
-                            fontWeight: FontWeight.bold),
-                      ),
+                      _paymentMethods.id == 2
+                          ? Text(
+                              '${cartProvider!.getTotalPricesint().toInt() + 25}',
+                              style: textStyle.normalTSBasic.copyWith(
+                                  color: globalColor.goldColor,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          : Text(
+                              '${cartProvider!.getTotalPricesint()}',
+                              style: textStyle.normalTSBasic.copyWith(
+                                  color: globalColor.goldColor,
+                                  fontWeight: FontWeight.bold),
+                            ),
                       HorizontalPadding(
                         percentage: 1.0,
                       ),
@@ -1838,11 +1481,9 @@ class _CartPageState extends State<CartPage> {
                   if (_formKey.currentState!.validate()) {
                     Get.Get.toNamed(EnterCartInfoPage.routeName,
                         arguments: CheckAndPayArgs(
-                            listOfOrder: cartProvider!.listOfCart,
-                            subtotal: 0,
-                            total:
-                                _finalTotalPriceint(cartProvider: cartProvider)
-                                    .toDouble(),
+                            listOfOrder: cartProvider.listOfCart,
+                            subtotal: cartProvider.getTotalPricesint(),
+                            total: cartProvider.getTotalPricesint().toDouble(),
                             city_id: _city.id,
                             coupon_id: null,
                             couponcode: _copon,
@@ -1853,7 +1494,7 @@ class _CartPageState extends State<CartPage> {
                             orginal_price: cartProvider.getTotalPricesint(),
                             price_discount: _couponInfoSuccess.total != null
                                 ? int.parse(_couponInfoSuccess.total)
-                                : 0,
+                                : cartProvider.getTotalPricesint(),
                             point_map: _city.name,
                             shipping_fee:
                                 _isCouponApply && _couponInfoSuccess != null
@@ -1867,13 +1508,13 @@ class _CartPageState extends State<CartPage> {
                             shipping_id: _shippingCarriers.id ?? 1,
                             tax: 15,
                             totalPrice:
-                                _finalTotalPrice(cartProvider: cartProvider),
+                                cartProvider.getTotalPricesint().toString(),
                             neighborhood_id: negaboor.id,
-                            load_id: 110,
+                            load_id: loadedAt.id ?? 110,
                             delivery_to: deliveryTo.key,
-                            dest_name: '',
+                            dest_name: mosqueName,
                             guard_number: recipientnumberName,
-                            dest_type: 0));
+                            dest_type: prayerPlace.id ?? 259));
                   }
                 },
                 child: Container(
@@ -1891,8 +1532,7 @@ class _CartPageState extends State<CartPage> {
                         child: Container(
                           child: FittedBox(
                             child: Text(
-                              Translations.of(context).translate(
-                                  'adoption_of_the_basket_and_payment'),
+                              Translations.of(context).translate('continue'),
                               style: textStyle.smallTSBasic
                                   .copyWith(color: globalColor.white),
                             ),
@@ -1928,7 +1568,7 @@ class _CartPageState extends State<CartPage> {
                     ? 25
                     : 0))
             .toStringAsFixed(2)
-        : (cartProvider.getTotalPrices() +
+        : (cartProvider.getTotalPricesAfterDiscount() +
                 (_paymentMethods != null &&
                         _paymentMethods.id != null &&
                         _paymentMethods.id == 8
@@ -1937,7 +1577,7 @@ class _CartPageState extends State<CartPage> {
             .toStringAsFixed(2);
   }
 
-  int _finalTotalPriceint({cartProvider}) {
+/*  int _finalTotalPriceint({cartProvider}) {
     double p = 0;
     p = (cartProvider.getTotalPrices() +
         (_paymentMethods != null &&
@@ -1946,9 +1586,9 @@ class _CartPageState extends State<CartPage> {
             ? 25
             : 0));
     return p.toInt();
-  }
+  }*/
 
-  _buildMap({
+  /* _buildMap({
     required BuildContext context,
     required double width,
     required double height,
@@ -2039,7 +1679,7 @@ class _CartPageState extends State<CartPage> {
       ),
     );
   }
-
+*/
   /*_buildSearchWidgetForMap({BuildContext context, double width}) {
     return Padding(
       padding: const EdgeInsets.all(EdgeMargin.small),
@@ -2230,7 +1870,7 @@ class _CartPageState extends State<CartPage> {
 //   }
 // }
 
-  Widget drobDowenLocal(context, Deliveryto? selectedItem) => Container(
+  Widget drobDowenLocal3(context, Deliveryto? selectedItem) => Container(
         height: 50.h,
         decoration: BoxDecoration(
           color: globalColor.white.withOpacity(0.5),
@@ -2251,7 +1891,113 @@ class _CartPageState extends State<CartPage> {
                     EdgeMargin.verySub,
                   ),
                   child: Text(
-                    Translations.of(context).translate('title'),
+                    Translations.of(context).translate("Prayer's place"),
+                    style: textStyle.smallTSBasic
+                        .copyWith(color: globalColor.black),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              width: 1.0,
+              color: Colors.grey.withOpacity(0.3),
+            ),
+            Expanded(
+              child: selectedItem == null
+                  ? Text(
+                      utils.getLang() == 'ar' ? "غير محدد" : "Not Specified",
+                      style: textStyle.smallTSBasic.copyWith(
+                        color: globalColor.primaryColor,
+                      ),
+                      textAlign: TextAlign.center,
+                    )
+                  : Text(
+                      "${selectedItem.name}",
+                      style: textStyle.smallTSBasic.copyWith(
+                        color: globalColor.primaryColor,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+            ),
+          ],
+        ),
+      );
+
+  // Widget drobDowenLocal(context, Deliveryto? selectedItem) => Container(
+  //       height: 50.h,
+  //       decoration: BoxDecoration(
+  //         color: globalColor.white.withOpacity(0.5),
+  //         borderRadius: BorderRadius.all(Radius.circular(12.w)),
+  //         border:
+  //             Border.all(color: globalColor.grey.withOpacity(0.3), width: 0.5),
+  //       ),
+  //       child: Row(
+  //         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //         children: [
+  //           Expanded(
+  //             child: Container(
+  //               child: Padding(
+  //                 padding: const EdgeInsets.fromLTRB(
+  //                   EdgeMargin.subMin,
+  //                   EdgeMargin.verySub,
+  //                   EdgeMargin.subMin,
+  //                   EdgeMargin.verySub,
+  //                 ),
+  //                 child: Text(
+  //                   Translations.of(context).translate('title'),
+  //                   style: textStyle.smallTSBasic
+  //                       .copyWith(color: globalColor.black),
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //           Container(
+  //             width: 1.0,
+  //             color: Colors.grey.withOpacity(0.3),
+  //           ),
+  //           Expanded(
+  //             child: selectedItem == null
+  //                 ? Text(
+  //                     utils.getLang() == 'ar' ? "غير محدد" : "Not Specified",
+  //                     style: textStyle.smallTSBasic.copyWith(
+  //                       color: globalColor.primaryColor,
+  //                     ),
+  //                     textAlign: TextAlign.center,
+  //                   )
+  //                 : Text(
+  //                     "${selectedItem.name}",
+  //                     style: textStyle.smallTSBasic.copyWith(
+  //                       color: globalColor.primaryColor,
+  //                     ),
+  //                     textAlign: TextAlign.center,
+  //                   ),
+  //           ),
+  //         ],
+  //       ),
+  //     );
+
+  Widget drobDowenLocal2(context, Deliveryto? selectedItem) => Container(
+        height: 50.h,
+        decoration: BoxDecoration(
+          color: globalColor.white.withOpacity(0.5),
+          borderRadius: BorderRadius.all(Radius.circular(12.w)),
+          border:
+              Border.all(color: globalColor.grey.withOpacity(0.3), width: 0.5),
+        ),
+        child: Row(
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Container(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    EdgeMargin.subMin,
+                    EdgeMargin.verySub,
+                    EdgeMargin.subMin,
+                    EdgeMargin.verySub,
+                  ),
+                  child: Text(
+                    Translations.of(context).translate('Loading the cartons'),
                     style: textStyle.smallTSBasic
                         .copyWith(color: globalColor.black),
                   ),
@@ -2405,6 +2151,372 @@ class _CartPageState extends State<CartPage> {
         ],
       ),
     );
+  }
+
+  buildSelecteddeliveryTo(context, width) {
+    if (deliveryTo.key == "mosque") {
+      return buildMosque(context, width);
+    } else if (deliveryTo.key == "home") {
+      return buildHome(context, width);
+    } else if (deliveryTo.key == "work") {
+      return buildWork(context, width);
+    } else if (deliveryTo.key == "rest") {
+      return buildRest(context, width);
+    } else {
+      return SizedBox();
+    }
+  }
+
+  buildRest(context, width) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.only(
+              left: EdgeMargin.min, right: EdgeMargin.min),
+          child: NormalOjosTextFieldWidget(
+            controller: mosqueEditingController,
+            maxLines: 1,
+            filled: true,
+            style: textStyle.smallTSBasic.copyWith(
+                color: globalColor.black, fontWeight: FontWeight.bold),
+            contentPadding: const EdgeInsets.fromLTRB(
+              EdgeMargin.small,
+              EdgeMargin.middle,
+              EdgeMargin.small,
+              EdgeMargin.small,
+            ),
+            fillColor: globalColor.white,
+            //validator: (value) => vRequired(context, value),
+            backgroundColor: globalColor.white,
+            labelBackgroundColor: globalColor.white,
+            validator: (value) {
+              if (value!.length == 0 || value == null) {
+                return Translations.of(context).translate('v_required');
+              } else {
+                return null;
+              }
+            },
+            hintText: Translations.of(context).translate('rest name'),
+            label: Translations.of(context).translate('rest name'),
+            keyboardType: TextInputType.text,
+            borderRadius: width * .02,
+            onChanged: (value) {
+              setState(() {
+                mosqueNameValidation = true;
+                mosqueName = value;
+              });
+            },
+            borderColor: globalColor.grey.withOpacity(0.3),
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) {
+              FocusScope.of(context).nextFocus();
+            },
+          ),
+        ),
+        VerticalPadding(
+          percentage: 2.0,
+        ),
+        Container(
+          padding: const EdgeInsets.only(
+              left: EdgeMargin.min, right: EdgeMargin.min),
+          child: NormalOjosTextFieldWidget(
+            controller: workerEditingController,
+            maxLines: 1,
+            filled: true,
+            style: textStyle.smallTSBasic.copyWith(
+                color: globalColor.black, fontWeight: FontWeight.bold),
+            contentPadding: const EdgeInsets.fromLTRB(
+              EdgeMargin.small,
+              EdgeMargin.middle,
+              EdgeMargin.small,
+              EdgeMargin.small,
+            ),
+            fillColor: globalColor.white,
+            backgroundColor: globalColor.white,
+            labelBackgroundColor: globalColor.white,
+            validator: (value) => vRequired(context, value),
+            hintText: Translations.of(context).translate('recipient number'),
+            label: Translations.of(context).translate('recipient number'),
+            //validator: (value) => vRequired(context, value),
+            keyboardType: TextInputType.phone,
+            borderRadius: width * .02,
+            onChanged: (value) {
+              setState(() {
+                recipientnumberValidation = true;
+                recipientnumberName = value;
+              });
+            },
+            borderColor: globalColor.grey.withOpacity(0.3),
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) {
+              FocusScope.of(context).nextFocus();
+            },
+          ),
+        )
+      ],
+    );
+  }
+
+  buildHome(context, width) {
+    return Column(
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width - 20,
+          child: DropdownSearch<Deliveryto>(
+            validator: (value) => vRequired(context, value),
+            dropdownButtonBuilder: (context) => SizedBox.shrink(),
+            mode: Mode.BOTTOM_SHEET,
+            showSearchBox: true,
+            dropdownBuilder: drobDowenLocal2,
+            emptyBuilder: (context, searchEntry) => Text("لا يوجد بيانات الان"),
+            items: attrbuotmodelList,
+            itemAsString: (item) => item!.name!,
+            onChanged: (value) {
+              setState(() {
+                loadedAt = value!;
+              });
+              print("loadedAt.id");
+              print(loadedAt.id);
+            },
+            onFind: (text) => getAttrbuotloadproduct(),
+            dropdownSearchDecoration: InputDecoration(
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                contentPadding: EdgeInsets.zero),
+          ),
+        ),
+        VerticalPadding(
+          percentage: 2.0,
+        ),
+        Container(
+          padding: const EdgeInsets.only(
+              left: EdgeMargin.min, right: EdgeMargin.min),
+          child: NormalOjosTextFieldWidget(
+            controller: workerEditingController,
+            maxLines: 1,
+            filled: true,
+            style: textStyle.smallTSBasic.copyWith(
+                color: globalColor.black, fontWeight: FontWeight.bold),
+            contentPadding: const EdgeInsets.fromLTRB(
+              EdgeMargin.small,
+              EdgeMargin.middle,
+              EdgeMargin.small,
+              EdgeMargin.small,
+            ),
+            fillColor: globalColor.white,
+            backgroundColor: globalColor.white,
+            labelBackgroundColor: globalColor.white,
+            validator: (value) => vRequired(context, value),
+            //validator: (value) => phoneValidation(context, value),
+            hintText: Translations.of(context).translate('recipient number'),
+            label: Translations.of(context).translate('recipient number'),
+            keyboardType: TextInputType.phone,
+            borderRadius: width * .02,
+            onChanged: (value) {
+              setState(() {
+                recipientnumberValidation = true;
+                recipientnumberName = value;
+              });
+            },
+            borderColor: globalColor.grey.withOpacity(0.3),
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) {
+              FocusScope.of(context).nextFocus();
+            },
+          ),
+        ),
+        VerticalPadding(
+          percentage: 2.0,
+        ),
+      ],
+    );
+  }
+
+  buildWork(context, width) {
+    return Column(
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width - 20,
+          child: DropdownSearch<Deliveryto>(
+            validator: (value) => vRequired(context, value),
+            dropdownButtonBuilder: (context) => SizedBox.shrink(),
+            mode: Mode.BOTTOM_SHEET,
+            showSearchBox: true,
+            dropdownBuilder: drobDowenLocal2,
+            emptyBuilder: (context, searchEntry) => Text("لا يوجد بيانات الان"),
+            items: attrbuotmodelList,
+            itemAsString: (item) => item!.name!,
+            onChanged: (value) {
+              setState(() {
+                loadedAt = value!;
+              });
+              print("loadedAt.id");
+              print(loadedAt.id);
+            },
+            onFind: (text) => getAttrbuotloadproduct(),
+            dropdownSearchDecoration: InputDecoration(
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                contentPadding: EdgeInsets.zero),
+          ),
+        ),
+        VerticalPadding(
+          percentage: 2.0,
+        ),
+        Container(
+          padding: const EdgeInsets.only(
+              left: EdgeMargin.min, right: EdgeMargin.min),
+          child: NormalOjosTextFieldWidget(
+            controller: workerEditingController,
+            maxLines: 1,
+            filled: true,
+            style: textStyle.smallTSBasic.copyWith(
+                color: globalColor.black, fontWeight: FontWeight.bold),
+            contentPadding: const EdgeInsets.fromLTRB(
+              EdgeMargin.small,
+              EdgeMargin.middle,
+              EdgeMargin.small,
+              EdgeMargin.small,
+            ),
+            fillColor: globalColor.white,
+            backgroundColor: globalColor.white,
+            labelBackgroundColor: globalColor.white,
+            validator: (value) => vRequired(context, value),
+            // validator: (value) => phoneValidation(context, value),
+            hintText: Translations.of(context).translate('recipient number'),
+            label: Translations.of(context).translate('recipient number'),
+            keyboardType: TextInputType.phone,
+            borderRadius: width * .02,
+            onChanged: (value) {
+              setState(() {
+                recipientnumberValidation = true;
+                recipientnumberName = value;
+              });
+            },
+            borderColor: globalColor.grey.withOpacity(0.3),
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) {
+              FocusScope.of(context).nextFocus();
+            },
+          ),
+        ),
+        VerticalPadding(
+          percentage: 2.0,
+        ),
+      ],
+    );
+  }
+
+  buildMosque(context, width) {
+    return Column(children: [
+      Container(
+        width: MediaQuery.of(context).size.width - 20,
+        child: DropdownSearch<Deliveryto>(
+          validator: (value) => vRequired(context, value),
+          dropdownButtonBuilder: (context) => SizedBox.shrink(),
+          mode: Mode.BOTTOM_SHEET,
+          // showAsSuffixIcons: false,
+          showSearchBox: true,
+          dropdownBuilder: drobDowenLocal3,
+          // drobDowenB(context, selectedItem,
+          //     itemAsString,"deliveryPlace"),
+          emptyBuilder: (context, searchEntry) => Text("لا يوجد بيانات الان"),
+          items: attrbuotmodelList,
+          itemAsString: (item) => item!.name!,
+          onFind: (filter) => getAttrbuotprayerPlace(),
+          onChanged: (value) {
+            setState(() {
+              prayerPlace = value!;
+            });
+            print(prayerPlace.name);
+          },
+          dropdownSearchDecoration: InputDecoration(
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              contentPadding: EdgeInsets.zero),
+        ),
+      ),
+      VerticalPadding(
+        percentage: 2.0,
+      ),
+      Container(
+        padding:
+            const EdgeInsets.only(left: EdgeMargin.min, right: EdgeMargin.min),
+        child: NormalOjosTextFieldWidget(
+          controller: mosqueEditingController,
+          maxLines: 1,
+          filled: true,
+          validator: (value) => vRequired(context, value),
+          style: textStyle.smallTSBasic
+              .copyWith(color: globalColor.black, fontWeight: FontWeight.bold),
+          contentPadding: const EdgeInsets.fromLTRB(
+            EdgeMargin.small,
+            EdgeMargin.middle,
+            EdgeMargin.small,
+            EdgeMargin.small,
+          ),
+          fillColor: globalColor.white,
+          backgroundColor: globalColor.white,
+          labelBackgroundColor: globalColor.white,
+          //validator: (value) => requiredValidation(context, value),
+          hintText: Translations.of(context).translate('mosqueName'),
+          label: Translations.of(context).translate('mosqueName'),
+          keyboardType: TextInputType.text,
+          borderRadius: width * .02,
+          onChanged: (value) {
+            setState(() {
+              mosqueNameValidation = true;
+              mosqueName = value;
+            });
+          },
+          borderColor: globalColor.grey.withOpacity(0.3),
+          textInputAction: TextInputAction.next,
+          onFieldSubmitted: (_) {
+            FocusScope.of(context).nextFocus();
+          },
+        ),
+      ),
+      VerticalPadding(
+        percentage: 2.0,
+      ),
+      Container(
+        padding:
+            const EdgeInsets.only(left: EdgeMargin.min, right: EdgeMargin.min),
+        child: NormalOjosTextFieldWidget(
+          controller: workerEditingController,
+          maxLines: 1,
+          filled: true,
+          style: textStyle.smallTSBasic
+              .copyWith(color: globalColor.black, fontWeight: FontWeight.bold),
+          contentPadding: const EdgeInsets.fromLTRB(
+            EdgeMargin.small,
+            EdgeMargin.middle,
+            EdgeMargin.small,
+            EdgeMargin.small,
+          ),
+          fillColor: globalColor.white,
+          validator: (value) => vRequired(context, value),
+          backgroundColor: globalColor.white,
+          labelBackgroundColor: globalColor.white,
+          // validator: (value) => phoneValidation(context, value),
+          hintText: Translations.of(context).translate('recipient number'),
+          label: Translations.of(context).translate('recipient number'),
+          keyboardType: TextInputType.phone,
+          borderRadius: width * .02,
+          onChanged: (value) {
+            setState(() {
+              recipientnumberValidation = true;
+              recipientnumberName = value;
+            });
+          },
+          borderColor: globalColor.grey.withOpacity(0.3),
+          textInputAction: TextInputAction.next,
+          onFieldSubmitted: (_) {
+            FocusScope.of(context).nextFocus();
+          },
+        ),
+      ),
+    ]);
   }
 }
 

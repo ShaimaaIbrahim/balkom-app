@@ -317,8 +317,7 @@ class _SignUpBoxState extends State<SignUpBox> {
                                         color: globalColor.primaryColor,
                                         onPressed: () async {
                                           //  Get.Get.toNamed(VerifyPage.routeName);
-                                          if (_fullName != null &&
-                                              _fullName.length >= 10) {
+                                          if (_fullName.isNotEmpty) {
                                             setState(() {
                                               _fullNameValidation = true;
                                               _phoneValidation = true;
@@ -357,13 +356,14 @@ class _SignUpBoxState extends State<SignUpBox> {
                                                 }
                                               });
                                             }
-                                          } else {
+                                          }
+                                          /*else {
                                             ErrorViewer.showCustomError(
                                                 context,
                                                 Translations.of(context)
                                                     .translate(
                                                         'msg_error_less_length'));
-                                          }
+                                          }*/
                                         },
                                         borderRadius: 8.w,
                                         child: Container(

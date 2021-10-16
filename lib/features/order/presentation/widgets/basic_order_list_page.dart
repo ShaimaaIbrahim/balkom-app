@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart' as Get;
+import 'package:ojos_app/core/appConfig.dart';
 import 'package:ojos_app/core/errors/connection_error.dart';
 import 'package:ojos_app/core/localization/translations.dart';
 import 'package:ojos_app/core/res/edge_margin.dart';
@@ -13,7 +15,6 @@ import 'package:ojos_app/core/res/text_style.dart';
 import 'package:ojos_app/features/order/domain/entities/general_order_item_entity.dart';
 import 'package:ojos_app/features/order/domain/entities/spec_order_item_entity.dart';
 import 'package:ojos_app/features/order/presentation/blocs/order_bloc.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:steps_indicator/steps_indicator.dart';
 
 import 'item_order_widget.dart';
@@ -59,22 +60,11 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
       bloc: _orderBloc,
       listener: (BuildContext context, state) async {
         if (state is OrderDoneState) {
-          // _navigateTo(context, state.extraGlassesEntity);
           listOfData = state.orders!;
         }
-        // if (state is OrderFailureState) {
-        //   final error = state.error;
-        //   if (error is ConnectionError) {
-        //     ErrorViewer.showConnectionError(context, state.callback);
-        //   } else if (error is CustomError) {
-        //     ErrorViewer.showCustomError(context, error.message);
-        //   } else if (error is BadRequestError) {
-        //     ErrorViewer.showCustomError(context, error.message);
-        //   }
-        //   else {
-        //     ErrorViewer.showUnexpectedError(context);
-        //   }
-        // }
+        /* if (state is DoneDeleteOrder) {
+          listOfData = state.listOfResult!;
+        }*/
       },
       child: BlocBuilder<OrderBloc, OrderState>(
           bloc: _orderBloc,
@@ -154,6 +144,8 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                                           "new")
                                   ? SizedBox.shrink()
                                   : ItemOrderWidget(
+                                      orderBloc: _orderBloc,
+                                      filterparams: widget.filterParams,
                                       orderItem: listOfData[index],
                                       cancelToken: _cancelToken,
                                       onUpdate: _onUpdate,
@@ -179,6 +171,149 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                 );
               }
             }
+            if (state is LoadingDeleteState) {
+              return Stack(children: [
+                Container(
+                  key: _globalKey,
+                  width: widget.width,
+                  height: widget.height,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          alignment: AlignmentDirectional.centerStart,
+                          padding: const EdgeInsets.only(
+                              left: EdgeMargin.min, right: EdgeMargin.min),
+                          child: Text(
+                            Translations.of(context)
+                                .translate('order_tracking'),
+                            style: textStyle.smallTSBasic.copyWith(
+                                color: globalColor.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        Container(
+                            key: _key,
+                            margin: const EdgeInsets.only(
+                              left: EdgeMargin.min,
+                              right: EdgeMargin.min,
+                            ),
+                            height: widget.height! * .16,
+                            child: _buildStepWidget(
+                                context: context, width: widget.width!)),
+                        Container(
+                          child: ListView.builder(
+                            itemCount: listOfData.length,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return (listOfData[index].status == "canceled" &&
+                                      widget.filterParams!["order_status"] ==
+                                          "new")
+                                  ? SizedBox.shrink()
+                                  : ItemOrderWidget(
+                                      orderBloc: _orderBloc,
+                                      filterparams: widget.filterParams,
+                                      orderItem: listOfData[index],
+                                      cancelToken: _cancelToken,
+                                      onUpdate: _onUpdate,
+                                    );
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    top: 0,
+                    child: Center(
+                        child: CircularProgressIndicator(
+                      color: globalColor.red,
+                    ))),
+              ]);
+            }
+            if (state is DoneDeleteOrder) {
+              appConfig.showToast(
+                  msg: Translations.of(context)
+                      .translate('order_successfully_deleted'));
+            }
+            if (state is FailureDeleteOrder) {
+              appConfig.showToast(
+                  msg:
+                      Translations.of(context).translate('order_failed_added'));
+            }
+            /*if (state is DoneDeleteOrder) {
+              if (state.listOfResult != null &&
+                  state.listOfResult!.isNotEmpty) {
+                return Container(
+                  key: _globalKey,
+                  width: widget.width,
+                  height: widget.height,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          alignment: AlignmentDirectional.centerStart,
+                          padding: const EdgeInsets.only(
+                              left: EdgeMargin.min, right: EdgeMargin.min),
+                          child: Text(
+                            Translations.of(context)
+                                .translate('order_tracking'),
+                            style: textStyle.smallTSBasic.copyWith(
+                                color: globalColor.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        Container(
+                            key: _key,
+                            margin: const EdgeInsets.only(
+                              left: EdgeMargin.min,
+                              right: EdgeMargin.min,
+                            ),
+                            height: widget.height! * .16,
+                            child: _buildStepWidget(
+                                context: context, width: widget.width!)),
+                        Container(
+                          child: ListView.builder(
+                            itemCount: listOfData.length,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return (listOfData[index].status == "canceled" &&
+                                      widget.filterParams!["order_status"] ==
+                                          "new")
+                                  ? SizedBox.shrink()
+                                  : ItemOrderWidget(
+                                      orderBloc: _orderBloc,
+                                      orderItem: listOfData[index],
+                                      cancelToken: _cancelToken,
+                                      onUpdate: _onUpdate,
+                                    );
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                return Container(
+                  width: widget.width,
+                  height: widget.height,
+                  child: Center(
+                    child: Text(
+                      '${Translations.of(context).translate('there_are_no_orders')}',
+                      style: textStyle.smallTSBasic
+                          .copyWith(color: globalColor.primaryColor),
+                    ),
+                  ),
+                );
+              }
+            }*/
             return Container(
                 width: widget.width,
                 height: widget.height,
@@ -222,7 +357,7 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                   width: 24.w,
                   height: 24.w,
                   child: Icon(
-                    MaterialIcons.check,
+                    Icons.check,
                     color: globalColor.black,
                     size: 10.w,
                   ),

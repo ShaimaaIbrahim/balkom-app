@@ -86,7 +86,7 @@ abstract class CoreRemoteDataSource extends RemoteDataSource {
   });
 
   Future<Either<BaseError, Object>> deleteNotification({
-    required String id,
+    required int id,
     required CancelToken cancelToken,
   });
 

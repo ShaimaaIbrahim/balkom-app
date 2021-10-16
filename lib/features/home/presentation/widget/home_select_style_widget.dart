@@ -13,7 +13,6 @@ import 'package:ojos_app/core/res/shared_preference_utils/shared_preferences.dar
 import 'package:ojos_app/core/res/text_style.dart';
 import 'package:ojos_app/core/ui/widget/image/image_caching.dart';
 import 'package:ojos_app/features/user_management/domain/repositories/user_repository.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class HomeSelectStyleWidget extends StatefulWidget {
@@ -240,7 +239,7 @@ class _HomeSelectStyleWidgetState extends State<HomeSelectStyleWidget> {
                               child: CircleAvatar(
                                 child: isSelected
                                     ? Icon(
-                                        MaterialIcons.check,
+                                        Icons.check,
                                         color: globalColor.black,
                                         size: 12,
                                       )

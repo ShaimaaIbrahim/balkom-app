@@ -16,7 +16,6 @@ import 'package:ojos_app/core/res/screen/vertical_padding.dart';
 import 'package:ojos_app/core/res/text_style.dart';
 import 'package:ojos_app/core/res/utils.dart';
 import 'package:ojos_app/core/ui/widget/button/rounded_button.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:place_picker/entities/location_result.dart';
 
@@ -369,8 +368,8 @@ class _ProfileLocationPageState extends State<ProfileLocationPage> {
           ),
           Icon(
             utils.getLang() == 'ar'
-                ? MaterialIcons.keyboard_arrow_left
-                : MaterialIcons.keyboard_arrow_right,
+                ? Icons.keyboard_arrow_left
+                : Icons.keyboard_arrow_right,
             color: globalColor.black,
           ),
         ],

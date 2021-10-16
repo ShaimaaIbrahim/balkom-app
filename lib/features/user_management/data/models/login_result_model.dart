@@ -28,7 +28,7 @@ class LoginResultModel extends BaseModel<LoginResult> {
   @JsonKey(name: 'expires_at')
   final String expiresAt;
   final int credit;
-  final int debit;
+  final String debit;
   final int balance;
 
   // final String msg;

@@ -59,7 +59,6 @@ import 'package:ojos_app/features/section/presentation/blocs/section_home_bloc.d
 import 'package:ojos_app/features/test/presentation/pages/main_test_page.dart';
 import 'package:ojos_app/features/user_management/domain/repositories/user_repository.dart';
 import 'package:ojos_app/features/user_management/presentation/pages/sign_in_page.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/flutter_icons.dart';
 import 'package:provider/provider.dart';
 //import 'package:residemenu/residemenu.dart' as Rs;
 
@@ -235,6 +234,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     isAuth =
         BlocProvider.of<ApplicationBloc>(context).state.isUserAuthenticated ||
             BlocProvider.of<ApplicationBloc>(context).state.isUserVerified;
+
     AppBar appBar({height, state}) => AppBar(
           backgroundColor: globalColor.appBar,
           brightness: Brightness.light,
@@ -249,11 +249,23 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           centerTitle: false,
           actions: [
             IconButtonWidget(
+                icon: Icon(
+                  Icons.search,
+                  size: 25,
+                  color: Colors.black,
+                ),
+                onTap: () async {
+                  Get.Get.toNamed(SearchPage.routeName, arguments: null);
+                }),
+            HorizontalPadding(
+              percentage: 3.0,
+            ),
+            IconButtonWidget(
               icon: SvgPicture.asset(
                 AppAssets.cart_btnv_svg,
                 width: 25,
                 height: 25,
-                color: Colors.grey,
+                color: Colors.black,
               ),
               onTap: () async {
                 if (await UserRepository.hasToken && isAuth!) {
@@ -274,6 +286,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 AppAssets.notification,
                 width: 25,
                 height: 25,
+                color: Colors.black,
               ),
               onTap: () async {
                 if (await UserRepository.hasToken && isAuth!) {
@@ -287,8 +300,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               },
             ),
             HorizontalPadding(
-              percentage: 2.5,
-            )
+              percentage: 3.0,
+            ),
           ],
         );
 
@@ -318,23 +331,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       child: Container(
                         child: Column(
                           children: [
-                            _buildSearchWidget(width: width, context: context),
-                            // VerticalPadding(
-                            //   percentage: .5,
-                            // ),
                             _buildTopAds(
                                 context: context, width: width, height: height),
-                            // VerticalPadding(
-                            //   percentage: .5,
-                            // ),
 
                             _buildBottomAdsTwo(
                                 context: context, width: width, height: height),
-                            // VerticalPadding(
-                            //   percentage: .5,
-                            // ),
-                            // _buildProduct(
-                            //     context: context, width: width, height: height),
 
                             VerticalPadding(
                               percentage: .5,
@@ -499,8 +500,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           child: leadingWidget == null
                               ? Icon(
                                   utils.getLang() == 'ar'
-                                      ? MaterialIcons.keyboard_arrow_left
-                                      : MaterialIcons.keyboard_arrow_right,
+                                      ? Icons.keyboard_arrow_left
+                                      : Icons.keyboard_arrow_right,
                                   color: globalColor.primaryColor,
                                   size: 25,
                                 )
@@ -737,102 +738,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             activeDotColor: globalColor.goldColor,
           ), // your preferred effect
           onDotClicked: (index) {}),
-    );
-  }
-
-  _buildSearchWidget({required BuildContext context, required double width}) {
-    return InkWell(
-      onTap: () {
-        Get.Get.toNamed(FilterSearchPage.routeName);
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(EdgeMargin.small),
-        child: Container(
-          height: 50.h,
-          decoration: BoxDecoration(
-            color: globalColor.white,
-            borderRadius: BorderRadius.circular(12.0.w),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                blurRadius: 5, // has the effect of softening the shadow
-                spreadRadius: 0, // has the effect of extending the shadow
-              ),
-            ],
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                flex: 1,
-                child: InkWell(
-                  onTap: () {
-                    Get.Get.toNamed(SearchPage.routeName, arguments: null);
-                  },
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          child: Center(
-                            child: Icon(
-                              Icons.search,
-                              size: 28.w,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 50.h,
-                        color: globalColor.grey.withOpacity(0.2),
-                        width: .5,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                  flex: 6,
-                  child: TextField(
-                    decoration: new InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        errorBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        contentPadding: EdgeInsets.only(
-                            left: 15, bottom: 11, top: 11, right: 15),
-                        hintText: Translations.of(context)
-                            .translate('Find_your_product_here'),
-                        hintStyle: textStyle.smallTSBasic
-                            .copyWith(color: globalColor.grey)),
-                    readOnly: true,
-                    onTap: () {},
-                  )),
-              // Expanded(
-              //   flex: 1,
-              //   child: Row(
-              //     children: [
-              //       Container(
-              //         height: 50.h,
-              //         color: globalColor.grey.withOpacity(0.2),
-              //         width: .5,
-              //       ),
-              //       Expanded(
-              //         flex: 1,
-              //         child: SvgPicture.asset(
-              //           AppAssets.filter,
-              //           width: 22,
-              //           height: 22,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -1182,8 +1087,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             ),
                             Icon(
                               utils.getLang() == 'ar'
-                                  ? MaterialIcons.keyboard_arrow_left
-                                  : MaterialIcons.keyboard_arrow_right,
+                                  ? Icons.keyboard_arrow_left
+                                  : Icons.keyboard_arrow_right,
                               color: globalColor.white,
                               size: 25,
                             ),

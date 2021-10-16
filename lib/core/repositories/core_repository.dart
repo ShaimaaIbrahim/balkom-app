@@ -115,7 +115,7 @@ abstract class CoreRepository extends Repository {
     required CancelToken cancelToken,
   });
   Future<Result<BaseError, Object>> deleteNotification({
-    required String id,
+    required int id,
     required CancelToken cancelToken,
   });
 

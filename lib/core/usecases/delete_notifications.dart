@@ -6,7 +6,7 @@ import 'package:ojos_app/core/results/result.dart';
 import 'package:ojos_app/core/usecases/usecase.dart';
 
 class DeleteNotificationParams extends BaseParams {
-  String id;
+  int id;
 
   DeleteNotificationParams({
     required this.id,

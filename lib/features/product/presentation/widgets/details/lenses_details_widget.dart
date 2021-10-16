@@ -26,7 +26,6 @@ import 'package:ojos_app/features/product/domin/entities/product_entity.dart';
 import 'package:ojos_app/features/product/domin/repositories/product_repository.dart';
 import 'package:ojos_app/features/product/domin/usecases/add_remove_favorite.dart';
 import 'package:ojos_app/features/user_management/domain/repositories/user_repository.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -320,51 +319,60 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
       width: width,
       padding:
           const EdgeInsets.fromLTRB(EdgeMargin.min, 0.0, EdgeMargin.min, 0.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                child: Text(
-                  '${name ?? ''}',
-                  style: textStyle.middleTSBasic.copyWith(
-                    color: globalColor.black,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-                alignment: AlignmentDirectional.centerStart,
-              ),
-              SizedBox(height: 8.0),
-              Container(
-                padding: const EdgeInsets.fromLTRB(
-                    EdgeMargin.subSubMin,
-                    EdgeMargin.verySub,
-                    EdgeMargin.subSubMin,
-                    EdgeMargin.verySub),
-                child: _buildPriceWidget(
-                    discountPrice: discountPrice,
-                    price: price,
-                    width: width,
-                    height: height),
-              ),
-            ],
-          ),
-          Spacer(),
-          _buildAddCartWidget(
-              context: context,
+      child: Stack(children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
               width: width,
-              height: height,
-              productEntity: widget.productDetails,
-              isAuth: isAuth)
-        ],
-      ),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 7),
+                    Container(
+                      child: Text(
+                        '${name ?? ''}',
+                        style: textStyle.middleTSBasic.copyWith(
+                          color: globalColor.black,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      alignment: AlignmentDirectional.centerStart,
+                    ),
+                  ]),
+            ),
+            SizedBox(height: 5.0),
+            Container(
+              padding: const EdgeInsets.fromLTRB(EdgeMargin.subSubMin,
+                  EdgeMargin.verySub, EdgeMargin.subSubMin, EdgeMargin.verySub),
+              child: _buildPrice2Widget(
+                discountPrice: discountPrice ?? 0.0,
+                price: price,
+                width: width,
+              ),
+            ),
+          ],
+        ),
+        Positioned(
+          left: 5,
+          top: 7,
+          child: Align(
+              alignment: Alignment.centerLeft,
+              child: _buildAddCartWidget(
+                  context: context,
+                  width: width,
+                  height: height,
+                  isAuth: isAuth,
+                  productEntity: widget.productDetails)),
+        )
+      ]),
     );
   }
 
-  _buildPriceWidget(
+/*  _buildPriceWidget(
       {required double? price,
       required double? discountPrice,
       required double width,
@@ -414,7 +422,7 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
         ],
       ),
     );
-  }
+  }*/
   /* _buildLensesColorWidget(
       {BuildContext context,
       double width,
@@ -858,7 +866,7 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
                 border:
                     Border.all(width: 1.0, color: globalColor.primaryColor)),
             child: Icon(
-              MaterialIcons.check,
+              Icons.check,
               color: globalColor.black,
               size: 10.w,
             ),
@@ -1287,4 +1295,160 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
       height: 20.h,
     );
   }
+
+  _buildPrice2Widget(
+      {required double? price,
+      required double? discountPrice,
+      required double width}) {
+    return Container(
+      width: width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+              child: Flexible(
+            child: RichText(
+              text: TextSpan(
+                text: '${discountPrice.toString()}',
+                style: textStyle.smallTSBasic.copyWith(
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.lineThrough,
+                    color: globalColor.grey),
+                children: <TextSpan>[
+                  new TextSpan(
+                      text: ' ${Translations.of(context).translate('rail')}',
+                      style: textStyle.subMinTSBasic
+                          .copyWith(color: globalColor.grey)),
+                ],
+              ),
+            ),
+          )),
+          SizedBox(width: 30),
+          Container(
+              child: Flexible(
+            child: RichText(
+              text: TextSpan(
+                text: price.toString(),
+                style: textStyle.smallTSBasic.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: globalColor.primaryColor),
+                children: <TextSpan>[
+                  new TextSpan(
+                      text: ' ${Translations.of(context).translate('rail')}',
+                      style: textStyle.subMinTSBasic
+                          .copyWith(color: globalColor.black)),
+                ],
+              ),
+            ),
+          )),
+          /* discountPrice != null && discountPrice.toString().isNotEmpty
+              ? Container(
+                  child: FittedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        discountPrice.toString(),
+                        style: textStyle.smallTSBasic.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: globalColor.primaryColor),
+                      ),
+                      Text(' ${Translations.of(context).translate('rail')}',
+                          style: textStyle.subMinTSBasic
+                              .copyWith(color: globalColor.primaryColor)),
+                    ],
+                  ),
+                ))
+              : SizedBox.shrink(),*/
+        ],
+      ),
+    );
+  }
+
+/*  _buildPrice2Widget(
+      {required double? price,
+      required double? discountPrice,
+      required double width}) {
+    return Container(
+      width: width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          discountPrice != null
+              ? Container(
+                  child: Flexible(
+                  child: RichText(
+                    text: TextSpan(
+                      text: '${price.toString()}',
+                      style: textStyle.smallTSBasic.copyWith(
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.lineThrough,
+                          color: globalColor.grey),
+                      children: <TextSpan>[
+                        new TextSpan(
+                            text:
+                                ' ${Translations.of(context).translate('rail')}',
+                            style: textStyle.subMinTSBasic
+                                .copyWith(color: globalColor.grey)),
+                      ],
+                    ),
+                  ),
+                ))
+              : Container(
+                  child: Flexible(
+                  child: RichText(
+                    text: TextSpan(
+                      text: price.toString(),
+                      style: textStyle.smallTSBasic.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: globalColor.primaryColor),
+                      children: <TextSpan>[
+                        new TextSpan(
+                            text:
+                                ' ${Translations.of(context).translate('rail')}',
+                            style: textStyle.subMinTSBasic
+                                .copyWith(color: globalColor.black)),
+                      ],
+                    ),
+                  ),
+                )),
+          discountPrice != null && discountPrice.toString().isNotEmpty
+              ? Container(
+                  child: FittedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        discountPrice.toString(),
+                        style: textStyle.smallTSBasic.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: globalColor.primaryColor),
+                      ),
+                      Text(' ${Translations.of(context).translate('rail')}',
+                          style: textStyle.subMinTSBasic
+                              .copyWith(color: globalColor.primaryColor)),
+                      // RichText(
+                      //   text: TextSpan(
+                      //     text: discountPrice ?? '',
+                      //     style: textStyle.smallTSBasic.copyWith(
+                      //         fontWeight: FontWeight.bold,
+                      //         color: globalColor.primaryColor),
+                      //     children: <TextSpan>[
+                      //       new TextSpan(
+                      //           text:
+                      //               ' ${Translations.of(context).translate('rail')}',
+                      //           style: textStyle.subMinTSBasic
+                      //               .copyWith(color: globalColor.primaryColor)),
+                      //     ],
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ))
+              : SizedBox.shrink(),
+        ],
+      ),
+    );
+  }*/
 }

@@ -9,12 +9,12 @@ part of 'login_result_model.dart';
 LoginResultModel _$LoginResultModelFromJson(Map<String, dynamic> json) {
   return LoginResultModel(
     mobile: json['phone'] as String,
-      name: json['name'] as String,
+    name: json['name'] as String,
     id: json['id'] as int,
     tokenType: json['token_type'] as String,
     balance: int.parse(json['balance'].toString()),
     credit: json['credit'] as int,
-    debit: json['debit'] as int,
+    debit: json['debit'] as String,
     expiresAt: json['expires_at'] as String,
     mobileActive: json['phone_verified'] as bool,
     otpCode: json['otp_code'] as int,

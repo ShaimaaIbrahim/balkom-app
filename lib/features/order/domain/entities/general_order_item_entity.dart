@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:ojos_app/core/entities/base_entity.dart';
+import 'package:ojos_app/features/product/data/models/item_model.dart';
 import 'package:ojos_app/features/product/domin/entities/item_entity.dart';
 
 import 'city_order_entity.dart';
@@ -11,15 +12,38 @@ class GeneralOrderItemEntity extends BaseEntity {
   final String? uid;
   final String? order_number;
   final int? user_id;
-  final int? payment_id;
+  final String? dest_name;
   final int? coupon_id;
-  final int? shipping_id;
+  final int? tax;
+  final int? subtotal;
+  final int? delivery_fee;
+  final int? discount;
+  final int? paid_amount;
+  final int? remaining_amount;
+  final int? method_id;
+  final String? method_name;
+  final String? status;
+  final int? city_id;
+  final String? cityname;
+  final int? neighborhood_id;
+  final String? neighborhood;
+  final String? description;
+  final int? quantity_id;
+  final String? quantity_name;
+  final int? load_id;
+  final String? load_product;
+  final int? delivery_to;
+  final String? deliveryto;
+  final int? dest_type;
+  final String? desttype;
+  final String? destname;
+  final String? guard_number;
   final int? shipping_fee;
+  final int? payment_id;
+  final int? shipping_id;
   final String? note;
   final int? price_discount;
   final double? orginal_price;
-  final int? tax;
-  final int? discount;
   final int? total;
   final String? delivery_address;
   final String? delivery_city;
@@ -28,7 +52,6 @@ class GeneralOrderItemEntity extends BaseEntity {
   final String? delivery_phone;
   final String? billing_name;
   final String? point_map;
-  final String? status;
   final String? statusint;
   final String? paymentmehtod;
   final String? orderimage;
@@ -38,6 +61,28 @@ class GeneralOrderItemEntity extends BaseEntity {
   final List<OrderItemEntity>? order_items;
 
   GeneralOrderItemEntity({
+    required this.delivery_fee,
+    required this.subtotal,
+    required this.guard_number,
+    required this.dest_name,
+    required this.paid_amount,
+    required this.remaining_amount,
+    required this.method_id,
+    required this.method_name,
+    required this.city_id,
+    required this.cityname,
+    required this.neighborhood_id,
+    required this.neighborhood,
+    required this.description,
+    required this.quantity_id,
+    required this.quantity_name,
+    required this.load_id,
+    required this.load_product,
+    required this.delivery_to,
+    required this.deliveryto,
+    required this.dest_type,
+    required this.desttype,
+    required this.destname,
     required this.id,
     required this.user_id,
     required this.total,
@@ -75,6 +120,13 @@ class GeneralOrderItemEntity extends BaseEntity {
         user_id ?? '',
         total ?? '',
         discount ?? '',
+        cityname ?? '',
+        destname ?? '',
+        desttype ?? '',
+        deliveryto ?? '',
+        delivery_city ?? '',
+        delivery_address ?? '',
+        delivery_state ?? '',
         status ?? '',
         city ?? '',
         billing_name ?? '',

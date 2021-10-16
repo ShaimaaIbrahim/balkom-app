@@ -17,7 +17,6 @@ import 'package:ojos_app/features/product/presentation/pages/lenses_details_page
 import 'package:ojos_app/features/product/presentation/pages/product_details_page.dart';
 import 'package:get/get.dart' as Get;
 import 'package:ojos_app/features/reviews/presentation/pages/add_reviews_page.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 
 class ItemReviewWidget extends StatelessWidget {
   final double? width;
@@ -174,7 +173,7 @@ class ItemReviewWidget extends StatelessWidget {
                                                               color: globalColor
                                                                   .primaryColor)),
                                                       child: Icon(
-                                                        MaterialIcons.check,
+                                                        Icons.check,
                                                         color:
                                                             globalColor.black,
                                                         size: 10.w,

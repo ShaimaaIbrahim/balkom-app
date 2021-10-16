@@ -26,9 +26,6 @@ import 'package:ojos_app/features/others/presentation/pages/sub_pages/contact_us
 import 'package:ojos_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:ojos_app/features/reviews/presentation/pages/reviews_page.dart';
 import 'package:ojos_app/features/section/presentation/pages/section_page.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/ant_design.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
-
 import '../../../../main.dart';
 
 class ItemNotificationWidget extends StatelessWidget {
@@ -120,7 +117,8 @@ class ItemNotificationWidget extends StatelessWidget {
                               actionYes: () {
                                 Get.Get.back();
                                 _requestDeleteNotificationsNewProduct(
-                                    id: notification!.id!, context: context);
+                                    id: int.parse(notification!.notifiable_id!),
+                                    context: context);
                               },
                               actionNo: () {
                                 Get.Get.back();
@@ -218,7 +216,7 @@ class ItemNotificationWidget extends StatelessWidget {
   }
 
   _requestDeleteNotificationsNewProduct(
-      {required String id, required BuildContext context}) async {
+      {required int id, required BuildContext context}) async {
     final result = await DeleteNotificationUseCase(locator<CoreRepository>())(
       DeleteNotificationParams(cancelToken: cancelToken!, id: id),
     );

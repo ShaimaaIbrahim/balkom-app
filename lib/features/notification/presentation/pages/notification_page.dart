@@ -19,7 +19,6 @@ import 'package:ojos_app/core/ui/widget/title_with_view_all_widget.dart';
 import 'package:ojos_app/features/home/data/models/category_model.dart';
 import 'package:ojos_app/features/notification/data/models/notification_model.dart';
 import 'package:ojos_app/features/notification/presentation/widgets/item_notification_widget.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 
 class NotificationPage extends StatefulWidget {
   static const routeName = '/notification/pages/NotificationPage';

@@ -10,7 +10,6 @@ import 'package:ojos_app/core/res/screen/horizontal_padding.dart';
 import 'package:ojos_app/core/res/text_style.dart';
 import 'package:ojos_app/core/res/utils.dart';
 import 'package:ojos_app/features/product/domin/entities/general_item_entity.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 
 class ItemSizeProduct extends StatefulWidget {
   final GeneralItemEntity? item;
@@ -102,7 +101,7 @@ class _ItemColorFilterState extends State<ItemSizeProduct> {
                           child: CircleAvatar(
                             child: _isSelect
                                 ? Icon(
-                                    MaterialIcons.check,
+                                    Icons.check,
                                     color: globalColor.black,
                                     size: 12,
                                   )
