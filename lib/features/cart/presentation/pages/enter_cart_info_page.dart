@@ -73,23 +73,6 @@ class _EnterCartInfoPageState extends State<EnterCartInfoPage> {
   final TextEditingController phoneEditingController2 =
       new TextEditingController();
 
-  //
-  // /// fullName parameters
-  // bool _countryValidation = false;
-  // String _country = '';
-  // final TextEditingController countryEditingController =
-  // new TextEditingController();
-  // bool _streetValidation = false;
-  // String _street = '';
-  // final TextEditingController streetEditingController =
-  // new TextEditingController();
-  //
-  // /// email parameters
-  // bool _emailValidation = false;
-  // String _email = '';
-  // final TextEditingController emailEditingController =
-  // new TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -312,8 +295,12 @@ class _EnterCartInfoPageState extends State<EnterCartInfoPage> {
                                                         EnterInfoCartArgs(
                                                       listOfOrder:
                                                           args.listOfOrder,
+                                                      delivery_fee:
+                                                          args.delivery_fee,
+                                                      discount: args.discount,
                                                       total: args.total,
                                                       city_id: args.city_id,
+                                                      //city_id: args.city_id,
                                                       coupon_id: args.coupon_id,
                                                       couponcode:
                                                           args.couponcode,
@@ -379,7 +366,7 @@ class _EnterCartInfoPageState extends State<EnterCartInfoPage> {
                                               } else {
                                                 OrderRequest request =
                                                     OrderRequest(
-                                                  subtotal: args.subtotal ?? 0,
+                                                  subtotal: args.subtotal,
                                                   total: args.total!.toInt(),
                                                   coupon_id: args.coupon_id,
                                                   tax: args.tax,
@@ -387,8 +374,9 @@ class _EnterCartInfoPageState extends State<EnterCartInfoPage> {
                                                   shipping_fee:
                                                       args.shipping_fee,
                                                   point_map: args.point_map,
-                                                  delivery_fee: 12,
-                                                  discount: args.price_discount,
+                                                  delivery_fee:
+                                                      args.delivery_fee,
+                                                  discount: args.discount,
                                                   orginal_price:
                                                       args.orginal_price,
                                                   couponcode: args.couponcode,
@@ -419,7 +407,7 @@ class _EnterCartInfoPageState extends State<EnterCartInfoPage> {
                                                       .toList(),
                                                   note: args.note ?? '',
                                                   method_id:
-                                                      args.paymentMethods ?? 0,
+                                                      args.paymentMethods,
                                                   user_address_id: args.city_id,
                                                   card: null,
                                                   delivery:

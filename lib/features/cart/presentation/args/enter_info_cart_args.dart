@@ -7,6 +7,7 @@ class EnterInfoCartArgs {
   final int? shipping_id;
   final int? city_id;
   final int? orginal_price;
+  final int? discount;
   final int? price_discount;
   final int? tax;
   final int? shipping_fee;
@@ -23,10 +24,13 @@ class EnterInfoCartArgs {
   final String? dest_name;
   final String? guard_number;
   final int? dest_type;
+  final int? delivery_fee;
 
   const EnterInfoCartArgs(
       {this.listOfOrder,
+      this.discount,
       this.totalPrice,
+      this.delivery_fee,
       this.couponcode,
       this.city_id,
       this.shipping_id,

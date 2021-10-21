@@ -26,6 +26,9 @@ class LoginFirstDialog extends StatefulWidget {
   //   this.actionNo,
   // });
 
+  bool? title;
+  LoginFirstDialog({this.title});
+
   @override
   State<StatefulWidget> createState() => _LoginFirstDialogState();
 }
@@ -76,20 +79,22 @@ class _LoginFirstDialogState extends State<LoginFirstDialog>
                         color: globalColor.primaryColor,
                         fontWeight: FontWeight.bold),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(
-                        left: EdgeMargin.subMin,
-                        right: EdgeMargin.subMin,
-                        top: EdgeMargin.subMin),
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Text(
-                      '${Translations.of(context).translate('msg_disclaimer')}',
-                      style: textStyle.minTSBasic.copyWith(
-                          color: globalColor.black,
-                          fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+                  widget.title == null
+                      ? Container(
+                          margin: EdgeInsets.only(
+                              left: EdgeMargin.subMin,
+                              right: EdgeMargin.subMin,
+                              top: EdgeMargin.subMin),
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Text(
+                            '${Translations.of(context).translate('msg_disclaimer')}',
+                            style: textStyle.minTSBasic.copyWith(
+                                color: globalColor.black,
+                                fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : Container(),
                   VerticalPadding(
                     percentage: 1.5,
                   ),

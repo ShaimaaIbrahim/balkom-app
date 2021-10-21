@@ -52,14 +52,20 @@ class FailureDeleteOrder extends OrderState {
 
 class OrderDoneState extends OrderState {
   final List<GeneralOrderItemEntity>? orders;
+  final bool? withTrack;
 
-  OrderDoneState({this.orders});
+  OrderDoneState({this.orders, this.withTrack});
 
   @override
   String toString() => 'OrderDoneState data ${orders.toString()}';
 
   @override
-  List<Object> get props => [orders!];
+  List<Object> get props => [orders!, withTrack!];
+}
+
+class StateLoadingState extends OrderState {
+  @override
+  List<Object?> get props => [];
 }
 
 class LoadingDeleteState extends OrderState {
@@ -82,6 +88,11 @@ class OrderFailureState extends OrderState {
   List<Object> get props => [error];
 }
 
+class OrderDoneStateState extends OrderState {
+  @override
+  List<Object?> get props => [];
+}
+
 @immutable
 abstract class OrderEvent extends Equatable {}
 
@@ -96,6 +107,16 @@ class GetOrderEvent extends OrderEvent {
 
   @override
   List<Object> get props => [cancelToken!, filterParams!];
+}
+
+class StatusOrder extends OrderEvent {
+  String? status;
+  final CancelToken? cancelToken;
+  final Map<String, String>? filterParams;
+
+  StatusOrder({this.status, this.filterParams, this.cancelToken});
+  @override
+  List<Object?> get props => [status!, filterParams!, cancelToken!];
 }
 
 class DeleteOrderEvent extends OrderEvent {
@@ -124,7 +145,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
       if (result.hasDataOnly) {
         final List<GeneralOrderItemEntity> listOfResult = result.data!;
-        yield OrderDoneState(orders: listOfResult);
+        yield OrderDoneState(orders: listOfResult, withTrack: false);
       } else {
         final error = result.error;
         yield OrderFailureState(error!);
@@ -147,7 +168,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         if (result1.hasDataOnly) {
           final List<GeneralOrderItemEntity> listOfResult = result1.data!;
           yield DoneDeleteOrder();
-          yield OrderDoneState(orders: listOfResult);
+          yield OrderDoneState(orders: listOfResult, withTrack: true);
         } else {
           final error = result1.error;
           yield FailureDeleteOrder(error: error);
@@ -155,6 +176,28 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       } else {
         final error = result.error;
         yield FailureDeleteOrder(error: error);
+      }
+    }
+
+    if (event is StatusOrder) {
+      yield StateLoadingState();
+
+      final result = await GetOrders(locator<OrderRepository>())(
+        GetOrdersParams(
+            cancelToken: event.cancelToken, filterParams: event.filterParams),
+      );
+      if (result.hasDataOnly) {
+        List<GeneralOrderItemEntity> orders = [];
+        final List<GeneralOrderItemEntity> listOfResult = result.data!;
+        for (GeneralOrderItemEntity v in listOfResult) {
+          if (v.status == event.status) {
+            orders.add(v);
+          }
+        }
+        yield OrderDoneState(orders: orders, withTrack: true);
+      } else {
+        final error = result.error;
+        yield OrderFailureState(error!);
       }
     }
   }

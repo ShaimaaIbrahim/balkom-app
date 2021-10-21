@@ -9,8 +9,11 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart' as Get;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ojos_app/core/appConfig.dart';
 import 'package:ojos_app/core/datasources/concrete_core_remote_data_source.dart';
 import 'package:ojos_app/core/localization/translations.dart';
+import 'package:ojos_app/core/params/no_params.dart';
+import 'package:ojos_app/core/repositories/core_repository.dart';
 import 'package:ojos_app/core/res/app_assets.dart';
 import 'package:ojos_app/core/res/edge_margin.dart';
 import 'package:ojos_app/core/res/global_color.dart';
@@ -21,9 +24,12 @@ import 'package:ojos_app/core/res/utils.dart';
 import 'package:ojos_app/core/res/width_height.dart';
 import 'package:ojos_app/core/ui/button/arrow_back_button_widget.dart';
 import 'package:ojos_app/core/ui/widget/image/image_caching.dart';
+import 'package:ojos_app/core/usecases/get_cities.dart';
 import 'package:ojos_app/features/order/data/models/order_detaill.dart';
+import 'package:ojos_app/features/order/domain/entities/city_order_entity.dart';
 import 'package:ojos_app/features/order/domain/entities/general_order_item_entity.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../../../main.dart';
 import '../../domain/entities/order_item_entity.dart';
 
 Set<Marker> markers = {};
@@ -235,11 +241,6 @@ class _CartPageState extends State<OrderDetailsPage> {
                           height: height,
                           context: context,
                           status: args.status!),
-                      /*    _buildOrderSummeryWidget(
-                          width: width,
-                          height: height,
-                          context: context,
-                          order: args),*/
                       _buildPriceSummeryWidget(
                           width: width,
                           height: height,
@@ -1074,6 +1075,7 @@ _buildPriceSummeryWidget({
   required double height,
   required GeneralOrderItemEntity order,
 }) {
+  print('order is ======================${order.toString()}');
   return order.order_items != null && order.order_items!.isNotEmpty
       ? Container(
           padding: const EdgeInsets.fromLTRB(
@@ -1098,35 +1100,42 @@ _buildPriceSummeryWidget({
                 value: order.orginal_price.toString(),
               ),
               _buildPriceItem(
-                width: width,
-                height: height,
-                context: context,
-                title: Translations.of(context).translate('order_delivery_fee'),
-                value: order.shipping_fee != null
-                    ? order.shipping_fee!.toDouble().toString()
-                    : '0.0',
-              ),
+                  width: width,
+                  height: height,
+                  context: context,
+                  title:
+                      Translations.of(context).translate('order_delivery_fee'),
+                  value: order.delivery_fee != null
+                      ? order.delivery_fee!.toDouble().toString()
+                      : "0.0"),
               _buildPriceItem(
                 width: width,
                 height: height,
                 context: context,
                 title: Translations.of(context).translate('order_discount'),
-                value: order.discount != null
-                    ? order.discount!.toDouble().toString()
-                    : '0.0',
+                value: order.discount.toString(),
               ),
               _buildPriceItem(
                   width: width,
                   height: height,
                   context: context,
                   title: Translations.of(context).translate('order_total'),
-                  value: order.total != null
-                      ? order.total!.toDouble().toString()
-                      : '0.0'),
+                  value: getTotal(order)),
             ],
           ),
         )
       : Container();
+}
+
+getTotal(GeneralOrderItemEntity order) {
+  var x = 0, y = 0, z = 0;
+  if (order.orginal_price == null) order.orginal_price = 0;
+  if (order.delivery_fee == null) order.delivery_fee = 0;
+  if (order.discount == null) order.discount = 0;
+
+  return ((order.orginal_price! + order.delivery_fee!) - order.discount!)
+      .abs()
+      .toString();
 }
 
 _buildPriceItem(
@@ -1186,102 +1195,33 @@ _buildPriceItem(
   );
 }
 
-/*
-  _buildSearchWidgetForMap({BuildContext context, double width}) {
-    return Padding(
-      padding: const EdgeInsets.all(EdgeMargin.small),
-      child: Container(
-        height: 50.h,
-        decoration: BoxDecoration(
-          color: globalColor.white,
-          borderRadius: BorderRadius.circular(12.0.w),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              blurRadius: 5, // has the effect of softening the shadow
-              spreadRadius: 0, // has the effect of extending the shadow
-            ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              flex: 1,
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      child: Center(
-                        child: Icon(
-                          EvilIcons.search,
-                          size: 28.w,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 50.h,
-                    color: globalColor.grey.withOpacity(0.2),
-                    width: .5,
-                  )
-                ],
-              ),
-            ),
-            Expanded(
-                flex: 6,
-                child: TextField(
-                  decoration: new InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      contentPadding: EdgeInsets.only(
-                          left: 15, bottom: 11, top: 11, right: 15),
-                      hintText:
-                          Translations.of(context).translate('search_places'),
-                      hintStyle: textStyle.smallTSBasic
-                          .copyWith(color: globalColor.grey)),
-                )),
-            Expanded(
-              flex: 1,
-              child: Row(
-                children: [
-                  Container(
-                    height: 50.h,
-                    color: globalColor.grey.withOpacity(0.2),
-                    width: .5,
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: SvgPicture.asset(
-                      AppAssets.filter,
-                      width: 22,
-                      height: 22,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-*/
-
 _getStrStatus({required BuildContext context, required String status}) {
   switch (status) {
-    case "accepted":
+    case "pending":
       return Translations.of(context).translate('received');
       break;
+    case "accepted":
+      return Translations.of(context).translate('processing');
+      break;
+
+    case "shipped":
+      return Translations.of(context).translate('on_way');
+      break;
+
+    case "completed":
+      return Translations.of(context).translate('completed');
+      break;
+
     case "canceled":
       return Translations.of(context).translate('canceled');
       break;
-    case "pending":
-      return Translations.of(context).translate('processing');
+
+    case "finshed":
+      return Translations.of(context).translate('completed');
+      break;
+
+    default:
+      return Translations.of(context).translate('completed');
       break;
   }
 }
@@ -1294,16 +1234,24 @@ _getColorStatus({required BuildContext context, required String status}) {
     case "canceled":
       return globalColor.red;
       break;
-
+    case "refunded":
+      return globalColor.red;
+      break;
+    case "cancel_requested":
+      return globalColor.red;
+      break;
     case "pending":
       return globalColor.buttonColorOrange;
       break;
+    case "shipping":
+      return globalColor.buttonColorOrange;
+      break;
+
     default:
       return globalColor.green;
       break;
   }
 }
-
 /*
 else if (snapshot.hasError) {
               return Text(snapshot.error.toString());

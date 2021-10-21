@@ -294,7 +294,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 } else {
                   showDialog(
                     context: context,
-                    builder: (ctx) => LoginFirstDialog(),
+                    builder: (ctx) => LoginFirstDialog(title: false),
                   );
                 }
               },
@@ -462,7 +462,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           if (state == null)
             tralingfunc();
           else {
-            // _menuController.closeMenu();
             _onItemMenuPress(state);
           }
         },

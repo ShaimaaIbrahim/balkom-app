@@ -18,6 +18,7 @@ import 'package:ojos_app/features/others/presentation/pages/sub_pages/complaint_
 import 'package:ojos_app/features/others/presentation/pages/sub_pages/contact_us_page.dart';
 import 'package:ojos_app/features/others/presentation/pages/sub_pages/membershipe_system_page.dart';
 import 'package:ojos_app/features/others/presentation/pages/sub_pages/questions_answers_page.dart';
+import 'package:ojos_app/features/others/presentation/pages/sub_pages/terms_condetion.dart';
 import 'package:ojos_app/features/others/presentation/pages/sub_pages/use_policy_page.dart';
 import 'package:ojos_app/features/product/presentation/pages/lenses_details_page.dart';
 import 'package:ojos_app/features/product/presentation/pages/product_details_page.dart';
@@ -51,6 +52,11 @@ class AppPages {
     GetPage(
       name: SplashScreen.routeName,
       page: () => SplashScreen(),
+    ),
+
+    GetPage(
+      name: TermsCondetion.routeName,
+      page: () => TermsCondetion(),
     ),
 
     /// user management pages

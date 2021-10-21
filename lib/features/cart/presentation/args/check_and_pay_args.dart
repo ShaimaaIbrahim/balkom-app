@@ -23,10 +23,16 @@ class CheckAndPayArgs {
   final String? guard_number;
   final int? dest_type;
   final int? subtotal;
+  final int? delivery_fee;
+  final int? discount;
+  final int? shipping_time;
   const CheckAndPayArgs(
       {required this.listOfOrder,
       this.totalPrice,
+      this.discount,
+      this.shipping_time,
       this.couponcode,
+      this.delivery_fee,
       this.city_id,
       this.shipping_id,
       this.paymentMethods,

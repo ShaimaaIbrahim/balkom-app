@@ -16,8 +16,8 @@ class GeneralOrderItemEntity extends BaseEntity {
   final int? coupon_id;
   final int? tax;
   final int? subtotal;
-  final int? delivery_fee;
-  final int? discount;
+  int? delivery_fee;
+  int? discount;
   final int? paid_amount;
   final int? remaining_amount;
   final int? method_id;
@@ -43,7 +43,7 @@ class GeneralOrderItemEntity extends BaseEntity {
   final int? shipping_id;
   final String? note;
   final int? price_discount;
-  final double? orginal_price;
+  double? orginal_price;
   final int? total;
   final String? delivery_address;
   final String? delivery_city;

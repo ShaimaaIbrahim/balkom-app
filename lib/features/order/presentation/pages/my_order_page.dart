@@ -26,22 +26,51 @@ class MyOrderPage extends StatefulWidget {
   _MyOrderPageState createState() => _MyOrderPageState();
 }
 
-class _MyOrderPageState extends State<MyOrderPage> {
+class _MyOrderPageState extends State<MyOrderPage>
+    with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   final _controller = TextEditingController();
   var _listKey = GlobalKey();
 
+  TabController? _tabController;
+  Map<String, String>? filterParams = {
+    'order_status': 'new',
+    'search_input': ''
+  };
+
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController!.addListener(() {
+      setState(() {
+        _currentIndex = _tabController!.index;
+        _controller.text = '';
+
+        if (_currentIndex == 0) {
+          filterParams = {
+            'order_status': 'new',
+            'search_input': _controller.text
+          };
+        } else if (_currentIndex == 1) {
+          filterParams = {
+            'order_status': 'finished',
+            'search_input': _controller.text
+          };
+        } else {
+          filterParams = {
+            'order_status': 'canceled',
+            'search_input': _controller.text
+          };
+        }
+      });
+    });
   }
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    //=========================================================================
-
     double width = globalSize.setWidthPercentage(100, context);
 
     AppBar appBar = AppBar(
@@ -66,13 +95,6 @@ class _MyOrderPageState extends State<MyOrderPage> {
             left: EdgeMargin.min,
             right: EdgeMargin.min,
           ),
-          // decoration: BoxDecoration(
-          //     color: globalColor.white,
-          //     borderRadius: BorderRadius.all(Radius.circular(12.0.w)),
-          //   border: Border.all(
-          //     color: globalColor.grey.withOpacity(0.3),
-          //   )
-          // ),
           child: (BlocProvider.of<ApplicationBloc>(context)
                       .state
                       .isUserAuthenticated ||
@@ -95,6 +117,22 @@ class _MyOrderPageState extends State<MyOrderPage> {
                               _currentIndex = index;
                               _controller.text = '';
                               _refreshList();
+                              if (_currentIndex == 0) {
+                                filterParams = {
+                                  'order_status': 'new',
+                                  'search_input': _controller.text
+                                };
+                              } else if (_currentIndex == 1) {
+                                filterParams = {
+                                  'order_status': 'finshed',
+                                  'search_input': _controller.text
+                                };
+                              } else {
+                                filterParams = {
+                                  'order_status': 'canceled',
+                                  'search_input': _controller.text
+                                };
+                              }
                             });
                         },
                         labelPadding: const EdgeInsets.all(0.0),
@@ -210,43 +248,35 @@ class _MyOrderPageState extends State<MyOrderPage> {
             BlocProvider.of<ApplicationBloc>(context).state.isUserVerified)
         ? DefaultTabController(
             length: 3,
-            child: Scaffold(
-              appBar: appBar,
-              backgroundColor: globalColor.scaffoldBackGroundGreyColor,
-              body: Container(
-                width: width,
-                height: height,
-                key: _listKey,
-                child: TabBarView(
-                  children: [
-                    BasicOrderListPage(
-                      height: height,
-                      width: width,
-                      filterParams: {
-                        'order_status': 'new',
-                        'search_input': _controller.text
-                      },
-                    ),
-                    BasicOrderListPage(
-                      height: height,
-                      width: width,
-                      filterParams: {
-                        'order_status': 'finshed',
-                        'search_input': _controller.text
-                      },
-                    ),
-                    BasicOrderListPage(
-                      height: height,
-                      width: width,
-                      filterParams: {
-                        'order_status': 'canceled',
-                        'search_input': _controller.text
-                      },
-                    ),
-                  ],
+            child: Builder(builder: (context) {
+              return Scaffold(
+                appBar: appBar,
+                backgroundColor: globalColor.scaffoldBackGroundGreyColor,
+                body: Container(
+                  width: width,
+                  height: height,
+                  key: _listKey,
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      BasicOrderListPage(
+                        height: height,
+                        width: width,
+                        filterParams: filterParams,
+                      ),
+                      BasicOrderListPage(
+                          height: height,
+                          width: width,
+                          filterParams: filterParams),
+                      BasicOrderListPage(
+                          height: height,
+                          width: width,
+                          filterParams: filterParams),
+                    ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            }),
           )
         : Scaffold(
             appBar: appBar,
@@ -437,26 +467,6 @@ class _MyOrderPageState extends State<MyOrderPage> {
                     hintStyle: textStyle.smallTSBasic
                         .copyWith(color: globalColor.grey)),
               )),
-          // Expanded(
-          //   flex: 1,
-          //   child: Row(
-          //     children: [
-          //       Container(
-          //         height: 50.h,
-          //         color: globalColor.grey.withOpacity(0.2),
-          //         width: .5,
-          //       ),
-          //       Expanded(
-          //         flex: 1,
-          //         child: SvgPicture.asset(
-          //           AppAssets.filter,
-          //           width: 22,
-          //           height: 22,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
         ],
       ),
     );

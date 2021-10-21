@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:ojos_app/core/localization/translations.dart';
 import 'package:ojos_app/core/res/edge_margin.dart';
 import 'package:ojos_app/core/res/global_color.dart';
 import 'package:ojos_app/core/res/text_size.dart';

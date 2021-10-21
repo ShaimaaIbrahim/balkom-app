@@ -14,8 +14,9 @@ import 'package:ojos_app/core/ui/items_shimmer/base_shimmer.dart';
 class OrderPageShimmer extends StatefulWidget {
   final double? width;
   final double? height;
+  final String? status;
 
-  const OrderPageShimmer({this.width, this.height});
+  const OrderPageShimmer({this.width, this.height, this.status});
 
   @override
   _OrderPageShimmerState createState() => _OrderPageShimmerState();
@@ -36,24 +37,29 @@ class _OrderPageShimmerState extends State<OrderPageShimmer> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              alignment: AlignmentDirectional.centerStart,
-              padding: const EdgeInsets.only(
-                  left: EdgeMargin.min, right: EdgeMargin.min),
-              child: Text(
-                Translations.of(context).translate('order_tracking'),
-                style: textStyle.smallTSBasic.copyWith(
-                    color: globalColor.black, fontWeight: FontWeight.w600),
-              ),
-            ),
-            Container(
-                margin: const EdgeInsets.only(
-                  left: EdgeMargin.min,
-                  right: EdgeMargin.min,
-                ),
-                height: widget.height! * .16,
-                child: _buildStepShimmerWidget(
-                    context: context, width: widget.width!)),
+            widget.status == "new"
+                ? Container(
+                    alignment: AlignmentDirectional.centerStart,
+                    padding: const EdgeInsets.only(
+                        left: EdgeMargin.min, right: EdgeMargin.min),
+                    child: Text(
+                      Translations.of(context).translate('order_tracking'),
+                      style: textStyle.smallTSBasic.copyWith(
+                          color: globalColor.black,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  )
+                : Container(),
+            widget.status == "new"
+                ? Container(
+                    margin: const EdgeInsets.only(
+                      left: EdgeMargin.min,
+                      right: EdgeMargin.min,
+                    ),
+                    height: widget.height! * .16,
+                    child: _buildStepShimmerWidget(
+                        context: context, width: widget.width!))
+                : Container(),
             Container(
               child: ListView.builder(
                 itemCount: 10,

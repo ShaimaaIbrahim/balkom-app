@@ -21,8 +21,8 @@ class NotificationsEntity extends BaseEntity {
         description ?? '',
         title ?? '',
         type ?? '',
-        id ?? 0,
+        id ?? '',
         type_int ?? 0,
-        notifiable_id ?? 0
+        notifiable_id ?? ''
       ];
 }

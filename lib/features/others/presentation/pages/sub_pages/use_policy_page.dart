@@ -19,7 +19,7 @@ import 'package:ojos_app/features/others/domain/usecases/get_privacy.dart';
 import '../../../../../main.dart';
 
 class UsePolicyPage extends StatefulWidget {
-  static const routeName = '/others/sub_pages/pages/UsePolicyPage';
+  static const routeName = '/others/pages/sub_pages/UsePolicyPage';
 
   @override
   _UsePolicyPageState createState() => _UsePolicyPageState();

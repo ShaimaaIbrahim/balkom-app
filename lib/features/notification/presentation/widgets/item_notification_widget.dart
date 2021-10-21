@@ -117,8 +117,7 @@ class ItemNotificationWidget extends StatelessWidget {
                               actionYes: () {
                                 Get.Get.back();
                                 _requestDeleteNotificationsNewProduct(
-                                    id: int.parse(notification!.notifiable_id!),
-                                    context: context);
+                                    id: notification!.id!, context: context);
                               },
                               actionNo: () {
                                 Get.Get.back();
@@ -216,7 +215,7 @@ class ItemNotificationWidget extends StatelessWidget {
   }
 
   _requestDeleteNotificationsNewProduct(
-      {required int id, required BuildContext context}) async {
+      {required String id, required BuildContext context}) async {
     final result = await DeleteNotificationUseCase(locator<CoreRepository>())(
       DeleteNotificationParams(cancelToken: cancelToken!, id: id),
     );

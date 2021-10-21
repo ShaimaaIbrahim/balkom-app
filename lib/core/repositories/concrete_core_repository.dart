@@ -273,7 +273,7 @@ class ConcreteCoreRepository extends CoreRepository {
 
   @override
   Future<Result<BaseError, Object>> deleteNotification({
-    required int id,
+    required String id,
     required CancelToken cancelToken,
   }) async {
     final remoteResult = await remoteDataSource.deleteNotification(

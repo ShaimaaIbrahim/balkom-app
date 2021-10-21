@@ -13,6 +13,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart' as Get;
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ojos_app/core/bloc/application_bloc.dart';
 import 'package:ojos_app/core/bloc/application_events.dart';
 import 'package:ojos_app/core/bloc/application_state.dart';
@@ -127,83 +128,31 @@ class _MainRootPageState extends State<MainRootPage>
     return [HomePage(), BrandPage(), CartPage(), SectionPage(), MyOrderPage()];
   }
 
-  // List<PersistentBottomNavBarItem> _navBarsItems() {
-  //   return [
-  //     PersistentBottomNavBarItem(
-  //         icon: SvgPicture.asset(
-  //           AppAssets.home_btnv_svg,
-  //           width: 22,
-  //           height: 22,
-  //         ),
-  //         title: "الرئيسية",
-  //         iconSize: 26,
-  //         activeColorPrimary: Color(0xFF2A357C),
-  //         inactiveColorPrimary: Colors.black,
-  //         textStyle: TextStyle(
-  //             height: .7, color: Colors.black, fontWeight: FontWeight.w300)),
-  //     PersistentBottomNavBarItem(
-  //       icon: SvgPicture.asset(
-  //         AppAssets.brand_btnv_svg,
-  //         width: 22,
-  //         height: 22,
-  //       ),
-  //       title: ("الماركات"),
-  //       iconSize: 26,
-  //       activeColorPrimary: Color(0xFF2A357C),
-  //       inactiveColorPrimary: Colors.black,
-  //     ),
-  //     PersistentBottomNavBarItem(
-  //       icon: SvgPicture.asset(
-  //         AppAssets.cart_btnv_svg,
-  //         width: 22,
-  //         height: 22,
-  //       ),
-  //       title: (""),
-  //       contentPadding: 20.0,
-  //       activeColorPrimary: Color(0xFF2A357C),
-  //       inactiveColorPrimary: Colors.grey,
-  //       inactiveColorSecondary: Colors.red,
-  //     ),
-  //     PersistentBottomNavBarItem(
-  //       icon: SvgPicture.asset(
-  //         AppAssets.sections_btnv_svg,
-  //         width: 22,
-  //         height: 22,
-  //       ),
-  //       title: ("الأقسام"),
-  //       iconSize: 26,
-  //       activeColorPrimary: Color(0xFF2A357C),
-  //       inactiveColorPrimary: Colors.black,
-  //     ),
-  //     PersistentBottomNavBarItem(
-  //       icon: SvgPicture.asset(
-  //         AppAssets.user_btnv_svg,
-  //         width: 22,
-  //         height: 22,
-  //       ),
-  //       title: ("الطلبات"),
-  //       iconSize: 26,
-  //       activeColorPrimary: Color(0xFF2A357C),
-  //       inactiveColorPrimary: Colors.black,
-  //     ),
-  //   ];
-  // }
-
   @override
   Widget build(BuildContext context) {
     double height = globalSize.setHeightPercentage(100, context) -
         // appBar().preferredSize.height -
         MediaQuery.of(context).viewPadding.top;
+
+    isAuth =
+        BlocProvider.of<ApplicationBloc>(context).state.isUserAuthenticated ||
+            BlocProvider.of<ApplicationBloc>(context).state.isUserVerified;
+
     if (BlocProvider.of<ApplicationBloc>(context).state.isUserAuthenticated ||
         BlocProvider.of<ApplicationBloc>(context).state.isUserVerified) {
-      stateLog = 'logout';
-      stateAsset = AppAssets.logout_svg;
-      stateMenu = MenuSpecItem.SignOut;
+      setState(() {
+        stateLog = 'logout';
+        stateAsset = AppAssets.logout_svg;
+        stateMenu = MenuSpecItem.SignOut;
+      });
     } else {
-      stateLog = 'login';
-      stateAsset = AppAssets.login_svg;
-      stateMenu = MenuSpecItem.SignInPage;
+      setState(() {
+        stateLog = 'login';
+        stateAsset = AppAssets.login_svg;
+        stateMenu = MenuSpecItem.SignInPage;
+      });
     }
+
     return BlocListener<RootPageBloc, RootPageState>(
       listener: (context, state) {
         if (state is PageIndexState) {
@@ -252,43 +201,6 @@ class _MainRootPageState extends State<MainRootPage>
                                   AppAssets.brand_btnv_svg,
                                   PagesEnum.BRAND_PAGE),
 
-                              // Container(
-                              //   width: 55.w,
-                              //   height: 55.w,
-                              //   decoration: BoxDecoration(
-                              //       shape: BoxShape.circle,
-                              //       color: globalColor.white,
-                              //       boxShadow: [
-                              //         BoxShadow(
-                              //           color: Colors.grey.withOpacity(0.5),
-                              //           blurRadius: 10.0,
-                              //           // has the effect of softening the shadow
-                              //           spreadRadius: 3,
-                              //           offset: Offset(0,
-                              //               3), // has the effect of extending the shadow
-                              //         ),
-                              //       ]),
-                              //   child: Center(
-                              //     child: Container(
-                              //       width: 45.w,
-                              //       height: 45.w,
-                              //       decoration: BoxDecoration(
-                              //           shape: BoxShape.circle,
-                              //           color: globalColor.primaryColor,
-                              //           border: Border.all(
-                              //               width: 1.0,
-                              //               color: globalColor.goldColor)),
-                              //       child: Center(
-                              //         child:
-                              //             SvgPicture.asset(AppAssets.cart_btnv_svg,color: globalColor.white,),
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
-                              // _buildTabItem(
-                              //     Translations.of(context).translate('cart'),
-                              //     AppAssets.cart_btnv_svg,
-                              //     PagesEnum.CART_PAGE),
                               _buildTabItem(
                                   Translations.of(context)
                                       .translate('order_drawer'),
@@ -353,9 +265,9 @@ class _MainRootPageState extends State<MainRootPage>
     return Card(
       child: new InkWell(
         onTap: () {
-          if (state == null)
+          if (state == null && tralingfunc != null)
             tralingfunc();
-          else {
+          else if (state != null && tralingfunc == null) {
             // _menuController.closeMenu();
             _onItemMenuPress(state);
           }
@@ -401,35 +313,12 @@ class _MainRootPageState extends State<MainRootPage>
               padding: EdgeInsets.only(right: 0),
             )
           ],
-        )
-
-            // Rs.ResideMenuItem(
-            //   titleStyle:
-            //       textStyle.normalTSBasic.copyWith(color: globalColor.white),
-            //   title: drawerMenuTitle,
-            //   leftSpacing: 12.0,
-            //   right: ishideArrow ? Container() :
-            //   Container(
-            //     child: Icon(
-            //       utils.getLang() == 'ar'
-            //           ? MaterialIcons.keyboard_arrow_left
-            //           : MaterialIcons.keyboard_arrow_right,
-            //       color: globalColor.primaryColor,
-            //       size: 25,
-            //     ),
-            //   ),
-            //   icon: SvgPicture.asset(
-            //     drawerMenuIcon ?? AppAssets.home_nav_bar,
-            //     color: globalColor.primaryColor,
-            //     width: 20,
-            //   ),
-            // ),
-            ),
+        )),
       ),
     );
   }
 
-  _onItemMenuPress(MenuSpecItem state) async {
+  _onItemMenuPress(MenuSpecItem? state) async {
     switch (state) {
       case MenuSpecItem.HomePage:
         break;
@@ -439,11 +328,11 @@ class _MainRootPageState extends State<MainRootPage>
         } else {
           showDialog(
             context: context,
-            builder: (ctx) => LoginFirstDialog(),
+            builder: (ctx) => LoginFirstDialog(title: false),
           );
         }
-
         break;
+
       case MenuSpecItem.BrandPage:
         tabController!.animateTo(1);
         break;
@@ -454,15 +343,6 @@ class _MainRootPageState extends State<MainRootPage>
         tabController!.animateTo(3);
         break;
       case MenuSpecItem.WalletPage:
-        // if (await UserRepository.hasToken && isAuth) {
-        //   Get.Get.toNamed(WalletPage.routeName);
-        // }
-        // else {
-        //   showDialog(
-        //     context: context,
-        //     builder: (ctx) => LoginFirstDialog(),
-        //   );
-        // }
         showDialog(
           context: context,
           builder: (ctx) => SoonDialog(),
@@ -475,7 +355,7 @@ class _MainRootPageState extends State<MainRootPage>
         } else {
           showDialog(
             context: context,
-            builder: (ctx) => LoginFirstDialog(),
+            builder: (ctx) => LoginFirstDialog(title: false),
           );
         }
 
@@ -486,7 +366,7 @@ class _MainRootPageState extends State<MainRootPage>
         } else {
           showDialog(
             context: context,
-            builder: (ctx) => LoginFirstDialog(),
+            builder: (ctx) => LoginFirstDialog(title: false),
           );
         }
 
@@ -510,10 +390,9 @@ class _MainRootPageState extends State<MainRootPage>
             actionYes: () {
               BlocProvider.of<ApplicationBloc>(context).add(UserLogoutEvent());
               setState(() {
-                this.stateLog = 'login';
-                this.stateMenu = MenuSpecItem.SignInPage;
-                this.stateAsset = AppAssets.login_svg;
-                BlocProvider.of<ApplicationBloc>(context).state.clearProfile();
+                stateLog = 'login';
+                stateMenu = MenuSpecItem.SignInPage;
+                stateAsset = AppAssets.login_svg;
               });
               Get.Get.back();
             },
@@ -536,86 +415,45 @@ class _MainRootPageState extends State<MainRootPage>
       bool ishideArrow = true,
       tralingfunc,
       leadingWidget}) {
-    return new InkWell(
-      onTap: () {
-        if (state == null)
-          tralingfunc();
-        else {
-          // _menuController.closeMenu();
-          _onItemMenuPress(state);
-        }
-      },
-      child: Container(
-          decoration: BoxDecoration(
-              border: Border.all(
-                color: globalColor.primaryColor,
-              ),
-              borderRadius: BorderRadius.circular(6)),
-          margin: EdgeInsets.only(
-              // right: isRtl(context) ? 10.0 : 0.0,
-              ),
-          child: new Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Container(
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      Translations.of(context).translate(drawerMenuTitle),
-                      style: textStyle.normalTSBasic.copyWith(
-                        color: globalColor.primaryColor,
-                      ),
-                    )
-                  ],
+    return StatefulBuilder(builder:
+        (BuildContext context, void Function(void Function()) setState) {
+      return InkWell(
+        onTap: () {
+          _onItemMenuPress(state!);
+        },
+        child: Container(
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: globalColor.primaryColor,
                 ),
-                margin:
-                    EdgeInsets.only(left: 12.0, top: 1, bottom: 1, right: 12),
-              ),
-              // Padding(
-              //   child: ishideArrow
-              //       ? Container()
-              //       : Container(
-              //           child: leadingWidget == null
-              //               ? Icon(
-              //                   utils.getLang() == 'ar'
-              //                       ? MaterialIcons.keyboard_arrow_left
-              //                       : MaterialIcons.keyboard_arrow_right,
-              //                   color: globalColor.primaryColor,
-              //                   size: 25,
-              //                 )
-              //               : leadingWidget,
-              //         ),
-              //   padding: EdgeInsets.only(right: 0),
-              // )
-            ],
-          )
-
-          // Rs.ResideMenuItem(
-          //   titleStyle:
-          //       textStyle.normalTSBasic.copyWith(color: globalColor.white),
-          //   title: drawerMenuTitle,
-          //   leftSpacing: 12.0,
-          //   right: ishideArrow ? Container() :
-          //   Container(
-          //     child: Icon(
-          //       utils.getLang() == 'ar'
-          //           ? MaterialIcons.keyboard_arrow_left
-          //           : MaterialIcons.keyboard_arrow_right,
-          //       color: globalColor.primaryColor,
-          //       size: 25,
-          //     ),
-          //   ),
-          //   icon: SvgPicture.asset(
-          //     drawerMenuIcon ?? AppAssets.home_nav_bar,
-          //     color: globalColor.primaryColor,
-          //     width: 20,
-          //   ),
-          // ),
-          ),
-    );
+                borderRadius: BorderRadius.circular(6)),
+            margin: EdgeInsets.only(
+                // right: isRtl(context) ? 10.0 : 0.0,
+                ),
+            child: new Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        Translations.of(context).translate(drawerMenuTitle),
+                        style: textStyle.normalTSBasic.copyWith(
+                          color: globalColor.primaryColor,
+                        ),
+                      )
+                    ],
+                  ),
+                  margin:
+                      EdgeInsets.only(left: 12.0, top: 1, bottom: 1, right: 12),
+                ),
+              ],
+            )),
+      );
+    });
   }
 
   List<Widget> getListMaterialResideMenuItem1(ApplicationState state) {
@@ -625,9 +463,8 @@ class _MainRootPageState extends State<MainRootPage>
       //     state: MenuSpecItem.HomePage),
 
       getMaterialResideMenuItem(
-          'edit_profile_drawer', AppAssets.profile_nav_bar, tralingfunc: () {
-        Get.Get.toNamed(ProfilePage.routeName);
-      }, state: null),
+          'edit_profile_drawer', AppAssets.profile_nav_bar,
+          state: MenuSpecItem.ProfilePage, tralingfunc: null),
 
       getMaterialResideMenuItem('application_language', AppAssets.worldLang,
           tralingfunc: () {
@@ -712,7 +549,6 @@ class _MainRootPageState extends State<MainRootPage>
 //       getMaterialResideMenuItem(Translations.of(context).translate('section'),
 //           AppAssets.section_nav_bar,
 //           state: MenuSpecItem.SectionPage),
-
       getMaterialResideMenuItem('offers_drawer', AppAssets.sales,
           state: MenuSpecItem.OffersPage),
 
@@ -720,25 +556,19 @@ class _MainRootPageState extends State<MainRootPage>
           state: MenuSpecItem.WalletPage),
 
       getMaterialResideMenuItem('favorite_drawer', AppAssets.love,
-          tralingfunc: () {
-        Get.Get.toNamed(FavoritePage.routeName);
-      }),
+          tralingfunc: null, state: MenuSpecItem.FavoritePage),
       //
       // getMaterialResideMenuItem('rated_drawer', AppAssets.review_drawer,
       //     state: MenuSpecItem.ReviewsPage),
 
-      InkWell(
-        onTap: () {
-          Get.Get.toNamed(TermsCondetion.routeName);
-        },
-        child: getMaterialResideMenuItem(
-            'Terms and Conditions', AppAssets.user_privacy, tralingfunc: () {
-          Get.Get.toNamed(TermsCondetion.routeName);
-        },
-            leadingWidget: Container(
-              width: 2000,
-            )),
-      ),
+      getMaterialResideMenuItem('Terms_and_Conditions', AppAssets.user_privacy,
+          tralingfunc: () {
+        Get.Get.toNamed(TermsCondetion.routeName);
+      },
+          state: null,
+          leadingWidget: Container(
+            width: 2000,
+          )),
 
       InkWell(
         onTap: () {
@@ -872,8 +702,47 @@ class _MainRootPageState extends State<MainRootPage>
               );
             },
           ),
-          getMaterialResideMenuItem2(stateLog, stateAsset!,
-              state: stateMenu, ishideArrow: true)
+          // getMaterialResideMenuItem2(stateLog, stateAsset!,
+          //     state: stateMenu, ishideArrow: true),
+          StatefulBuilder(builder:
+              (BuildContext context, void Function(void Function()) setState) {
+            return InkWell(
+              onTap: () {
+                _onItemMenuPress(stateMenu);
+              },
+              child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                        color: globalColor.primaryColor,
+                      ),
+                      borderRadius: BorderRadius.circular(6)),
+                  margin: EdgeInsets.only(
+                      // right: isRtl(context) ? 10.0 : 0.0,
+                      ),
+                  child: new Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Container(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              Translations.of(context).translate(stateLog),
+                              style: textStyle.normalTSBasic.copyWith(
+                                color: globalColor.primaryColor,
+                              ),
+                            )
+                          ],
+                        ),
+                        margin: EdgeInsets.only(
+                            left: 12.0, top: 1, bottom: 1, right: 12),
+                      ),
+                    ],
+                  )),
+            );
+          })
         ],
       ),
     ];

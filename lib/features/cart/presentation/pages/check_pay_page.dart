@@ -380,16 +380,17 @@ class _CheckAndPayPageState extends State<CheckAndPayPage> {
                 color: globalColor.primaryColor,
                 onPressed: () {
                   OrderRequest request = OrderRequest(
-                    couponcode: args.couponcode ?? '',
-                    delivery_fee: 12,
-                    subtotal: 63,
-                    point_map: args.point_map ?? '',
-                    discount: args.price_discount ?? 0,
-                    shipping_id: args.shipping_id ?? 0,
-                    total: args.total == null ? args.total!.toInt() : 0,
-                    coupon_id: args.coupon_id ?? 0,
-                    tax: args.tax ?? 0,
-                    city_id: args.city_id ?? 1,
+                    couponcode: args.couponcode,
+                    delivery_fee: args.delivery_fee,
+                    subtotal: args.total!.toInt(),
+                    point_map: args.point_map,
+                    discount: args.discount,
+                    shipping_id: args.shipping_id,
+                    total: args.total!.toInt(),
+                    coupon_id: args.coupon_id,
+                    tax: args.tax,
+                    //city_id: args.city_id,
+                    city_id: args.city_id,
                     cartItems: args.listOfOrder!
                         .map((e) => ProductOrderRequest(
                               price: e.productEntity!.price != null
@@ -405,9 +406,9 @@ class _CheckAndPayPageState extends State<CheckAndPayPage> {
                               //   lens_right_size: e.sizeForRightEye == LensesSelectedEnum.CPH ? 'cph':e.sizeForLeftEye == LensesSelectedEnum.CYI ?'cyi' :'axis'
                             ))
                         .toList(),
-                    note: args.note ?? '',
-                    method_id: _selectedPaymentMethod?.id ?? 1,
-                    neighborhood_id: args.neighborhood_id ?? 1,
+                    note: args.note,
+                    method_id: _selectedPaymentMethod?.id,
+                    neighborhood_id: args.neighborhood_id,
                     load_id: args.load_id ?? 112,
                     delivery_to: args.delivery_to ?? 'home',
                     dest_name: args.dest_name ?? '',
@@ -418,8 +419,8 @@ class _CheckAndPayPageState extends State<CheckAndPayPage> {
                     card: null,
                     delivery: args.deliveryOrder,
                     dest_type: args.dest_type ?? 0,
-                    orginal_price: null,
-                    shipping_fee: null,
+                    orginal_price: args.orginal_price,
+                    shipping_fee: args.shipping_fee,
                   );
                   print('Order Request ${request.toJson()}');
 

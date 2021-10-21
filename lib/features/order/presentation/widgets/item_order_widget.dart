@@ -4,7 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:ojos_app/core/appConfig.dart';
 import 'package:ojos_app/core/localization/translations.dart';
+import 'package:ojos_app/core/params/no_params.dart';
+import 'package:ojos_app/core/repositories/core_repository.dart';
 import 'package:ojos_app/core/res/app_assets.dart';
 import 'package:ojos_app/core/res/edge_margin.dart';
 import 'package:ojos_app/core/res/global_color.dart';
@@ -13,6 +16,8 @@ import 'package:ojos_app/core/res/text_style.dart';
 import 'package:ojos_app/core/res/width_height.dart';
 import 'package:ojos_app/core/ui/dailog/confirm_dialog.dart';
 import 'package:ojos_app/core/ui/widget/image/image_caching.dart';
+import 'package:ojos_app/core/usecases/get_cities.dart';
+import 'package:ojos_app/features/order/domain/entities/city_order_entity.dart';
 import 'package:ojos_app/features/order/domain/entities/general_order_item_entity.dart';
 import 'package:get/get.dart' as Get;
 import 'package:ojos_app/features/order/domain/repositories/order_repository.dart';
@@ -37,10 +42,18 @@ class ItemOrderWidget extends StatefulWidget {
   _ItemOrderWidgetState createState() => _ItemOrderWidgetState();
 }
 
+
 class _ItemOrderWidgetState extends State<ItemOrderWidget> {
   bool isDeleted = false;
   var _cancelToken = CancelToken();
+  String shipping_time= '_';
+  List<CityOrderEntity> _listOfCities = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _getCities(0);
+  }
   @override
   Widget build(BuildContext context) {
     double width = globalSize.setWidthPercentage(95, context);
@@ -208,7 +221,7 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                                     ),
                                                     SizedBox(width: 5),
                                                     Text(
-                                                      '${widget.orderItem!.price_discount ?? '-'} ${Translations.of(context).translate('rail')}',
+                                                      '${widget.orderItem!.discount} ${Translations.of(context).translate('rail')}',
                                                       style: textStyle
                                                           .minTSBasic
                                                           .copyWith(
@@ -224,50 +237,13 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                                             .minTSBasic
                                                             .copyWith(
                                                             color:
-                                                            globalColor
-                                                                .black)),
+                                                            globalColor.black)),
                                                   ],
                                                 )
                                             ),
                                           ]
                                         ),
                                       ),
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Container(
-                                                child: InkWell(
-                                                    onTap: () {
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (ctx) => ConfirmDialog(
-                                                              title: Translations
-                                                                  .of(context)
-                                                                  .translate(
-                                                                  'delete_order'),
-                                                              confirmMessage: Translations
-                                                                  .of(context)
-                                                                  .translate(
-                                                                  'are_you_sure_delete_order'),
-                                                              actionYes: () {
-                                                                widget.orderBloc!.add(
-                                                                    DeleteOrderEvent(
-                                                                     filterparams: widget.filterparams,
-                                                                     cancelToken: _cancelToken,
-                                                                     id: widget.orderItem!.id));
-                                                                },
-                                                              actionNo: () {
-                                                                setState(() {
-                                                                  Get.Get.back();
-                                                                });
-                                                              },
-                                                            ),
-                                                      );
-                                                    },
-                                                    child: Icon(Icons.delete,
-                                                        size: 30,
-                                                        color: globalColor
-                                                            .red)),),
-                                      )
                                     ],
                                   )),
                             ],
@@ -312,10 +288,7 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                       decoration: BoxDecoration(
                                           color: _getColorStatus(
                                                   context: context,
-                                                  status: widget.orderItem!
-                                                          .statusint ??
-                                                      "0") ??
-                                              globalColor.green,
+                                                  status: widget.orderItem!.status!),
                                           shape: BoxShape.circle,
                                           border: Border.all(
                                               color: globalColor.grey
@@ -328,10 +301,7 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                       percentage: 1,
                                     ),
                                     Text(
-                                      //'${Translations.of(context).translate('delivery_stage')}',
-                                      _getStrStatus(
-                                          context: context,
-                                          status: widget.orderItem!.statusint!),
+                                      _getStrStatus(context: context, status: widget.orderItem!.status!),
                                       style: textStyle.minTSBasic.copyWith(
                                           color: globalColor.primaryColor),
                                       overflow: TextOverflow.ellipsis,
@@ -376,7 +346,8 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                 color: globalColor.scaffoldBackGroundGreyColor,
                                 alignment: AlignmentDirectional.center,
                                 child: Text(
-                                  '${widget.orderItem?.city?.shiping_time ?? '-'}',
+                                 // '${widget.orderItem?.city?.shiping_time ?? '-'}',
+                                  shipping_time,
                                   style: textStyle.smallTSBasic.copyWith(
                                       color: globalColor.primaryColor,
                                       fontWeight: FontWeight.bold),
@@ -414,27 +385,32 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                   ),
                                 ),
                               ),
-                              widget.orderItem!.status == "pending"
+                              /*widget.orderItem!.status == "pending"
                                   ? Container()
-                                  : InkWell(
+                                  :*/ InkWell(
                                       onTap: () {
                                         showDialog(
                                           context: context,
                                           builder: (ctx) => ConfirmDialog(
-                                            title: Translations.of(context)
-                                                .translate('delete'),
-                                            confirmMessage:
-                                                Translations.of(context)
-                                                    .translate(
-                                                        'are_you_sure_delete'),
+                                            title: Translations
+                                                .of(context)
+                                                .translate(
+                                                'delete_order'),
+                                            confirmMessage: Translations
+                                                .of(context)
+                                                .translate(
+                                                'are_you_sure_delete_order'),
                                             actionYes: () {
-                                              Get.Get.back();
-                                              _requestDeleteNotificationsNewProduct(
-                                                  id: widget.orderItem!.id!,
-                                                  context: context);
+                                              widget.orderBloc!.add(
+                                                  DeleteOrderEvent(
+                                                      filterparams: widget.filterparams,
+                                                      cancelToken: _cancelToken,
+                                                      id: widget.orderItem!.id));
                                             },
                                             actionNo: () {
-                                              Get.Get.back();
+                                              setState(() {
+                                                Get.Get.back();
+                                              });
                                             },
                                           ),
                                         );
@@ -485,29 +461,32 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
 
   _getStrStatus({required BuildContext context, required String status}) {
     switch (status) {
-      case "accepted":
+
+      case "pending":
         return Translations.of(context).translate('received');
         break;
+      case "accepted":
+        return Translations.of(context).translate('processing');
+        break;
+
+      case "shipped":
+        return Translations.of(context).translate('on_way');
+        break;
+
+      case "completed":
+        return Translations.of(context).translate('completed');
+        break;
+
       case "canceled":
         return Translations.of(context).translate('canceled');
         break;
-      case "pending":
-        return Translations.of(context).translate('processing');
+
+      case "finshed":
+        return Translations.of(context).translate('completed');
         break;
-      // case 4:
-      //   return Translations.of(context).translate('delivered');
-      //   break;
-      // case 5:
-      //   return Translations.of(context).translate('canceled');
-      //   break;
-      // case 6:
-      //   return Translations.of(context).translate('cancel_requested');
-      //   break;
-      // case 7:
-      //   return Translations.of(context).translate('refunded');
-      //   break;
+
       default:
-        return Translations.of(context).translate('received');
+        return Translations.of(context).translate('completed');
         break;
     }
   }
@@ -517,7 +496,6 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
       case "accepted":
         return globalColor.green;
         break;
-
       case "canceled":
         return globalColor.red;
         break;
@@ -530,9 +508,43 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
       case "pending":
         return globalColor.buttonColorOrange;
         break;
+      case "shipping":
+        return globalColor.buttonColorOrange;
+        break;
+
       default:
         return globalColor.green;
         break;
+    }
+  }
+
+  Future<void> _getCities(int reloadCount) async {
+    int count = reloadCount;
+    if (mounted) {
+      final result = await GetCities(locator<CoreRepository>())(
+        NoParams(cancelToken: _cancelToken),
+      );
+
+      if (result.data != null) {
+        setState(() {
+          _listOfCities = result.data!;
+          for(var c in _listOfCities){
+            if(c.id == widget.orderItem!.city_id){
+              shipping_time = c.shiping_time!;
+              print('shpping time is =====================$shipping_time');
+              break;
+            }
+          }
+        });
+      } else {
+        if (count != 3)
+          appConfig.check().then((internet) {
+            if (internet != null && internet) {
+              _getCities(count + 1);
+            }
+            // No-Internet Case
+          });
+      }
     }
   }
 

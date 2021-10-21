@@ -507,7 +507,7 @@ class _ResetPageBoxState extends State<ResetPageBox> {
           children: <Widget>[
             Text(
               '${Translations.of(context).translate('did_not_get_the_code')} ',
-              style: textStyle.smallTSBasic.copyWith(color: globalColor.white),
+              style: textStyle.smallTSBasic.copyWith(color: globalColor.black),
             ),
             InkWell(
               child: Text(Translations.of(context).translate('send_back'),

@@ -49,6 +49,7 @@ import 'package:provider/provider.dart';
 import 'package:get/get.dart' as Get;
 import '../../../../main.dart';
 import 'enter_cart_info_page.dart';
+import 'dart:math' as math;
 
 class CartPage extends StatefulWidget {
   static const routeName = '/cart/pages/CartPage';
@@ -86,10 +87,10 @@ class _CartPageState extends State<CartPage> {
   CityOrderEntity _city = CityOrderEntity(
     id: -1,
     name: '',
-    shiping_time: '',
+    shiping_time: '0',
     status: false,
   );
-  late var negaboor; //null
+  late var negaboor;
 
   late List<ShippingCarriersEntity> _listOfShippingCarriers;
   List<CityOrderEntity> _listOfCities = [];
@@ -237,29 +238,6 @@ class _CartPageState extends State<CartPage> {
       print(e);
     }
   }
-
-/*  void _listenForPermissionStatus() async {
-    final status = await _permission.status;
-    setState(() => _permissionStatus = status);
-    if (_permissionStatus.isGranted) {
-      await _getCurrentLocation();
-    } else {
-      requestPermission(_permission);
-    }
-  }
-
-  Future<void> requestPermission(Permission permission) async {
-    final status = await permission.request();
-
-    setState(() {
-      print(status);
-      _permissionStatus = status;
-      print(_permissionStatus);
-    });
-    if (_permissionStatus.isGranted) {
-      await _getCurrentLocation();
-    }
-  }*/
 
   ///===========================================================================
 
@@ -432,15 +410,6 @@ class _CartPageState extends State<CartPage> {
                                                     globalColor.white,
                                                 labelBackgroundColor:
                                                     globalColor.white,
-                                                validator: (value) {
-                                                  return BaseValidator
-                                                      .validateValue(
-                                                    context,
-                                                    value!,
-                                                    [],
-                                                    _phoneValidation,
-                                                  );
-                                                },
                                                 hintText:
                                                     Translations.of(context)
                                                         .translate(
@@ -783,10 +752,6 @@ class _CartPageState extends State<CartPage> {
                         total: cartProvider
                             .getTotalPricesAfterDiscount()
                             .toStringAsFixed(2)));
-                    // _applyCoupon(
-                    //     couponCode: _copon,
-                    //     total:
-                    //         cartProvider.getTotalPrices().toStringAsFixed(2));
                   }
                 },
                 textAlign: TextAlign.center,
@@ -813,13 +778,9 @@ class _CartPageState extends State<CartPage> {
       decoration: BoxDecoration(
         color: globalColor.primaryColor,
         borderRadius: BorderRadius.all(Radius.circular(12.w)),
-        // border:
-        // Border.all(color: globalColor.primaryColor.withOpacity(0.3), width: 0.5),
       ),
-      //   margin: const EdgeInsets.only(left: EdgeMargin.verySub,),
       height: height,
       width: width,
-
       child: Wrap(
         runAlignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,
@@ -848,12 +809,6 @@ class _CartPageState extends State<CartPage> {
                   SizedBox(
                     width: 2.w,
                   ),
-                  // Text(
-                  //   '${couponInfoSuccess.discountAmount ?? ''}',
-                  //   style: textStyle.minTSBasic.copyWith(
-                  //       color: globalColor.primaryColor,
-                  //       fontWeight: FontWeight.bold),
-                  // ),
                   Text(
                     Translations.of(context).translate('Delivery_free'),
                     style: textStyle.smallTSBasic.copyWith(
@@ -864,26 +819,6 @@ class _CartPageState extends State<CartPage> {
               ),
             ),
           ),
-          // Text(
-          //   Translations.of(context).translate('discounted'),
-          //   style: textStyle.middleTSBasic.copyWith(
-          //       color: globalColor.white, fontWeight: FontWeight.bold),
-          // ),
-          // Text(
-          //   '${couponInfoSuccess.discount ?? ''}',
-          //   style: textStyle.bigTSBasic.copyWith(
-          //       color: globalColor.goldColor, fontWeight: FontWeight.bold),
-          // ),
-          // Text(
-          //   '${Translations.of(context).translate('rail')} ${Translations.of(context).translate('from_code')} ',
-          //   style: textStyle.middleTSBasic.copyWith(
-          //       color: globalColor.white, fontWeight: FontWeight.bold),
-          // ),
-          // Text(
-          //   '${couponInfoSuccess.couponCode ?? ''}',
-          //   style: textStyle.bigTSBasic.copyWith(
-          //       color: globalColor.goldColor, fontWeight: FontWeight.bold),
-          // ),
         ],
       ),
     );
@@ -907,33 +842,19 @@ class _CartPageState extends State<CartPage> {
           VerticalPadding(
             percentage: 1.0,
           ),
-          // _isCouponApply && _couponInfoSuccess != null
-          //     ? Column(
-          //         crossAxisAlignment: CrossAxisAlignment.start,
-          //         children: [
-          //           _buildPricesInfoItem(
-          //               height: height,
-          //               width: width,
-          //               value: _couponInfoSuccess.total ?? '',
-          //               title: Translations.of(context)
-          //                   .translate('total_after_discount')),
-          //           VerticalPadding(
-          //             percentage: 1.0,
-          //           ),
-          //         ],
-          //       )
-          //     : Container(),
           _paymentMethods.id == 1
               ? _buildPricesInfoItem(
                   height: height,
                   width: width,
-                  value: cartProvider.getTotalPricesAfterDiscount().toString(),
+                  value: _isCouponApply
+                      ? _couponInfoSuccess.total
+                      : cartProvider.getTotalPricesAfterDiscount().toString(),
                   title: Translations.of(context)
                       .translate('price_after_discount'))
               : _buildPricesInfoItem(
                   height: height,
                   width: width,
-                  value: '25.0',
+                  value: '0.0',
                   title: Translations.of(context)
                       .translate('payment_fees_on_receipt'))
         ],
@@ -994,141 +915,6 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  /* _buildSelectCompanyWidget({
-    BuildContext context,
-    double width,
-    double height,
-    TextEditingController controller,
-    bool textValidation,
-    String text,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: globalColor.white,
-        borderRadius: BorderRadius.all(Radius.circular(12.w)),
-        border:
-            Border.all(color: globalColor.grey.withOpacity(0.3), width: 0.5),
-      ),
-      //   margin: const EdgeInsets.only(left: EdgeMargin.verySub,),
-      height: height,
-      width: width,
-
-      child: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Container(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  EdgeMargin.subMin,
-                  EdgeMargin.verySub,
-                  EdgeMargin.subMin,
-                  EdgeMargin.verySub,
-                ),
-                child: Text(
-                  Translations.of(context)
-                      .translate('choose_a_shipping_company'),
-                  style:
-                      textStyle.smallTSBasic.copyWith(color: globalColor.black),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            width: 1.0,
-            color: globalColor.grey.withOpacity(0.3),
-          ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(
-                EdgeMargin.subMin,
-                EdgeMargin.verySub,
-                EdgeMargin.subMin,
-                EdgeMargin.verySub,
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Container(
-                      // width: widget.width * .4,
-                      height: 35.h,
-                      child: Custom2Dropdown<ShippingCarriersEntity>(
-                        onChanged: (data) {
-                          _shippingCarriers = data;
-                          if (mounted) setState(() {});
-                        },
-                        value: _shippingCarriers,
-                        borderRadius: 0,
-                        hint: '',
-                        dropdownMenuItemList:
-                            _listOfShippingCarriers.map((profession) {
-                          return DropdownMenuItem(
-                            child: Container(
-                              width: width,
-                              decoration: BoxDecoration(
-                                  color: profession == _shippingCarriers
-                                      ? globalColor.primaryColor
-                                          .withOpacity(0.3)
-                                      : globalColor.white,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(12.w))),
-                              padding: EdgeInsets.all(EdgeMargin.small),
-                              child: Container(
-                                child: Center(
-                                  child: Text(
-                                    profession.name ?? '',
-                                    style: textStyle.smallTSBasic.copyWith(
-                                        color: globalColor.primaryColor),
-                                  ),
-                                ),
-                                alignment: AlignmentDirectional.center,
-                              ),
-                            ),
-                            value: profession ?? null,
-                          );
-                        }).toList(),
-                        selectedItemBuilder: (BuildContext context) {
-                          return _listOfShippingCarriers.map<Widget>((item) {
-                            return Center(
-                              child: Text(
-                                item.name ?? '',
-                                style: textStyle.smallTSBasic
-                                    .copyWith(color: globalColor.primaryColor),
-                              ),
-                            );
-                          }).toList();
-                        },
-                        isEnabled: true,
-                      ),
-                    ),
-                  ),
-                  // Expanded(
-                  //   child: Container(
-                  //     child: Text(
-                  //       'ارامكس',
-                  //       style: textStyle.smallTSBasic
-                  //           .copyWith(color: globalColor.primaryColor),
-                  //     ),
-                  //     alignment: AlignmentDirectional.center,
-                  //   ),
-                  // ),
-                  // Container(
-                  //   child: Icon(
-                  //     MaterialIcons.keyboard_arrow_down,
-                  //     color: globalColor.black,
-                  //   ),
-                  // ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-*/
   _buildpayment_methodWidget({
     BuildContext? context,
     double? width,
@@ -1358,22 +1144,6 @@ class _CartPageState extends State<CartPage> {
                       ),
                     ),
                   ),
-                  // Expanded(
-                  //   child: Container(
-                  //     child: Text(
-                  //       'ارامكس',
-                  //       style: textStyle.smallTSBasic
-                  //           .copyWith(color: globalColor.primaryColor),
-                  //     ),
-                  //     alignment: AlignmentDirectional.center,
-                  //   ),
-                  // ),
-                  // Container(
-                  //   child: Icon(
-                  //     MaterialIcons.keyboard_arrow_down,
-                  //     color: globalColor.black,
-                  //   ),
-                  // ),
                 ],
               ),
             ),
@@ -1427,19 +1197,12 @@ class _CartPageState extends State<CartPage> {
                       HorizontalPadding(
                         percentage: 1.0,
                       ),
-                      _paymentMethods.id == 2
-                          ? Text(
-                              '${cartProvider!.getTotalPricesint().toInt() + 25}',
-                              style: textStyle.normalTSBasic.copyWith(
-                                  color: globalColor.goldColor,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          : Text(
-                              '${cartProvider!.getTotalPricesint()}',
-                              style: textStyle.normalTSBasic.copyWith(
-                                  color: globalColor.goldColor,
-                                  fontWeight: FontWeight.bold),
-                            ),
+                      Text(
+                        '${cartProvider!.getTotalPricesint()}',
+                        style: textStyle.normalTSBasic.copyWith(
+                            color: globalColor.goldColor,
+                            fontWeight: FontWeight.bold),
+                      ),
                       HorizontalPadding(
                         percentage: 1.0,
                       ),
@@ -1461,50 +1224,37 @@ class _CartPageState extends State<CartPage> {
               flex: 3,
               child: InkWell(
                 onTap: () {
-                  // Get.Get.toNamed(CheckAndPayPage.routeName,
-                  //     arguments: CheckAndPayArgs(
-                  //         listOfOrder: cartProvider.listOfCart,
-                  //         total: _finalTotalPriceint(cartProvider: cartProvider),
-                  //         city_id: _city.id,
-                  //         coupon_id: null,
-                  //         couponcode: _copon,
-                  //         note: appConfig.notNullOrEmpty(_phone)? _phone :Translations.of(context).translate('there_is_no'),
-                  //         orginal_price: cartProvider.getTotalPricesint(),
-                  //         price_discount:_couponInfoSuccess?.total!=null? int.parse(_couponInfoSuccess.total):0,
-                  //         point_map: _city.name,
-                  //         shipping_fee: 25,
-                  //         shipping_id: _shippingCarriers.id,
-                  //         tax: 15,
-                  //         totalPrice:
-                  //             _finalTotalPrice(cartProvider: cartProvider)));
-
                   if (_formKey.currentState!.validate()) {
                     Get.Get.toNamed(EnterCartInfoPage.routeName,
                         arguments: CheckAndPayArgs(
                             listOfOrder: cartProvider.listOfCart,
-                            subtotal: cartProvider.getTotalPricesint(),
-                            total: cartProvider.getTotalPricesint().toDouble(),
+                            //  shipping_time: int.parse(_city.shiping_time!),
+                            subtotal: cartProvider
+                                .getTotalPricesAfterDiscount()
+                                .toInt(),
+                            discount: _isCouponApply == true
+                                ? int.parse(_couponInfoSuccess.discount)
+                                : 0,
+                            total: cartProvider
+                                .getTotalPricesAfterDiscount()
+                                .toDouble(),
                             city_id: _city.id,
-                            coupon_id: null,
+                            coupon_id: _isCouponApply
+                                ? _couponInfoSuccess.couponId
+                                : 0,
+                            delivery_fee: 0,
                             couponcode: _copon,
                             note: appConfig.notNullOrEmpty(_phone)
                                 ? _phone
                                 : Translations.of(context)
                                     .translate('there_is_no'),
                             orginal_price: cartProvider.getTotalPricesint(),
-                            price_discount: _couponInfoSuccess.total != null
+                            price_discount: _isCouponApply
                                 ? int.parse(_couponInfoSuccess.total)
-                                : cartProvider.getTotalPricesint(),
+                                : cartProvider.getTotalPricesAfterDiscount(),
                             point_map: _city.name,
-                            shipping_fee:
-                                _isCouponApply && _couponInfoSuccess != null
-                                    ? 0
-                                    : _paymentMethods != null &&
-                                            _paymentMethods.id != null &&
-                                            _paymentMethods.id == 0
-                                        ? 1
-                                        : 2,
-                            paymentMethods: _paymentMethods.id ?? 2,
+                            shipping_fee: 0,
+                            paymentMethods: _paymentMethods.id,
                             shipping_id: _shippingCarriers.id ?? 1,
                             tax: 15,
                             totalPrice:
@@ -1559,210 +1309,19 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  _finalTotalPrice({cartProvider}) {
-    return _isCouponApply && _couponInfoSuccess != null
+  String _finalTotalPrice({cartProvider}) {
+    return _isCouponApply
         ? (double.parse(_couponInfoSuccess.total) +
-                (_paymentMethods != null &&
-                        _paymentMethods.id != null &&
-                        _paymentMethods.id == 8
+                (_paymentMethods.id != null && _paymentMethods.id == 2
                     ? 25
                     : 0))
-            .toStringAsFixed(2)
+            .toString()
         : (cartProvider.getTotalPricesAfterDiscount() +
-                (_paymentMethods != null &&
-                        _paymentMethods.id != null &&
-                        _paymentMethods.id == 8
+                (_paymentMethods.id != null && _paymentMethods.id == 2
                     ? 25
                     : 0))
-            .toStringAsFixed(2);
+            .toString();
   }
-
-/*  int _finalTotalPriceint({cartProvider}) {
-    double p = 0;
-    p = (cartProvider.getTotalPrices() +
-        (_paymentMethods != null &&
-                _paymentMethods.id != null &&
-                _paymentMethods.id == 8
-            ? 25
-            : 0));
-    return p.toInt();
-  }*/
-
-  /* _buildMap({
-    required BuildContext context,
-    required double width,
-    required double height,
-  }) {
-    return ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(12.w)),
-      child: Container(
-        decoration: BoxDecoration(
-          color: globalColor.white,
-          borderRadius: BorderRadius.all(Radius.circular(12.w)),
-          border:
-              Border.all(color: globalColor.grey.withOpacity(0.3), width: 0.5),
-        ),
-        //   margin: const EdgeInsets.only(left: EdgeMargin.verySub,),
-        width: width,
-
-        child: Column(
-          children: [
-            VerticalPadding(
-              percentage: 0.5,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      EdgeMargin.subMin,
-                      EdgeMargin.verySub,
-                      EdgeMargin.subMin,
-                      EdgeMargin.verySub,
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          Translations.of(context)
-                              .translate('cart_txt_delivery_location'),
-                          style: textStyle.smallTSBasic
-                              .copyWith(color: globalColor.black),
-                        ),
-                        HorizontalPadding(
-                          percentage: 1.0,
-                        ),
-                        Text(
-                          Translations.of(context)
-                              .translate('cart_txt_automatic_GPS_selections'),
-                          style: textStyle.smallTSBasic.copyWith(
-                              color: globalColor.primaryColor,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Container(
-                  child: Icon(
-                    utils.getLang() != 'ar'
-                        ? Icons.keyboard_arrow_right
-                        : Icons.keyboard_arrow_left,
-                    color: globalColor.black,
-                  ),
-                ),
-              ],
-            ),
-            //  _buildSearchWidgetForMap(context: context, width: width),
-            Container(
-              height: 180,
-              padding: const EdgeInsets.all(EdgeMargin.small),
-              child: GoogleMap(
-                initialCameraPosition: _initialLocation,
-                myLocationEnabled: false,
-                myLocationButtonEnabled: false,
-                mapType: MapType.normal,
-                zoomGesturesEnabled: true,
-                zoomControlsEnabled: false,
-                polylines: Set<Polyline>.of(polylines.values),
-                markers: Set<Marker>.from(markers),
-                onMapCreated: (GoogleMapController controller) async {
-                  mapController = controller;
-                  // controller.setMapStyle(_mapStyle);
-                  // await  createMArker();
-                },
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-*/
-  /*_buildSearchWidgetForMap({BuildContext context, double width}) {
-    return Padding(
-      padding: const EdgeInsets.all(EdgeMargin.small),
-      child: Container(
-        height: 50.h,
-        decoration: BoxDecoration(
-          color: globalColor.white,
-          borderRadius: BorderRadius.circular(12.0.w),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              blurRadius: 5, // has the effect of softening the shadow
-              spreadRadius: 0, // has the effect of extending the shadow
-            ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              flex: 1,
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      child: Center(
-                        child: Icon(
-                          Icons.search,
-                          size: 28.w,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 50.h,
-                    color: globalColor.grey.withOpacity(0.2),
-                    width: .5,
-                  )
-                ],
-              ),
-            ),
-            Expanded(
-                flex: 6,
-                child: TextField(
-                  decoration: new InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      contentPadding: EdgeInsets.only(
-                          left: 15, bottom: 11, top: 11, right: 15),
-                      hintText:
-                          Translations.of(context).translate('search_places'),
-                      hintStyle: textStyle.smallTSBasic
-                          .copyWith(color: globalColor.grey)),
-                )),
-            Expanded(
-              flex: 1,
-              child: Row(
-                children: [
-                  Container(
-                    height: 50.h,
-                    color: globalColor.grey.withOpacity(0.2),
-                    width: .5,
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: SvgPicture.asset(
-                      AppAssets.filter,
-                      width: 22,
-                      height: 22,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }*/
 
   @override
   void dispose() {
@@ -2234,10 +1793,15 @@ class _CartPageState extends State<CartPage> {
             fillColor: globalColor.white,
             backgroundColor: globalColor.white,
             labelBackgroundColor: globalColor.white,
-            validator: (value) => vRequired(context, value),
             hintText: Translations.of(context).translate('recipient number'),
             label: Translations.of(context).translate('recipient number'),
-            //validator: (value) => vRequired(context, value),
+            validator: (text) {
+              if (text == null || text.length == 0 || text.isEmpty) {
+                return Translations.of(context).translate('v_required');
+              } else {
+                return null;
+              }
+            },
             keyboardType: TextInputType.phone,
             borderRadius: width * .02,
             onChanged: (value) {
@@ -2306,8 +1870,13 @@ class _CartPageState extends State<CartPage> {
             fillColor: globalColor.white,
             backgroundColor: globalColor.white,
             labelBackgroundColor: globalColor.white,
-            validator: (value) => vRequired(context, value),
-            //validator: (value) => phoneValidation(context, value),
+            validator: (text) {
+              if (text == null || text.length == 0 || text.isEmpty) {
+                return Translations.of(context).translate('v_required');
+              } else {
+                return null;
+              }
+            },
             hintText: Translations.of(context).translate('recipient number'),
             label: Translations.of(context).translate('recipient number'),
             keyboardType: TextInputType.phone,
@@ -2381,7 +1950,13 @@ class _CartPageState extends State<CartPage> {
             fillColor: globalColor.white,
             backgroundColor: globalColor.white,
             labelBackgroundColor: globalColor.white,
-            validator: (value) => vRequired(context, value),
+            validator: (text) {
+              if (text == null || text.length == 0 || text.isEmpty) {
+                return Translations.of(context).translate('v_required');
+              } else {
+                return null;
+              }
+            },
             // validator: (value) => phoneValidation(context, value),
             hintText: Translations.of(context).translate('recipient number'),
             label: Translations.of(context).translate('recipient number'),
@@ -2446,7 +2021,6 @@ class _CartPageState extends State<CartPage> {
           controller: mosqueEditingController,
           maxLines: 1,
           filled: true,
-          validator: (value) => vRequired(context, value),
           style: textStyle.smallTSBasic
               .copyWith(color: globalColor.black, fontWeight: FontWeight.bold),
           contentPadding: const EdgeInsets.fromLTRB(
@@ -2458,7 +2032,13 @@ class _CartPageState extends State<CartPage> {
           fillColor: globalColor.white,
           backgroundColor: globalColor.white,
           labelBackgroundColor: globalColor.white,
-          //validator: (value) => requiredValidation(context, value),
+          validator: (text) {
+            if (text == null || text.length == 0 || text.isEmpty) {
+              return Translations.of(context).translate('v_required');
+            } else {
+              return null;
+            }
+          },
           hintText: Translations.of(context).translate('mosqueName'),
           label: Translations.of(context).translate('mosqueName'),
           keyboardType: TextInputType.text,

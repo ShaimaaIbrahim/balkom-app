@@ -46,7 +46,7 @@ class _TermsCondetionState extends State<TermsCondetion> {
         iconColor: globalColor.black,
       ),
       title: Text(
-        Translations.of(context).translate('Terms and Conditions'),
+        Translations.of(context).translate('Terms_and_Conditions'),
         style: textStyle.middleTSBasic.copyWith(color: globalColor.black),
       ),
       centerTitle: true,

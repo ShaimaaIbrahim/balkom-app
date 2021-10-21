@@ -11,7 +11,10 @@ import 'package:ojos_app/core/errors/connection_error.dart';
 import 'package:ojos_app/core/localization/translations.dart';
 import 'package:ojos_app/core/res/edge_margin.dart';
 import 'package:ojos_app/core/res/global_color.dart';
+import 'package:ojos_app/core/res/screen/horizontal_padding.dart';
+import 'package:ojos_app/core/res/screen/vertical_padding.dart';
 import 'package:ojos_app/core/res/text_style.dart';
+import 'package:ojos_app/core/ui/items_shimmer/base_shimmer.dart';
 import 'package:ojos_app/features/order/domain/entities/general_order_item_entity.dart';
 import 'package:ojos_app/features/order/domain/entities/spec_order_item_entity.dart';
 import 'package:ojos_app/features/order/presentation/blocs/order_bloc.dart';
@@ -40,71 +43,277 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
   int selectedStep = 0;
   int nbSteps = 4;
 
+  bool recipient = true;
+  bool on_way = false;
+  bool delivered = false;
+  bool in_progress = false;
+
   List<GeneralOrderItemEntity> listOfData = [];
   var _orderBloc = OrderBloc();
   GlobalKey _globalKey = GlobalKey();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+
     _orderBloc.add(GetOrderEvent(
         cancelToken: _cancelToken, filterParams: widget.filterParams));
+
+    if (widget.filterParams!['order_status'] == "new") {
+      _orderBloc.add(StatusOrder(
+          cancelToken: _cancelToken,
+          filterParams: widget.filterParams,
+          status: 'pending'));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // print("aaaa" + widget.filterParams!!["order_status"]);
     super.build(context);
+
     return BlocListener<OrderBloc, OrderState>(
-      bloc: _orderBloc,
-      listener: (BuildContext context, state) async {
-        if (state is OrderDoneState) {
-          listOfData = state.orders!;
-        }
-        /* if (state is DoneDeleteOrder) {
-          listOfData = state.listOfResult!;
-        }*/
-      },
-      child: BlocBuilder<OrderBloc, OrderState>(
-          bloc: _orderBloc,
-          builder: (BuildContext context, state) {
-            if (state is OrderFailureState) {
-              return Container(
-                width: widget.width,
-                child: Center(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
+        bloc: _orderBloc,
+        listener: (BuildContext context, state) async {
+          if (state is OrderDoneState) {
+            listOfData = state.orders!;
+          }
+          if (state is DoneDeleteOrder) {
+            appConfig.showToast(
+                msg: Translations.of(context)
+                    .translate('order_successfully_deleted'));
+          }
+          if (state is FailureDeleteOrder) {
+            appConfig.showToast(
+                msg: Translations.of(context).translate('order_failed_added'));
+          }
+        },
+        child: BlocBuilder<OrderBloc, OrderState>(
+            bloc: _orderBloc,
+            builder: (BuildContext context, state) {
+              if (state is OrderFailureState) {
+                return Container(
+                  width: widget.width,
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(
+                              (state.error is ConnectionError)
+                                  ? Translations.of(context)
+                                      .translate('err_connection')
+                                  : Translations.of(context)
+                                      .translate('err_unexpected'),
+                              style: textStyle.normalTSBasic
+                                  .copyWith(color: globalColor.accentColor)),
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            _orderBloc.add(GetOrderEvent(
+                                cancelToken: _cancelToken,
+                                filterParams: widget.filterParams));
+                          },
+                          elevation: 1.0,
+                          child: Text(
+                              Translations.of(context).translate('retry'),
+                              style: textStyle.smallTSBasic
+                                  .copyWith(color: globalColor.white)),
+                          color: Theme.of(context).accentColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              if (state is OrderDoneState) {
+                if (state.orders != null && state.orders!.isNotEmpty) {
+                  return Container(
+                    key: _globalKey,
+                    width: widget.width,
+                    height: widget.height,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          widget.filterParams!['order_status'] == "new"
+                              ? Container(
+                                  alignment: AlignmentDirectional.centerStart,
+                                  padding: const EdgeInsets.only(
+                                      left: EdgeMargin.min,
+                                      right: EdgeMargin.min),
+                                  child: Text(
+                                    Translations.of(context)
+                                        .translate('order_tracking'),
+                                    style: textStyle.smallTSBasic.copyWith(
+                                        color: globalColor.black,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                )
+                              : Container(),
+                          widget.filterParams!['order_status'] == "new"
+                              ? Container(
+                                  key: _key,
+                                  margin: const EdgeInsets.only(
+                                    left: EdgeMargin.min,
+                                    right: EdgeMargin.min,
+                                  ),
+                                  height: widget.height! * .16,
+                                  child: _buildStepWidget(
+                                      context: context, width: widget.width!))
+                              : Container(),
+                          Container(
+                            child: ListView.builder(
+                              itemCount: listOfData.length,
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                return (listOfData[index].status ==
+                                            "canceled" &&
+                                        widget.filterParams!["order_status"] ==
+                                            "new")
+                                    ? SizedBox.shrink()
+                                    : ItemOrderWidget(
+                                        orderBloc: _orderBloc,
+                                        filterparams: widget.filterParams,
+                                        orderItem: listOfData[index],
+                                        cancelToken: _cancelToken,
+                                        onUpdate: _onUpdate,
+                                      );
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  if (state.withTrack!) {
+                    return Container(
+                        width: widget.width,
+                        height: widget.height,
+                        child: Column(
+                          children: [
+                            widget.filterParams!['order_status'] == "new"
+                                ? Container(
+                                    alignment: AlignmentDirectional.centerStart,
+                                    padding: const EdgeInsets.only(
+                                        left: EdgeMargin.min,
+                                        right: EdgeMargin.min),
+                                    child: Text(
+                                      Translations.of(context)
+                                          .translate('order_tracking'),
+                                      style: textStyle.smallTSBasic.copyWith(
+                                          color: globalColor.black,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  )
+                                : Container(),
+                            widget.filterParams!['order_status'] == "new"
+                                ? Container(
+                                    key: _key,
+                                    margin: const EdgeInsets.only(
+                                      left: EdgeMargin.min,
+                                      right: EdgeMargin.min,
+                                    ),
+                                    height: widget.height! * .16,
+                                    child: _buildStepWidget(
+                                        context: context, width: widget.width!))
+                                : Container(),
+                            Center(
+                              child: Text(
+                                '${Translations.of(context).translate('there_are_no_orders')}',
+                                style: textStyle.smallTSBasic
+                                    .copyWith(color: globalColor.primaryColor),
+                              ),
+                            ),
+                          ],
+                        ));
+                  } else {
+                    return Container(
+                      width: widget.width,
+                      height: widget.height,
+                      child: Center(
                         child: Text(
-                            (state.error is ConnectionError)
-                                ? Translations.of(context)
-                                    .translate('err_connection')
-                                : Translations.of(context)
-                                    .translate('err_unexpected'),
-                            style: textStyle.normalTSBasic
-                                .copyWith(color: globalColor.accentColor)),
+                          '${Translations.of(context).translate('there_are_no_orders')}',
+                          style: textStyle.smallTSBasic
+                              .copyWith(color: globalColor.primaryColor),
+                        ),
                       ),
-                      RaisedButton(
-                        onPressed: () {
-                          _orderBloc.add(GetOrderEvent(
-                              cancelToken: _cancelToken,
-                              filterParams: widget.filterParams));
-                        },
-                        elevation: 1.0,
-                        child: Text(Translations.of(context).translate('retry'),
-                            style: textStyle.smallTSBasic
-                                .copyWith(color: globalColor.white)),
-                        color: Theme.of(context).accentColor,
+                    );
+                  }
+                }
+              }
+              if (state is LoadingDeleteState) {
+                return Stack(children: [
+                  Container(
+                    key: _globalKey,
+                    width: widget.width,
+                    height: widget.height,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          widget.filterParams!['order_status'] == "new"
+                              ? Container(
+                                  alignment: AlignmentDirectional.centerStart,
+                                  padding: const EdgeInsets.only(
+                                      left: EdgeMargin.min,
+                                      right: EdgeMargin.min),
+                                  child: Text(
+                                    Translations.of(context)
+                                        .translate('order_tracking'),
+                                    style: textStyle.smallTSBasic.copyWith(
+                                        color: globalColor.black,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                )
+                              : Container(),
+                          widget.filterParams!['order_status'] == "new"
+                              ? Container(
+                                  key: _key,
+                                  margin: const EdgeInsets.only(
+                                    left: EdgeMargin.min,
+                                    right: EdgeMargin.min,
+                                  ),
+                                  height: widget.height! * .16,
+                                  child: _buildStepWidget(
+                                      context: context, width: widget.width!))
+                              : Container(),
+                          Container(
+                            child: ListView.builder(
+                              itemCount: listOfData.length,
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                return (listOfData[index].status ==
+                                            "canceled" &&
+                                        widget.filterParams!["order_status"] ==
+                                            "new")
+                                    ? SizedBox.shrink()
+                                    : ItemOrderWidget(
+                                        orderBloc: _orderBloc,
+                                        filterparams: widget.filterParams,
+                                        orderItem: listOfData[index],
+                                        cancelToken: _cancelToken,
+                                        onUpdate: _onUpdate,
+                                      );
+                              },
+                            ),
+                          )
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              );
-            }
-            if (state is OrderDoneState) {
-              if (state.orders != null && state.orders!.isNotEmpty) {
+                  Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      top: 0,
+                      child: Center(
+                          child: CircularProgressIndicator(
+                        color: globalColor.red,
+                      ))),
+                ]);
+              }
+              if (state is StateLoadingState) {
                 return Container(
                   key: _globalKey,
                   width: widget.width,
@@ -112,217 +321,56 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Container(
-                          alignment: AlignmentDirectional.centerStart,
-                          padding: const EdgeInsets.only(
-                              left: EdgeMargin.min, right: EdgeMargin.min),
-                          child: Text(
-                            Translations.of(context)
-                                .translate('order_tracking'),
-                            style: textStyle.smallTSBasic.copyWith(
-                                color: globalColor.black,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        Container(
-                            key: _key,
-                            margin: const EdgeInsets.only(
-                              left: EdgeMargin.min,
-                              right: EdgeMargin.min,
-                            ),
-                            height: widget.height! * .16,
-                            child: _buildStepWidget(
-                                context: context, width: widget.width!)),
+                        widget.filterParams!['order_status'] == "new"
+                            ? Container(
+                                alignment: AlignmentDirectional.centerStart,
+                                padding: const EdgeInsets.only(
+                                    left: EdgeMargin.min,
+                                    right: EdgeMargin.min),
+                                child: Text(
+                                  Translations.of(context)
+                                      .translate('order_tracking'),
+                                  style: textStyle.smallTSBasic.copyWith(
+                                      color: globalColor.black,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              )
+                            : Container(),
+                        widget.filterParams!['order_status'] == "new"
+                            ? Container(
+                                key: _key,
+                                margin: const EdgeInsets.only(
+                                  left: EdgeMargin.min,
+                                  right: EdgeMargin.min,
+                                ),
+                                height: widget.height! * .16,
+                                child: _buildStepWidget(
+                                    context: context, width: widget.width!))
+                            : Container(),
                         Container(
                           child: ListView.builder(
-                            itemCount: listOfData.length,
+                            itemCount: 10,
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
-                              return (listOfData[index].status == "canceled" &&
-                                      widget.filterParams!["order_status"] ==
-                                          "new")
-                                  ? SizedBox.shrink()
-                                  : ItemOrderWidget(
-                                      orderBloc: _orderBloc,
-                                      filterparams: widget.filterParams,
-                                      orderItem: listOfData[index],
-                                      cancelToken: _cancelToken,
-                                      onUpdate: _onUpdate,
-                                    );
+                              return _itemShimmer(width: widget.width!);
                             },
                           ),
                         )
                       ],
-                    ),
-                  ),
-                );
-              } else {
-                return Container(
-                  width: widget.width,
-                  height: widget.height,
-                  child: Center(
-                    child: Text(
-                      '${Translations.of(context).translate('there_are_no_orders')}',
-                      style: textStyle.smallTSBasic
-                          .copyWith(color: globalColor.primaryColor),
                     ),
                   ),
                 );
               }
-            }
-            if (state is LoadingDeleteState) {
-              return Stack(children: [
-                Container(
-                  key: _globalKey,
+              return Container(
                   width: widget.width,
                   height: widget.height,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Container(
-                          alignment: AlignmentDirectional.centerStart,
-                          padding: const EdgeInsets.only(
-                              left: EdgeMargin.min, right: EdgeMargin.min),
-                          child: Text(
-                            Translations.of(context)
-                                .translate('order_tracking'),
-                            style: textStyle.smallTSBasic.copyWith(
-                                color: globalColor.black,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        Container(
-                            key: _key,
-                            margin: const EdgeInsets.only(
-                              left: EdgeMargin.min,
-                              right: EdgeMargin.min,
-                            ),
-                            height: widget.height! * .16,
-                            child: _buildStepWidget(
-                                context: context, width: widget.width!)),
-                        Container(
-                          child: ListView.builder(
-                            itemCount: listOfData.length,
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              return (listOfData[index].status == "canceled" &&
-                                      widget.filterParams!["order_status"] ==
-                                          "new")
-                                  ? SizedBox.shrink()
-                                  : ItemOrderWidget(
-                                      orderBloc: _orderBloc,
-                                      filterparams: widget.filterParams,
-                                      orderItem: listOfData[index],
-                                      cancelToken: _cancelToken,
-                                      onUpdate: _onUpdate,
-                                    );
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    top: 0,
-                    child: Center(
-                        child: CircularProgressIndicator(
-                      color: globalColor.red,
-                    ))),
-              ]);
-            }
-            if (state is DoneDeleteOrder) {
-              appConfig.showToast(
-                  msg: Translations.of(context)
-                      .translate('order_successfully_deleted'));
-            }
-            if (state is FailureDeleteOrder) {
-              appConfig.showToast(
-                  msg:
-                      Translations.of(context).translate('order_failed_added'));
-            }
-            /*if (state is DoneDeleteOrder) {
-              if (state.listOfResult != null &&
-                  state.listOfResult!.isNotEmpty) {
-                return Container(
-                  key: _globalKey,
-                  width: widget.width,
-                  height: widget.height,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Container(
-                          alignment: AlignmentDirectional.centerStart,
-                          padding: const EdgeInsets.only(
-                              left: EdgeMargin.min, right: EdgeMargin.min),
-                          child: Text(
-                            Translations.of(context)
-                                .translate('order_tracking'),
-                            style: textStyle.smallTSBasic.copyWith(
-                                color: globalColor.black,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        Container(
-                            key: _key,
-                            margin: const EdgeInsets.only(
-                              left: EdgeMargin.min,
-                              right: EdgeMargin.min,
-                            ),
-                            height: widget.height! * .16,
-                            child: _buildStepWidget(
-                                context: context, width: widget.width!)),
-                        Container(
-                          child: ListView.builder(
-                            itemCount: listOfData.length,
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              return (listOfData[index].status == "canceled" &&
-                                      widget.filterParams!["order_status"] ==
-                                          "new")
-                                  ? SizedBox.shrink()
-                                  : ItemOrderWidget(
-                                      orderBloc: _orderBloc,
-                                      orderItem: listOfData[index],
-                                      cancelToken: _cancelToken,
-                                      onUpdate: _onUpdate,
-                                    );
-                            },
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              } else {
-                return Container(
-                  width: widget.width,
-                  height: widget.height,
-                  child: Center(
-                    child: Text(
-                      '${Translations.of(context).translate('there_are_no_orders')}',
-                      style: textStyle.smallTSBasic
-                          .copyWith(color: globalColor.primaryColor),
-                    ),
-                  ),
-                );
-              }
-            }*/
-            return Container(
-                width: widget.width,
-                height: widget.height,
-                child: OrderPageShimmer(
-                  width: widget.width!,
-                  height: widget.height!,
-                ));
-          }),
-    );
+                  child: OrderPageShimmer(
+                    status: widget.filterParams!['order_status'],
+                    width: widget.width!,
+                    height: widget.height!,
+                  ));
+            }));
   }
 
   _onUpdate() {
@@ -345,38 +393,46 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                     color: globalColor.grey.withOpacity(0.2), width: 1.0)),
             width: 73.w,
             height: 60,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      color: globalColor.goldColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                          color: globalColor.primaryColor, width: 1.0)),
-                  width: 24.w,
-                  height: 24.w,
-                  child: Icon(
-                    Icons.check,
-                    color: globalColor.black,
-                    size: 10.w,
-                  ),
-                ),
-                Container(
-                  child: Text(
-                    Translations.of(context).translate('recipient'),
-                    style: textStyle.subMinTSBasic.copyWith(
-                        color: globalColor.black, fontWeight: FontWeight.bold),
-                  ),
-                )
-              ],
+            child: InkWell(
+              onTap: () {
+                _orderBloc.add(StatusOrder(
+                    status: 'pending',
+                    filterParams: widget.filterParams,
+                    cancelToken: _cancelToken));
+                setState(() {
+                  recipient = true;
+                  on_way = false;
+                  delivered = false;
+                  in_progress = false;
+                });
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  recipient ? coloredCircle() : emptyCircle(),
+                  Container(
+                    child: Text(
+                      Translations.of(context).translate('recipient'),
+                      style: textStyle.subMinTSBasic.copyWith(
+                          color: globalColor.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
-          Expanded(
-              child: Container(
-            height: 1.0,
-            color: globalColor.primaryColor,
-          )),
+          recipient || on_way || delivered || in_progress
+              ? Expanded(
+                  child: Container(
+                  height: 1.0,
+                  color: globalColor.primaryColor,
+                ))
+              : Expanded(
+                  child: Container(
+                  height: 1.0,
+                  color: globalColor.grey.withOpacity(0.2),
+                )),
           Container(
             decoration: BoxDecoration(
                 color: globalColor.white,
@@ -385,34 +441,46 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                     color: globalColor.grey.withOpacity(0.2), width: 1.0)),
             width: 73.w,
             height: 60,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      color: globalColor.grey.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                          color: globalColor.grey.withOpacity(0.2),
-                          width: 1.0)),
-                  width: 24.w,
-                  height: 24.w,
-                ),
-                Container(
-                  child: Text(
-                    Translations.of(context).translate('in_progress'),
-                    style: textStyle.subMinTSBasic.copyWith(
-                        color: globalColor.black, fontWeight: FontWeight.bold),
-                  ),
-                )
-              ],
+            child: InkWell(
+              onTap: () {
+                _orderBloc.add(StatusOrder(
+                    status: 'accepted',
+                    filterParams: widget.filterParams,
+                    cancelToken: _cancelToken));
+                setState(() {
+                  in_progress = true;
+                  recipient = true;
+                  delivered = false;
+                  on_way = false;
+                });
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  in_progress ? coloredCircle() : emptyCircle(),
+                  Container(
+                    child: Text(
+                      Translations.of(context).translate('in_progress'),
+                      style: textStyle.subMinTSBasic.copyWith(
+                          color: globalColor.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
-          Expanded(
-              child: Container(
-            height: 1.0,
-            color: globalColor.grey.withOpacity(0.2),
-          )),
+          on_way || delivered
+              ? Expanded(
+                  child: Container(
+                  height: 1.0,
+                  color: globalColor.primaryColor,
+                ))
+              : Expanded(
+                  child: Container(
+                  height: 1.0,
+                  color: globalColor.grey.withOpacity(0.2),
+                )),
           Container(
             decoration: BoxDecoration(
                 color: globalColor.white,
@@ -421,34 +489,46 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                     color: globalColor.grey.withOpacity(0.2), width: 1.0)),
             width: 73.w,
             height: 60,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      color: globalColor.grey.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                          color: globalColor.grey.withOpacity(0.2),
-                          width: 1.0)),
-                  width: 24.w,
-                  height: 24.w,
-                ),
-                Container(
-                  child: Text(
-                    Translations.of(context).translate('on_way'),
-                    style: textStyle.subMinTSBasic.copyWith(
-                        color: globalColor.black, fontWeight: FontWeight.bold),
-                  ),
-                )
-              ],
+            child: InkWell(
+              onTap: () {
+                _orderBloc.add(StatusOrder(
+                    status: 'shipped',
+                    filterParams: widget.filterParams,
+                    cancelToken: _cancelToken));
+                setState(() {
+                  on_way = true;
+                  recipient = true;
+                  in_progress = true;
+                  delivered = false;
+                });
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  on_way ? coloredCircle() : emptyCircle(),
+                  Container(
+                    child: Text(
+                      Translations.of(context).translate('on_way'),
+                      style: textStyle.subMinTSBasic.copyWith(
+                          color: globalColor.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
-          Expanded(
-              child: Container(
-            height: 1.0,
-            color: globalColor.grey.withOpacity(0.2),
-          )),
+          delivered
+              ? Expanded(
+                  child: Container(
+                  height: 1.0,
+                  color: globalColor.primaryColor,
+                ))
+              : Expanded(
+                  child: Container(
+                  height: 1.0,
+                  color: globalColor.grey.withOpacity(0.2),
+                )),
           Container(
             decoration: BoxDecoration(
                 color: globalColor.white,
@@ -457,30 +537,336 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                     color: globalColor.grey.withOpacity(0.2), width: 1.0)),
             width: 73.w,
             height: 60,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      color: globalColor.grey.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                          color: globalColor.grey.withOpacity(0.2),
-                          width: 1.0)),
-                  width: 24.w,
-                  height: 24.w,
-                ),
-                Container(
-                  child: Text(
-                    Translations.of(context).translate('delivered'),
-                    style: textStyle.subMinTSBasic.copyWith(
-                        color: globalColor.black, fontWeight: FontWeight.bold),
-                  ),
-                )
-              ],
+            child: InkWell(
+              onTap: () {
+                _orderBloc.add(StatusOrder(
+                    status: 'completed',
+                    filterParams: widget.filterParams,
+                    cancelToken: _cancelToken));
+
+                setState(() {
+                  delivered = true;
+                  on_way = true;
+                  recipient = true;
+                  in_progress = true;
+                });
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  delivered ? coloredCircle() : emptyCircle(),
+                  Container(
+                    child: Text(
+                      Translations.of(context).translate('delivered'),
+                      style: textStyle.subMinTSBasic.copyWith(
+                          color: globalColor.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget coloredCircle() {
+    return Container(
+      decoration: BoxDecoration(
+          color: globalColor.goldColor,
+          shape: BoxShape.circle,
+          border: Border.all(color: globalColor.primaryColor, width: 1.0)),
+      width: 24.w,
+      height: 24.w,
+      child: Icon(
+        Icons.check,
+        color: globalColor.black,
+        size: 10.w,
+      ),
+    );
+  }
+
+  Widget emptyCircle() {
+    return Container(
+      decoration: BoxDecoration(
+          color: globalColor.grey.withOpacity(0.2),
+          shape: BoxShape.circle,
+          border:
+              Border.all(color: globalColor.grey.withOpacity(0.2), width: 1.0)),
+      width: 24.w,
+      height: 24.w,
+    );
+  }
+
+  _itemShimmer({required double width}) {
+    return Container(
+      width: width,
+      padding:
+          EdgeInsets.only(left: EdgeMargin.subMin, right: EdgeMargin.subMin),
+      child: Card(
+        color: globalColor.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12.0.w))),
+        child: ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(12.0.w)),
+          child: Container(
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.only(
+                      left: EdgeMargin.subMin,
+                      right: EdgeMargin.subMin,
+                      bottom: EdgeMargin.subMin,
+                      top: EdgeMargin.subMin),
+                  width: width,
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 144.h,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    height: 144.h,
+                                    child: BaseShimmerWidget(
+                                      child: Container(
+                                        width: 10.w,
+                                        height: 144.h,
+                                        decoration: BoxDecoration(
+                                          color: globalColor.white,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(12.w)),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                              flex: 2,
+                              child: Container(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    BaseShimmerWidget(
+                                      child: Container(
+                                        width: 60,
+                                        height: 6,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    VerticalPadding(
+                                      percentage: 1.0,
+                                    ),
+                                    Container(
+                                      child: BaseShimmerWidget(
+                                        child: Container(
+                                          width: 35,
+                                          height: 6,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )),
+                          Container(
+                              alignment: AlignmentDirectional.centerEnd,
+                              padding: const EdgeInsets.fromLTRB(
+                                  EdgeMargin.verySub,
+                                  EdgeMargin.sub,
+                                  EdgeMargin.verySub,
+                                  EdgeMargin.sub),
+                              child: FittedBox(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 4.0, right: 4.0),
+                                        child: BaseShimmerWidget(
+                                          child: Container(
+                                            width: 16,
+                                            height: 25,
+                                            decoration: BoxDecoration(
+                                                color: globalColor.white,
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(12.w)),
+                                                border: Border.all(
+                                                    color: globalColor.grey
+                                                        .withOpacity(0.3),
+                                                    width: 0.5)),
+                                            constraints: BoxConstraints(
+                                                minWidth: width * .1),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      child: BaseShimmerWidget(
+                                        child: Container(
+                                          width: 20,
+                                          height: 25,
+                                          decoration: BoxDecoration(
+                                              color: globalColor.white,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(12.w)),
+                                              border: Border.all(
+                                                  color: globalColor.grey
+                                                      .withOpacity(0.3),
+                                                  width: 0.5)),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              EdgeMargin.subSubMin,
+                                              EdgeMargin.verySub,
+                                              EdgeMargin.subSubMin,
+                                              EdgeMargin.verySub),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ))
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(
+                  color: globalColor.backgroundLightPrim,
+                  height: 2.0,
+                ),
+                Container(
+                  //padding: const EdgeInsets.all(EdgeMargin.subMin),
+                  height: 41.h,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          HorizontalPadding(
+                            percentage: 3,
+                          ),
+                          BaseShimmerWidget(
+                            child: Container(
+                              width: 80,
+                              height: 10,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        //margin: const EdgeInsets.only(left:EdgeMargin.min,right: EdgeMargin.min),
+                        width: 148.w,
+                        height: 41.h,
+                        color: globalColor.scaffoldBackGroundGreyColor,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              child: BaseShimmerWidget(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: globalColor.white,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          color:
+                                              globalColor.grey.withOpacity(0.2),
+                                          width: 1.0)),
+                                  width: 12.w,
+                                  height: 12.w,
+                                ),
+                              ),
+                            ),
+                            HorizontalPadding(
+                              percentage: 1,
+                            ),
+                            BaseShimmerWidget(
+                              child: Container(
+                                width: 16,
+                                height: 6,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(
+                  color: globalColor.backgroundLightPrim,
+                  height: 2.0,
+                ),
+                Container(
+                  //padding: const EdgeInsets.all(EdgeMargin.subMin),
+                  height: 41.h,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          HorizontalPadding(
+                            percentage: 3,
+                          ),
+                          BaseShimmerWidget(
+                            child: Container(
+                              width: 60,
+                              height: 10,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        //margin: const EdgeInsets.only(left:EdgeMargin.min,right: EdgeMargin.min),
+                        width: 148.w,
+                        height: 41.h,
+                        color: globalColor.scaffoldBackGroundGreyColor,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            HorizontalPadding(
+                              percentage: 1,
+                            ),
+                            BaseShimmerWidget(
+                              child: Container(
+                                width: 40,
+                                height: 6,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
