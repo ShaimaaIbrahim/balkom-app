@@ -17,6 +17,7 @@ import 'package:ojos_app/core/ui/dailog/confirm_dialog.dart';
 import 'package:ojos_app/core/ui/dailog/soon_dailog.dart';
 import 'package:ojos_app/core/usecases/delete_notifications.dart';
 import 'package:ojos_app/features/brand/presentation/pages/brand_page.dart';
+import 'package:ojos_app/features/home/presentation/pages/home_page.dart';
 import 'package:ojos_app/features/notification/data/models/notification_model.dart';
 import 'package:get/get.dart' as Get;
 import 'package:ojos_app/features/order/presentation/pages/my_order_page.dart';
@@ -65,11 +66,13 @@ class ItemNotificationWidget extends StatelessWidget {
                       color: globalColor.scaffoldBackGroundGreyColor,
                       child: Padding(
                         padding: const EdgeInsets.all(6.0),
-                        child: SvgPicture.asset(
-                          _getImage(notification!.type_int ?? 0),
-                          width: 10.w,
-                          color: globalColor.black,
-                        ),
+                        child: notification!.type_int != 10
+                            ? SvgPicture.asset(
+                                _getImage(notification!.type_int ?? 0),
+                                width: 10.w,
+                                color: globalColor.black,
+                              )
+                            : Image.network(notification!.icon!),
                       ),
                     ),
                   ),
@@ -275,6 +278,8 @@ class ItemNotificationWidget extends StatelessWidget {
       case 9:
         return AppAssets.brand_btnv_svg;
         break;
+      case 10:
+
       default:
         return AppAssets.order_drawer;
         break;
@@ -314,6 +319,15 @@ class ItemNotificationWidget extends StatelessWidget {
       case 9:
         return NotificationType.brand;
         break;
+
+      case 10:
+        return NotificationType.product;
+        break;
+
+      case 11:
+        return NotificationType.copoun;
+        break;
+
       default:
         return NotificationType.order;
         break;
@@ -355,6 +369,9 @@ class ItemNotificationWidget extends StatelessWidget {
       case NotificationType.profile:
         Get.Get.toNamed(ProfilePage.routeName);
         break;
+      case NotificationType.product:
+        Get.Get.toNamed(HomePage.routeName);
+        break;
     }
   }
 }
@@ -369,5 +386,7 @@ enum NotificationType {
   wallet,
   section,
   favorite,
-  profile
+  profile,
+  product,
+  copoun
 }

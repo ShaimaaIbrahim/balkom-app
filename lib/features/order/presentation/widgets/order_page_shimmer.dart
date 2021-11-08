@@ -16,7 +16,11 @@ class OrderPageShimmer extends StatefulWidget {
   final double? height;
   final String? status;
 
-  const OrderPageShimmer({this.width, this.height, this.status});
+  const OrderPageShimmer({
+    this.width,
+    this.height,
+    this.status,
+  });
 
   @override
   _OrderPageShimmerState createState() => _OrderPageShimmerState();
@@ -75,9 +79,7 @@ class _OrderPageShimmerState extends State<OrderPageShimmer> {
       ),
     );
   }
-
-  _buildStepShimmerWidget(
-      {required BuildContext context, required double width}) {
+  _buildStepShimmerWidget({required BuildContext context, required double width}) {
     return Container(
       width: width,
       child: Row(
@@ -92,7 +94,7 @@ class _OrderPageShimmerState extends State<OrderPageShimmer> {
                     color: globalColor.grey.withOpacity(0.2), width: 1.0)),
             width: 73.w,
             height: 60,
-            child: BaseShimmerWidget(
+            child:  BaseShimmerWidget(
               child: Container(
                 width: 73.w,
                 height: 60,
@@ -106,9 +108,9 @@ class _OrderPageShimmerState extends State<OrderPageShimmer> {
           ),
           Expanded(
               child: Container(
-            height: 1.0,
-            color: globalColor.primaryColor,
-          )),
+                height: 1.0,
+                color: globalColor.primaryColor,
+              )),
           Container(
             decoration: BoxDecoration(
                 color: globalColor.white,
@@ -117,7 +119,7 @@ class _OrderPageShimmerState extends State<OrderPageShimmer> {
                     color: globalColor.grey.withOpacity(0.2), width: 1.0)),
             width: 73.w,
             height: 60,
-            child: BaseShimmerWidget(
+            child:  BaseShimmerWidget(
               child: Container(
                 width: 73.w,
                 height: 60,
@@ -131,9 +133,9 @@ class _OrderPageShimmerState extends State<OrderPageShimmer> {
           ),
           Expanded(
               child: Container(
-            height: 1.0,
-            color: globalColor.grey.withOpacity(0.2),
-          )),
+                height: 1.0,
+                color: globalColor.grey.withOpacity(0.2),
+              )),
           Container(
             decoration: BoxDecoration(
                 color: globalColor.white,
@@ -142,7 +144,7 @@ class _OrderPageShimmerState extends State<OrderPageShimmer> {
                     color: globalColor.grey.withOpacity(0.2), width: 1.0)),
             width: 73.w,
             height: 60,
-            child: BaseShimmerWidget(
+            child:  BaseShimmerWidget(
               child: Container(
                 width: 73.w,
                 height: 60,
@@ -156,9 +158,9 @@ class _OrderPageShimmerState extends State<OrderPageShimmer> {
           ),
           Expanded(
               child: Container(
-            height: 1.0,
-            color: globalColor.grey.withOpacity(0.2),
-          )),
+                height: 1.0,
+                color: globalColor.grey.withOpacity(0.2),
+              )),
           Container(
             decoration: BoxDecoration(
                 color: globalColor.white,
@@ -167,7 +169,7 @@ class _OrderPageShimmerState extends State<OrderPageShimmer> {
                     color: globalColor.grey.withOpacity(0.2), width: 1.0)),
             width: 73.w,
             height: 60,
-            child: BaseShimmerWidget(
+            child:  BaseShimmerWidget(
               child: Container(
                 width: 73.w,
                 height: 60,

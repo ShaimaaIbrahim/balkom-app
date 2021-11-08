@@ -30,11 +30,11 @@ import '../../../../main.dart';
 class ItemOrderWidget extends StatefulWidget {
 
   final GeneralOrderItemEntity? orderItem;
-  final CancelToken? cancelToken;
+
   final Function? onUpdate;
   final OrderBloc? orderBloc;
   final Map<String, String>? filterparams;
-
+  final CancelToken? cancelToken;
   const ItemOrderWidget({this.orderItem, this.onUpdate,
     this.cancelToken, required this.orderBloc, this.filterparams});
 
@@ -53,6 +53,7 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
   void initState() {
     super.initState();
     _getCities(0);
+    print("order status is ===================================${widget.orderItem!.status}");
   }
   @override
   Widget build(BuildContext context) {
@@ -301,7 +302,8 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                       percentage: 1,
                                     ),
                                     Text(
-                                      _getStrStatus(context: context, status: widget.orderItem!.status!),
+                                      _getStrStatus(context: context,
+                                          status: widget.orderItem!.status!),
                                       style: textStyle.minTSBasic.copyWith(
                                           color: globalColor.primaryColor),
                                       overflow: TextOverflow.ellipsis,
@@ -401,6 +403,7 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                                 .translate(
                                                 'are_you_sure_delete_order'),
                                             actionYes: () {
+                                              Get.Get.back();
                                               widget.orderBloc!.add(
                                                   DeleteOrderEvent(
                                                       filterparams: widget.filterparams,
@@ -460,17 +463,20 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
   }
 
   _getStrStatus({required BuildContext context, required String status}) {
+
+    print('status is =============================$status');
+
     switch (status) {
 
       case "pending":
-        return Translations.of(context).translate('received');
+        return Translations.of(context).translate('pending');
         break;
       case "accepted":
-        return Translations.of(context).translate('processing');
+        return Translations.of(context).translate('accepted');
         break;
 
       case "shipped":
-        return Translations.of(context).translate('on_way');
+        return Translations.of(context).translate('shipped');
         break;
 
       case "completed":
@@ -481,38 +487,29 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
         return Translations.of(context).translate('canceled');
         break;
 
-      case "finshed":
-        return Translations.of(context).translate('completed');
-        break;
-
-      default:
-        return Translations.of(context).translate('completed');
-        break;
     }
   }
 
   _getColorStatus({required BuildContext context, required String status}) {
     switch (status) {
-      case "accepted":
-        return globalColor.green;
-        break;
-      case "canceled":
-        return globalColor.red;
-        break;
-      case "refunded":
-        return globalColor.red;
-        break;
-      case "cancel_requested":
-        return globalColor.red;
-        break;
+
       case "pending":
         return globalColor.buttonColorOrange;
         break;
+
+      case "accepted":
+        return globalColor.buttonColorOrange;
+        break;
+
       case "shipping":
         return globalColor.buttonColorOrange;
         break;
 
-      default:
+      case "canceled":
+        return globalColor.red;
+        break;
+
+      case "completed":
         return globalColor.green;
         break;
     }

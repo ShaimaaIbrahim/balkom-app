@@ -7,6 +7,7 @@ class CouponCodeEntity extends BaseEntity {
   final String discount;
   final String couponCode;
   final String total;
+  final int type;
 
   CouponCodeEntity({
     required this.total,
@@ -14,6 +15,7 @@ class CouponCodeEntity extends BaseEntity {
     required this.couponId,
     required this.discount,
     required this.discountAmount,
+    required this.type
   });
 
   @override
@@ -23,5 +25,6 @@ class CouponCodeEntity extends BaseEntity {
         couponId,
         discount,
         discountAmount,
+        type
       ];
 }

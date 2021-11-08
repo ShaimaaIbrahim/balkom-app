@@ -20,14 +20,11 @@ import 'package:ojos_app/core/ui/items_shimmer/base_shimmer.dart';
 import 'package:ojos_app/core/ui/widget/network/network_widget.dart';
 import 'package:ojos_app/features/others/domain/entity/about_app_result.dart';
 import 'package:ojos_app/features/others/domain/usecases/get_about_app.dart';
+import 'package:ojos_app/features/others/presentation/widgets/custom_section_about.dart';
 import 'package:ojos_app/features/others/presentation/widgets/sectionAbout.dart';
 import 'package:ojos_app/features/others/presentation/widgets/section_about_with_custom_child.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../main.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/ant_design.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/entypo.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_community_icons.dart';
 
 class AboutOjosPage extends StatefulWidget {
   static const routeName = '/others/sub_pages/pages/AboutOjosPage';
@@ -103,17 +100,17 @@ class _AboutOjosPageState extends State<AboutOjosPage> {
                       children: <Widget>[
                         //============= about section with description ===============
                         SectionAbout(
-                          icon: AntDesign.infocirlceo,
+                          icon: Icons.info_outline,
                           title: Translations.of(context).translate('about_us'),
-                          description: aboutAppResult.site_desc!,
+                          description: aboutAppResult.site_desc,
                         ),
-                        SectionAbout(
-                          icon: Entypo.address,
+                        CustomSectionAbout(
+                          svg: AppAssets.address,
                           title: Translations.of(context).translate('address'),
-                          description: aboutAppResult.address!,
+                          description: aboutAppResult.address,
                         ),
                         SectionAboutWithCustomChild(
-                          icon: MaterialCommunityIcons.contact_mail,
+                          icon: Icons.contact_mail,
                           title:
                               Translations.of(context).translate("contact_us"),
                           description: buildContactUs(aboutAppResult, width),
@@ -153,7 +150,7 @@ class _AboutOjosPageState extends State<AboutOjosPage> {
     );
   }
 
-  Widget buildContactUs(AboutAppResult aboutAppResult, double widthC) {
+  Widget buildContactUs(AboutAppResult? aboutAppResult, double widthC) {
     return Padding(
       padding: EdgeInsets.only(top: EdgeMargin.sub),
       child: new Column(
@@ -165,17 +162,17 @@ class _AboutOjosPageState extends State<AboutOjosPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 IconButton(
-                  onPressed: () => _lunchSocialMediaAction(context,
-                      aboutAppResult != null ? aboutAppResult.address! : ""),
+                  onPressed: () => _lunchSocialMediaAction(
+                      context, aboutAppResult?.address ?? ''),
                   icon: Icon(
-                    MaterialCommunityIcons.web,
+                    Icons.web,
                     color: globalColor.primaryColor,
                     size: 30.0,
                   ),
                 ),
                 IconButton(
-                  onPressed: () => _callMobile(context,
-                      aboutAppResult != null ? aboutAppResult.mobile! : ""),
+                  onPressed: () =>
+                      _callMobile(context, aboutAppResult?.mobile ?? ''),
                   icon: SvgPicture.asset(
                     AppAssets.phone_sq,
                     width: 30,
@@ -183,8 +180,8 @@ class _AboutOjosPageState extends State<AboutOjosPage> {
                   ),
                 ),
                 IconButton(
-                  onPressed: () => _callMobile(context,
-                      aboutAppResult != null ? aboutAppResult.phone! : ""),
+                  onPressed: () =>
+                      _callMobile(context, aboutAppResult?.phone ?? ''),
                   icon: SvgPicture.asset(
                     AppAssets.telephone,
                     width: 30,
@@ -194,7 +191,7 @@ class _AboutOjosPageState extends State<AboutOjosPage> {
                 IconButton(
                   onPressed: () {
                     String configEmail =
-                        'mailto:${aboutAppResult.email ?? "email@gmail.com"}'
+                        'mailto:${aboutAppResult?.email ?? "email@gmail.com"}'
                         '?subject=Email about $APP_NAME   &'
                         'body=Thank you for a such great App';
                     _lunchSocialMediaAction(context, configEmail);
@@ -213,13 +210,13 @@ class _AboutOjosPageState extends State<AboutOjosPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 IconButton(
-                  icon: Icon(
-                    AntDesign.facebook_square,
-                    size: 30.0,
-                    color: Color(0xFF3b5998),
+                  icon: SvgPicture.asset(
+                    AppAssets.facebook,
+                    width: 35,
+                    fit: BoxFit.cover,
                   ),
                   onPressed: () => _lunchSocialMediaAction(
-                      context, aboutAppResult.facebook!),
+                      context, aboutAppResult?.facebook ?? 'www.facebook.com'),
                 ),
                 // IconButton(
                 //   icon: Icon(
@@ -231,13 +228,13 @@ class _AboutOjosPageState extends State<AboutOjosPage> {
                 //       _lunchSocialMediaAction(context, aboutAppResult.linkedin),
                 // ),
                 IconButton(
-                  icon: Icon(
-                    AntDesign.twitter,
-                    size: 30.0,
-                    color: Colors.blue,
+                  icon: SvgPicture.asset(
+                    AppAssets.twitter,
+                    width: 35,
+                    fit: BoxFit.cover,
                   ),
-                  onPressed: () =>
-                      _lunchSocialMediaAction(context, aboutAppResult.twitter!),
+                  onPressed: () => _lunchSocialMediaAction(
+                      context, aboutAppResult?.twitter ?? 'www.twitter.com'),
                 ),
                 IconButton(
                   icon: SvgPicture.asset(
@@ -245,8 +242,8 @@ class _AboutOjosPageState extends State<AboutOjosPage> {
                     width: 35,
                     fit: BoxFit.cover,
                   ),
-                  onPressed: () => _lunchSocialMediaAction(
-                      context, aboutAppResult.instagram!),
+                  onPressed: () => _lunchSocialMediaAction(context,
+                      aboutAppResult?.instagram ?? 'www.instagram.com'),
                 ),
               ],
             ),

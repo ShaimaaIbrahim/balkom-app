@@ -19,6 +19,7 @@ import 'package:ojos_app/core/res/screen/vertical_padding.dart';
 import 'package:ojos_app/core/res/text_style.dart';
 import 'package:ojos_app/core/res/width_height.dart';
 import 'package:ojos_app/core/ui/button/arrow_back_button_widget.dart';
+import 'package:ojos_app/core/ui/dailog/confirm_dialog.dart';
 import 'package:ojos_app/core/ui/widget/button/rounded_button.dart';
 import 'package:ojos_app/core/ui/widget/general_widgets/error_widgets.dart';
 import 'package:ojos_app/features/cart/presentation/args/check_and_pay_args.dart';
@@ -364,99 +365,141 @@ class _EnterCartInfoPageState extends State<EnterCartInfoPage> {
                                                           args.dest_type ?? 259,
                                                     ));
                                               } else {
-                                                OrderRequest request =
-                                                    OrderRequest(
-                                                  subtotal: args.subtotal,
-                                                  total: args.total!.toInt(),
-                                                  coupon_id: args.coupon_id,
-                                                  tax: args.tax,
-                                                  shipping_id: args.shipping_id,
-                                                  shipping_fee:
-                                                      args.shipping_fee,
-                                                  point_map: args.point_map,
-                                                  delivery_fee:
-                                                      args.delivery_fee,
-                                                  discount: args.discount,
-                                                  orginal_price:
-                                                      args.orginal_price,
-                                                  couponcode: args.couponcode,
-                                                  city_id: args.city_id,
-                                                  cartItems: args.listOfOrder!
-                                                      .map((e) =>
-                                                          ProductOrderRequest(
-                                                              price: e
-                                                                  .productEntity
-                                                                  ?.price,
-                                                              type_product: e
-                                                                  .productEntity
-                                                                  ?.type,
-                                                              product_id: e
-                                                                  .productEntity
-                                                                  ?.id,
-                                                              //  lens_size:e.lensSize==LensesIpdAddEnum.IPD?"IPD":"ADD",
-                                                              quantity: e.count,
-                                                              //  sizeMode: e.SizeModeId,
-                                                              brand_id: e
-                                                                  .productEntity
-                                                                  ?.brandId,
-                                                              //    color_id: e.colorId,
-                                                              Is_Glasses: 1
-                                                              //    lens_left_size: e.sizeForLeftEye == LensesSelectedEnum.CPH ? 'cph':e.sizeForLeftEye == LensesSelectedEnum.CYI ?'cyi' :'axis',
-                                                              //    lens_right_size: e.sizeForRightEye == LensesSelectedEnum.CPH ? 'cph':e.sizeForLeftEye == LensesSelectedEnum.CYI ?'cyi' :'axis'
-                                                              ))
-                                                      .toList(),
-                                                  note: args.note ?? '',
-                                                  method_id:
-                                                      args.paymentMethods,
-                                                  user_address_id: args.city_id,
-                                                  card: null,
-                                                  delivery:
-                                                      DeliveryOrderRequest(
-                                                    delivery_address: BlocProvider
-                                                                .of<ApplicationBloc>(
-                                                                    context)
-                                                            .state
-                                                            .profile
-                                                            ?.address ??
-                                                        "_street",
-                                                    delivery_city: _city,
-                                                    delivery_email: "_email",
-                                                    delivery_mobile_1: _phone,
-                                                    delivery_mobile_2: _phone2,
-                                                    delivery_name: BlocProvider
-                                                                .of<ApplicationBloc>(
-                                                                    context)
-                                                            .state
-                                                            .profile
-                                                            ?.name ??
-                                                        '',
-                                                    delivery_phone: BlocProvider
-                                                                .of<ApplicationBloc>(
-                                                                    context)
-                                                            .state
-                                                            .profile
-                                                            ?.phone ??
-                                                        '',
-                                                    delivery_state: "_street",
-                                                    delivery_zipcode:
-                                                        "_country",
-                                                  ),
-                                                  neighborhood_id:
-                                                      args.neighborhood_id,
-                                                  load_id: args.load_id,
-                                                  delivery_to: args.delivery_to,
-                                                  dest_name: args.dest_name,
-                                                  guard_number:
-                                                      args.guard_number,
-                                                  dest_type:
-                                                      args.dest_type ?? 259,
-                                                );
-                                                print(
-                                                    'Order Request ${request.toJson()}');
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (ctx) =>
+                                                      ConfirmDialog(
+                                                    title: Translations.of(
+                                                            context)
+                                                        .translate(
+                                                            'confirm_order'),
+                                                    confirmMessage: Translations
+                                                            .of(context)
+                                                        .translate(
+                                                            'are_you_sure_confirm_order'),
+                                                    actionYes: () {
+                                                      Get.Get.back();
+                                                      OrderRequest request =
+                                                          OrderRequest(
+                                                        subtotal: args.subtotal,
+                                                        total:
+                                                            args.total!.toInt(),
+                                                        coupon_id:
+                                                            args.coupon_id,
+                                                        tax: args.tax,
+                                                        shipping_id:
+                                                            args.shipping_id,
+                                                        shipping_fee:
+                                                            args.shipping_fee,
+                                                        point_map:
+                                                            args.point_map,
+                                                        delivery_fee:
+                                                            args.delivery_fee,
+                                                        discount: args.discount,
+                                                        orginal_price:
+                                                            args.orginal_price,
+                                                        couponcode:
+                                                            args.couponcode,
+                                                        city_id: args.city_id,
+                                                        cartItems: args
+                                                            .listOfOrder!
+                                                            .map((e) =>
+                                                                ProductOrderRequest(
+                                                                    price: e
+                                                                        .productEntity
+                                                                        ?.price,
+                                                                    type_product: e
+                                                                        .productEntity
+                                                                        ?.type,
+                                                                    product_id: e
+                                                                        .productEntity
+                                                                        ?.id,
+                                                                    //  lens_size:e.lensSize==LensesIpdAddEnum.IPD?"IPD":"ADD",
+                                                                    quantity:
+                                                                        e.count,
+                                                                    //  sizeMode: e.SizeModeId,
+                                                                    brand_id: e
+                                                                        .productEntity
+                                                                        ?.brandId,
+                                                                    //    color_id: e.colorId,
+                                                                    Is_Glasses:
+                                                                        1
+                                                                    //    lens_left_size: e.sizeForLeftEye == LensesSelectedEnum.CPH ? 'cph':e.sizeForLeftEye == LensesSelectedEnum.CYI ?'cyi' :'axis',
+                                                                    //    lens_right_size: e.sizeForRightEye == LensesSelectedEnum.CPH ? 'cph':e.sizeForLeftEye == LensesSelectedEnum.CYI ?'cyi' :'axis'
+                                                                    ))
+                                                            .toList(),
+                                                        note: args.note ?? '',
+                                                        method_id:
+                                                            args.paymentMethods,
+                                                        user_address_id:
+                                                            args.city_id,
+                                                        card: null,
+                                                        delivery:
+                                                            DeliveryOrderRequest(
+                                                          delivery_address:
+                                                              BlocProvider.of<ApplicationBloc>(
+                                                                          context)
+                                                                      .state
+                                                                      .profile
+                                                                      ?.address ??
+                                                                  "_street",
+                                                          delivery_city: _city,
+                                                          delivery_email:
+                                                              "_email",
+                                                          delivery_mobile_1:
+                                                              _phone,
+                                                          delivery_mobile_2:
+                                                              _phone2,
+                                                          delivery_name:
+                                                              BlocProvider.of<ApplicationBloc>(
+                                                                          context)
+                                                                      .state
+                                                                      .profile
+                                                                      ?.name ??
+                                                                  '',
+                                                          delivery_phone:
+                                                              BlocProvider.of<ApplicationBloc>(
+                                                                          context)
+                                                                      .state
+                                                                      .profile
+                                                                      ?.phone ??
+                                                                  '',
+                                                          delivery_state:
+                                                              "_street",
+                                                          delivery_zipcode:
+                                                              "_country",
+                                                        ),
+                                                        neighborhood_id: args
+                                                            .neighborhood_id,
+                                                        load_id: args.load_id,
+                                                        delivery_to:
+                                                            args.delivery_to,
+                                                        dest_name:
+                                                            args.dest_name,
+                                                        guard_number:
+                                                            args.guard_number,
+                                                        dest_type:
+                                                            args.dest_type ??
+                                                                259,
+                                                      );
+                                                      print(
+                                                          'Order Request ${request.toJson()}');
 
-                                                _bloc.add(GetSendOrderEvent(
-                                                    cancelToken: _cancelToken,
-                                                    request: request));
+                                                      _bloc.add(
+                                                          GetSendOrderEvent(
+                                                              cancelToken:
+                                                                  _cancelToken,
+                                                              request:
+                                                                  request));
+                                                    },
+                                                    actionNo: () {
+                                                      setState(() {
+                                                        Get.Get.back();
+                                                      });
+                                                    },
+                                                  ),
+                                                );
+                                                //==============================
                                               }
                                             }
                                           },

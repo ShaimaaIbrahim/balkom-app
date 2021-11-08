@@ -16,14 +16,16 @@ class CouponCodeModel extends BaseModel<CouponCodeEntity> {
   final String couponCode;
   @JsonKey(name: 'total')
   final String total;
+  @JsonKey(name: 'type')
+  final int type;
 
-  CouponCodeModel({
-    required this.total,
-    required this.couponCode,
-    required this.couponId,
-    required this.discount,
-    required this.discountAmount,
-  });
+  CouponCodeModel(
+      {required this.total,
+      required this.couponCode,
+      required this.couponId,
+      required this.discount,
+      required this.discountAmount,
+      required this.type});
 
   factory CouponCodeModel.fromJson(Map<String, dynamic> json) =>
       _$CouponCodeModelFromJson(json);
@@ -32,10 +34,10 @@ class CouponCodeModel extends BaseModel<CouponCodeEntity> {
 
   @override
   CouponCodeEntity toEntity() => CouponCodeEntity(
-    couponCode: this.couponCode,
-    couponId: this.couponId,
-    discount: this.discount,
-    discountAmount: this.discountAmount,
-    total:  this.total,
-  );
+      couponCode: this.couponCode,
+      couponId: this.couponId,
+      discount: this.discount,
+      discountAmount: this.discountAmount,
+      total: this.total,
+      type: this.type);
 }

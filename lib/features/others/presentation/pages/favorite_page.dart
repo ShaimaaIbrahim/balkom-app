@@ -67,7 +67,7 @@ class _FavoritePageState extends State<FavoritePage> {
                     globalSize.setWidthPercentage(60, context),
               ),
               isEnablePagination: false,
-              isEnableRefresh: true,
+              isEnableRefresh: false,
               params: {},
             )));
   }

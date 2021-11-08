@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:dio/dio.dart';
@@ -48,6 +49,10 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
   bool delivered = false;
   bool in_progress = false;
 
+  bool track = true;
+  bool loading = false;
+  String state = 'pending';
+
   List<GeneralOrderItemEntity> listOfData = [];
   var _orderBloc = OrderBloc();
   GlobalKey _globalKey = GlobalKey();
@@ -56,14 +61,18 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
   void initState() {
     super.initState();
 
-    _orderBloc.add(GetOrderEvent(
-        cancelToken: _cancelToken, filterParams: widget.filterParams));
-
     if (widget.filterParams!['order_status'] == "new") {
+      // Timer.periodic(Duration(seconds: 1), (_) {
       _orderBloc.add(StatusOrder(
           cancelToken: _cancelToken,
           filterParams: widget.filterParams,
-          status: 'pending'));
+          status: "pending"));
+      // });
+    } else {
+      // Timer.periodic(Duration(seconds: 1), (_) {
+      _orderBloc.add(GetOrderEvent(
+          cancelToken: _cancelToken, filterParams: widget.filterParams));
+      //  });
     }
   }
 
@@ -76,6 +85,9 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
         listener: (BuildContext context, state) async {
           if (state is OrderDoneState) {
             listOfData = state.orders!;
+            setState(() {
+              track = state.withTrack!;
+            });
           }
           if (state is DoneDeleteOrder) {
             appConfig.showToast(
@@ -86,45 +98,16 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
             appConfig.showToast(
                 msg: Translations.of(context).translate('order_failed_added'));
           }
+          if (state is OrderDoneStateState) {
+            listOfData = state.orders!;
+            setState(() {
+              track = state.withTrack!;
+            });
+          }
         },
         child: BlocBuilder<OrderBloc, OrderState>(
             bloc: _orderBloc,
-            builder: (BuildContext context, state) {
-              if (state is OrderFailureState) {
-                return Container(
-                  width: widget.width,
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Text(
-                              (state.error is ConnectionError)
-                                  ? Translations.of(context)
-                                      .translate('err_connection')
-                                  : Translations.of(context)
-                                      .translate('err_unexpected'),
-                              style: textStyle.normalTSBasic
-                                  .copyWith(color: globalColor.accentColor)),
-                        ),
-                        RaisedButton(
-                          onPressed: () {
-                            _orderBloc.add(GetOrderEvent(
-                                cancelToken: _cancelToken,
-                                filterParams: widget.filterParams));
-                          },
-                          elevation: 1.0,
-                          child: Text(
-                              Translations.of(context).translate('retry'),
-                              style: textStyle.smallTSBasic
-                                  .copyWith(color: globalColor.white)),
-                          color: Theme.of(context).accentColor,
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }
+            builder: (context, state) {
               if (state is OrderDoneState) {
                 if (state.orders != null && state.orders!.isNotEmpty) {
                   return Container(
@@ -228,23 +211,52 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                           ],
                         ));
                   } else {
-                    return Container(
-                      width: widget.width,
-                      height: widget.height,
-                      child: Center(
-                        child: Text(
-                          '${Translations.of(context).translate('there_are_no_orders')}',
-                          style: textStyle.smallTSBasic
-                              .copyWith(color: globalColor.primaryColor),
-                        ),
+                    return Center(
+                      child: Text(
+                        '${Translations.of(context).translate('there_are_no_orders')}',
+                        style: textStyle.smallTSBasic
+                            .copyWith(color: globalColor.primaryColor),
                       ),
                     );
                   }
                 }
               }
-              if (state is LoadingDeleteState) {
-                return Stack(children: [
-                  Container(
+
+              if (state is OrderFailureState) {
+                return Container(
+                  width: widget.width,
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(
+                              Translations.of(context)
+                                  .translate('err_connection'),
+                              style: textStyle.normalTSBasic
+                                  .copyWith(color: globalColor.accentColor)),
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            _orderBloc.add(GetOrderEvent(
+                                cancelToken: _cancelToken,
+                                filterParams: widget.filterParams));
+                          },
+                          elevation: 1.0,
+                          child: Text(
+                              Translations.of(context).translate('retry'),
+                              style: textStyle.smallTSBasic
+                                  .copyWith(color: globalColor.white)),
+                          color: Theme.of(context).accentColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              if (state is OrderDoneStateState) {
+                if (state.orders != null && state.orders!.isNotEmpty) {
+                  return Container(
                     key: _globalKey,
                     width: widget.width,
                     height: widget.height,
@@ -301,21 +313,62 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                         ],
                       ),
                     ),
-                  ),
-                  Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      top: 0,
-                      child: Center(
-                          child: CircularProgressIndicator(
-                        color: globalColor.red,
-                      ))),
-                ]);
+                  );
+                } else {
+                  if (state.withTrack!) {
+                    return Container(
+                        width: widget.width,
+                        height: widget.height,
+                        child: Column(
+                          children: [
+                            widget.filterParams!['order_status'] == "new"
+                                ? Container(
+                                    alignment: AlignmentDirectional.centerStart,
+                                    padding: const EdgeInsets.only(
+                                        left: EdgeMargin.min,
+                                        right: EdgeMargin.min),
+                                    child: Text(
+                                      Translations.of(context)
+                                          .translate('order_tracking'),
+                                      style: textStyle.smallTSBasic.copyWith(
+                                          color: globalColor.black,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  )
+                                : Container(),
+                            widget.filterParams!['order_status'] == "new"
+                                ? Container(
+                                    key: _key,
+                                    margin: const EdgeInsets.only(
+                                      left: EdgeMargin.min,
+                                      right: EdgeMargin.min,
+                                    ),
+                                    height: widget.height! * .16,
+                                    child: _buildStepWidget(
+                                        context: context, width: widget.width!))
+                                : Container(),
+                            Center(
+                              child: Text(
+                                '${Translations.of(context).translate('there_are_no_orders')}',
+                                style: textStyle.smallTSBasic
+                                    .copyWith(color: globalColor.primaryColor),
+                              ),
+                            ),
+                          ],
+                        ));
+                  } else {
+                    return Center(
+                      child: Text(
+                        '${Translations.of(context).translate('there_are_no_orders')}',
+                        style: textStyle.smallTSBasic
+                            .copyWith(color: globalColor.primaryColor),
+                      ),
+                    );
+                  }
+                }
               }
               if (state is StateLoadingState) {
                 return Container(
-                  key: _globalKey,
                   width: widget.width,
                   height: widget.height,
                   child: SingleChildScrollView(
@@ -338,7 +391,6 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                             : Container(),
                         widget.filterParams!['order_status'] == "new"
                             ? Container(
-                                key: _key,
                                 margin: const EdgeInsets.only(
                                   left: EdgeMargin.min,
                                   right: EdgeMargin.min,
@@ -404,6 +456,8 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                   on_way = false;
                   delivered = false;
                   in_progress = false;
+                  state = "pending";
+                  loading = true;
                 });
               },
               child: Column(
@@ -412,7 +466,7 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                   recipient ? coloredCircle() : emptyCircle(),
                   Container(
                     child: Text(
-                      Translations.of(context).translate('recipient'),
+                      Translations.of(context).translate('pending'),
                       style: textStyle.subMinTSBasic.copyWith(
                           color: globalColor.black,
                           fontWeight: FontWeight.bold),
@@ -443,15 +497,17 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
             height: 60,
             child: InkWell(
               onTap: () {
-                _orderBloc.add(StatusOrder(
-                    status: 'accepted',
-                    filterParams: widget.filterParams,
-                    cancelToken: _cancelToken));
                 setState(() {
                   in_progress = true;
                   recipient = true;
                   delivered = false;
                   on_way = false;
+                  state = "accepted";
+                  loading = true;
+                  _orderBloc.add(StatusOrder(
+                      status: 'accepted',
+                      filterParams: widget.filterParams,
+                      cancelToken: _cancelToken));
                 });
               },
               child: Column(
@@ -460,7 +516,7 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                   in_progress ? coloredCircle() : emptyCircle(),
                   Container(
                     child: Text(
-                      Translations.of(context).translate('in_progress'),
+                      Translations.of(context).translate('accepted'),
                       style: textStyle.subMinTSBasic.copyWith(
                           color: globalColor.black,
                           fontWeight: FontWeight.bold),
@@ -491,15 +547,18 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
             height: 60,
             child: InkWell(
               onTap: () {
-                _orderBloc.add(StatusOrder(
-                    status: 'shipped',
-                    filterParams: widget.filterParams,
-                    cancelToken: _cancelToken));
                 setState(() {
+                  _orderBloc.add(StatusOrder(
+                      status: 'shipped',
+                      filterParams: widget.filterParams,
+                      cancelToken: _cancelToken));
+
+                  state = "shipped";
                   on_way = true;
                   recipient = true;
                   in_progress = true;
                   delivered = false;
+                  loading = true;
                 });
               },
               child: Column(
@@ -508,7 +567,7 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                   on_way ? coloredCircle() : emptyCircle(),
                   Container(
                     child: Text(
-                      Translations.of(context).translate('on_way'),
+                      Translations.of(context).translate('shipped'),
                       style: textStyle.subMinTSBasic.copyWith(
                           color: globalColor.black,
                           fontWeight: FontWeight.bold),
@@ -539,16 +598,18 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
             height: 60,
             child: InkWell(
               onTap: () {
-                _orderBloc.add(StatusOrder(
-                    status: 'completed',
-                    filterParams: widget.filterParams,
-                    cancelToken: _cancelToken));
-
                 setState(() {
+                  _orderBloc.add(StatusOrder(
+                      status: 'completed',
+                      filterParams: widget.filterParams,
+                      cancelToken: _cancelToken));
+
+                  state = "completed";
                   delivered = true;
                   on_way = true;
                   recipient = true;
                   in_progress = true;
+                  loading = true;
                 });
               },
               child: Column(
@@ -557,7 +618,7 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
                   delivered ? coloredCircle() : emptyCircle(),
                   Container(
                     child: Text(
-                      Translations.of(context).translate('delivered'),
+                      Translations.of(context).translate('completed'),
                       style: textStyle.subMinTSBasic.copyWith(
                           color: globalColor.black,
                           fontWeight: FontWeight.bold),

@@ -1128,7 +1128,6 @@ _buildPriceSummeryWidget({
 }
 
 getTotal(GeneralOrderItemEntity order) {
-  var x = 0, y = 0, z = 0;
   if (order.orginal_price == null) order.orginal_price = 0;
   if (order.delivery_fee == null) order.delivery_fee = 0;
   if (order.discount == null) order.discount = 0;
@@ -1198,14 +1197,14 @@ _buildPriceItem(
 _getStrStatus({required BuildContext context, required String status}) {
   switch (status) {
     case "pending":
-      return Translations.of(context).translate('received');
+      return Translations.of(context).translate('pending');
       break;
     case "accepted":
-      return Translations.of(context).translate('processing');
+      return Translations.of(context).translate('accepted');
       break;
 
     case "shipped":
-      return Translations.of(context).translate('on_way');
+      return Translations.of(context).translate('shipped');
       break;
 
     case "completed":
@@ -1215,39 +1214,28 @@ _getStrStatus({required BuildContext context, required String status}) {
     case "canceled":
       return Translations.of(context).translate('canceled');
       break;
-
-    case "finshed":
-      return Translations.of(context).translate('completed');
-      break;
-
-    default:
-      return Translations.of(context).translate('completed');
-      break;
   }
 }
 
 _getColorStatus({required BuildContext context, required String status}) {
   switch (status) {
-    case "accepted":
-      return globalColor.green;
-      break;
-    case "canceled":
-      return globalColor.red;
-      break;
-    case "refunded":
-      return globalColor.red;
-      break;
-    case "cancel_requested":
-      return globalColor.red;
-      break;
     case "pending":
       return globalColor.buttonColorOrange;
       break;
+
+    case "accepted":
+      return globalColor.buttonColorOrange;
+      break;
+
     case "shipping":
       return globalColor.buttonColorOrange;
       break;
 
-    default:
+    case "canceled":
+      return globalColor.red;
+      break;
+
+    case "completed":
       return globalColor.green;
       break;
   }

@@ -9,8 +9,9 @@ class NotificationsModel extends BaseModel<NotificationsEntity> {
   final String? description;
   final String? title;
   final String? id;
-  final String? type;
-  final String? notifiable_id;
+  final int? type;
+  final int? id_s;
+  final String? icon;
   final int? type_int;
 
   NotificationsModel(
@@ -18,7 +19,8 @@ class NotificationsModel extends BaseModel<NotificationsEntity> {
       required this.description,
       required this.id,
       required this.type,
-      required this.notifiable_id,
+      required this.icon,
+      required this.id_s,
       required this.type_int});
 
   factory NotificationsModel.fromJson(Map<String, dynamic> json) =>
@@ -31,7 +33,8 @@ class NotificationsModel extends BaseModel<NotificationsEntity> {
       description: this.description,
       title: this.title,
       id: this.id,
-      notifiable_id: this.notifiable_id,
+      icon: this.icon,
+      id_s: this.id_s,
       type: this.type,
       type_int: this.type_int);
 }

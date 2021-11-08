@@ -4,16 +4,19 @@ class NotificationsEntity extends BaseEntity {
   final String? description;
   final String? id;
   final String? title;
-  final String? type;
+  final int? type;
   final int? type_int;
-  final String? notifiable_id;
+  //final String? notifiable_id;
+  final String? icon;
+  final int? id_s;
 
   NotificationsEntity(
       {required this.description,
       required this.title,
       required this.id,
       required this.type,
-      required this.notifiable_id,
+      required this.icon,
+      required this.id_s,
       required this.type_int});
 
   @override
@@ -23,6 +26,6 @@ class NotificationsEntity extends BaseEntity {
         type ?? '',
         id ?? '',
         type_int ?? 0,
-        notifiable_id ?? ''
+        icon ?? ''
       ];
 }

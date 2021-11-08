@@ -112,9 +112,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     );
 
     if (result.hasDataOnly) {
-      if (result.data!.mobileActive != null &&
-          result.data!.mobileActive == true &&
-          result.data!.accessToken.isNotEmpty) {
+      if (result.data!.accessToken!.isNotEmpty) {
         yield LoginSuccess(data: result.data);
       } else {
         yield LoginSuccessButNeedVerify(data: result.data!);

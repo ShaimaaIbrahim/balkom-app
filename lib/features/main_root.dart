@@ -138,8 +138,7 @@ class _MainRootPageState extends State<MainRootPage>
         BlocProvider.of<ApplicationBloc>(context).state.isUserAuthenticated ||
             BlocProvider.of<ApplicationBloc>(context).state.isUserVerified;
 
-    if (BlocProvider.of<ApplicationBloc>(context).state.isUserAuthenticated ||
-        BlocProvider.of<ApplicationBloc>(context).state.isUserVerified) {
+    if (isAuth!) {
       setState(() {
         stateLog = 'logout';
         stateAsset = AppAssets.logout_svg;
@@ -388,11 +387,13 @@ class _MainRootPageState extends State<MainRootPage>
             confirmMessage:
                 Translations.of(context).translate('are_you_sure_logout'),
             actionYes: () {
-              BlocProvider.of<ApplicationBloc>(context).add(UserLogoutEvent());
               setState(() {
-                stateLog = 'login';
-                stateMenu = MenuSpecItem.SignInPage;
-                stateAsset = AppAssets.login_svg;
+                BlocProvider.of<ApplicationBloc>(context)
+                    .add(UserLogoutEvent());
+                isAuth = false;
+                // this.stateLog = 'login';
+                // stateMenu = MenuSpecItem.SignInPage;
+                // stateAsset = AppAssets.login_svg;
               });
               Get.Get.back();
             },
@@ -609,7 +610,7 @@ class _MainRootPageState extends State<MainRootPage>
                       child: CircleAvatar(
                         child: Padding(
                           padding: const EdgeInsets.all(4.0),
-                          child: SvgPicture.asset(AppAssets.twitter,
+                          child: Image.asset(AppAssets.twitter,
                               color: Colors.white),
                         ),
                         /* child: Icon(
@@ -630,7 +631,7 @@ class _MainRootPageState extends State<MainRootPage>
                       child: CircleAvatar(
                         child: Padding(
                           padding: const EdgeInsets.all(4.0),
-                          child: SvgPicture.asset(AppAssets.instagram,
+                          child: Image.asset(AppAssets.instagram,
                               color: Colors.white),
                         ),
                         backgroundColor: globalColor.primaryColor,
@@ -704,45 +705,86 @@ class _MainRootPageState extends State<MainRootPage>
           ),
           // getMaterialResideMenuItem2(stateLog, stateAsset!,
           //     state: stateMenu, ishideArrow: true),
-          StatefulBuilder(builder:
-              (BuildContext context, void Function(void Function()) setState) {
-            return InkWell(
-              onTap: () {
-                _onItemMenuPress(stateMenu);
-              },
-              child: Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: globalColor.primaryColor,
-                      ),
-                      borderRadius: BorderRadius.circular(6)),
-                  margin: EdgeInsets.only(
-                      // right: isRtl(context) ? 10.0 : 0.0,
-                      ),
-                  child: new Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              Translations.of(context).translate(stateLog),
-                              style: textStyle.normalTSBasic.copyWith(
-                                color: globalColor.primaryColor,
-                              ),
-                            )
-                          ],
-                        ),
+          isAuth!
+              ? StatefulBuilder(builder: (BuildContext context,
+                  void Function(void Function()) setState) {
+                  return InkWell(
+                    onTap: () {
+                      _onItemMenuPress(MenuSpecItem.SignOut);
+                    },
+                    child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              color: globalColor.primaryColor,
+                            ),
+                            borderRadius: BorderRadius.circular(6)),
                         margin: EdgeInsets.only(
-                            left: 12.0, top: 1, bottom: 1, right: 12),
-                      ),
-                    ],
-                  )),
-            );
-          })
+                            // right: isRtl(context) ? 10.0 : 0.0,
+                            ),
+                        child: new Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    Translations.of(context)
+                                        .translate('logout'),
+                                    style: textStyle.normalTSBasic.copyWith(
+                                      color: globalColor.primaryColor,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              margin: EdgeInsets.only(
+                                  left: 12.0, top: 1, bottom: 1, right: 12),
+                            ),
+                          ],
+                        )),
+                  );
+                })
+              : StatefulBuilder(builder: (BuildContext context,
+                  void Function(void Function()) setState) {
+                  return InkWell(
+                    onTap: () {
+                      _onItemMenuPress(MenuSpecItem.SignInPage);
+                    },
+                    child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              color: globalColor.primaryColor,
+                            ),
+                            borderRadius: BorderRadius.circular(6)),
+                        margin: EdgeInsets.only(
+                            // right: isRtl(context) ? 10.0 : 0.0,
+                            ),
+                        child: new Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    Translations.of(context).translate('login'),
+                                    style: textStyle.normalTSBasic.copyWith(
+                                      color: globalColor.primaryColor,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              margin: EdgeInsets.only(
+                                  left: 12.0, top: 1, bottom: 1, right: 12),
+                            ),
+                          ],
+                        )),
+                  );
+                })
         ],
       ),
     ];

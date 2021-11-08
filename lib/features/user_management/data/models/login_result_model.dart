@@ -11,30 +11,24 @@ class LoginResultModel extends BaseModel<LoginResult> {
   final String name;
   final String email;
   final String photo;
-  final String status;
-  final String mobile;
   @JsonKey(name: 'otp_code')
   final int otpCode;
-  @JsonKey(name: 'mobile_active')
-  final bool mobileActive;
   final String address;
   final String phone;
   @JsonKey(name: 'about_me')
   final String aboutMe;
   @JsonKey(name: 'access_token')
   final String accessToken;
+  final bool status;
   @JsonKey(name: 'token_type')
   final String tokenType;
   @JsonKey(name: 'expires_at')
   final String expiresAt;
-  final int credit;
+  final String credit;
   final String debit;
-  final int balance;
-
-  // final String msg;
+  final String balance;
 
   LoginResultModel({
-    required this.mobile,
     required this.name,
     required this.id,
     required this.tokenType,
@@ -42,7 +36,6 @@ class LoginResultModel extends BaseModel<LoginResult> {
     required this.credit,
     required this.debit,
     required this.expiresAt,
-    required this.mobileActive,
     required this.otpCode,
     required this.photo,
     required this.status,
@@ -62,8 +55,6 @@ class LoginResultModel extends BaseModel<LoginResult> {
   LoginResult toEntity() => LoginResult(
         photo: this.photo,
         otpCode: this.otpCode,
-        mobileActive: this.mobileActive,
-        mobile: this.mobile,
         accessToken: this.accessToken,
         debit: this.debit,
         credit: this.credit,

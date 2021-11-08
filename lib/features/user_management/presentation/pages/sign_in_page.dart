@@ -376,7 +376,7 @@ class _SignInBoxState extends State<SignInBox> {
 
               Get.Get.toNamed(VerifyPage.routeName,
                   arguments: VerifyPageArgs(
-                      userName: state.data.mobile,
+                      userName: state.data.phone ?? '',
                       otpCode: state.data.otpCode));
             }
             if (state is LoginFailure) {

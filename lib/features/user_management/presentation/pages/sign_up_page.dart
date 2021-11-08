@@ -394,7 +394,7 @@ class _SignUpBoxState extends State<SignUpBox> {
             if (state is RegisterSuccess) {
               Get.Get.toNamed(VerifyPage.routeName,
                   arguments: VerifyPageArgs(
-                      userName: state.data.mobile!,
+                      userName: state.data.phone!,
                       otpCode: state.data.otpCode));
             }
             if (state is RegisterFailure) {

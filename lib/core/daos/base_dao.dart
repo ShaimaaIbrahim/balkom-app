@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:ojos_app/core/models/base_model.dart';
 import 'package:hive/hive.dart';
 

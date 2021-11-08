@@ -89,8 +89,13 @@ class OrderFailureState extends OrderState {
 }
 
 class OrderDoneStateState extends OrderState {
+  final List<GeneralOrderItemEntity>? orders;
+  final bool? withTrack;
+
+  OrderDoneStateState({this.orders, this.withTrack});
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [orders!, withTrack!];
 }
 
 @immutable
@@ -153,8 +158,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     }
 
     if (event is DeleteOrderEvent) {
-      Get.Get.back();
-
       yield LoadingDeleteState();
       final result = await DeleteOrder(locator<OrderRepository>())(
           DeleteOrderParams(cancelToken: event.cancelToken, id: event.id!));
@@ -194,7 +197,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
             orders.add(v);
           }
         }
-        yield OrderDoneState(orders: orders, withTrack: true);
+        yield OrderDoneStateState(orders: orders, withTrack: true);
       } else {
         final error = result.error;
         yield OrderFailureState(error!);

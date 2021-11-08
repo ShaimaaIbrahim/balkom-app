@@ -22,6 +22,7 @@ import 'package:ojos_app/core/res/text_style.dart';
 import 'package:ojos_app/core/res/utils.dart';
 import 'package:ojos_app/core/res/width_height.dart';
 import 'package:ojos_app/core/ui/button/arrow_back_button_widget.dart';
+import 'package:ojos_app/core/ui/dailog/confirm_dialog.dart';
 import 'package:ojos_app/core/ui/widget/button/rounded_button.dart';
 import 'package:ojos_app/core/ui/widget/general_widgets/error_widgets.dart';
 import 'package:ojos_app/core/usecases/get_payment_method.dart';
@@ -358,7 +359,8 @@ class _CheckAndPayPageState extends State<CheckAndPayPage> {
     return Container();
   }
 
-  _buildButtonsWidget({BuildContext? context, double? widthC, double? height}) {
+  _buildButtonsWidget(
+      {required BuildContext context, double? widthC, double? height}) {
     return Container(
       height: 80.h,
       width: widthC,
@@ -379,59 +381,75 @@ class _CheckAndPayPageState extends State<CheckAndPayPage> {
                 width: widthC! * .35,
                 color: globalColor.primaryColor,
                 onPressed: () {
-                  OrderRequest request = OrderRequest(
-                    couponcode: args.couponcode,
-                    delivery_fee: args.delivery_fee,
-                    subtotal: args.total!.toInt(),
-                    point_map: args.point_map,
-                    discount: args.discount,
-                    shipping_id: args.shipping_id,
-                    total: args.total!.toInt(),
-                    coupon_id: args.coupon_id,
-                    tax: args.tax,
-                    //city_id: args.city_id,
-                    city_id: args.city_id,
-                    cartItems: args.listOfOrder!
-                        .map((e) => ProductOrderRequest(
-                              price: e.productEntity!.price != null
-                                  ? e.productEntity!.price!
-                                  : 0,
-                              brand_id: 0,
-                              Is_Glasses: 0,
-                              type_product: 0,
-                              product_id: e.productEntity!.id ?? 0,
-                              // lens_size:  e.lensSize==LensesIpdAddEnum.IPD?"IPD":"ADD",
-                              quantity: e.count ?? 0,
-                              //   lens_left_size: e.sizeForLeftEye == LensesSelectedEnum.CPH ? 'cph':e.sizeForLeftEye == LensesSelectedEnum.CYI ?'cyi' :'axis',
-                              //   lens_right_size: e.sizeForRightEye == LensesSelectedEnum.CPH ? 'cph':e.sizeForLeftEye == LensesSelectedEnum.CYI ?'cyi' :'axis'
-                            ))
-                        .toList(),
-                    note: args.note,
-                    method_id: _selectedPaymentMethod?.id,
-                    neighborhood_id: args.neighborhood_id,
-                    load_id: args.load_id ?? 112,
-                    delivery_to: args.delivery_to ?? 'home',
-                    dest_name: args.dest_name ?? '',
-                    guard_number: args.guard_number != null
-                        ? args.guard_number!
-                        : '01060999471011',
-                    user_address_id: args.city_id,
-                    card: null,
-                    delivery: args.deliveryOrder,
-                    dest_type: args.dest_type ?? 0,
-                    orginal_price: args.orginal_price,
-                    shipping_fee: args.shipping_fee,
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => ConfirmDialog(
+                      title:
+                          Translations.of(context).translate('confirm_order'),
+                      confirmMessage: Translations.of(context)
+                          .translate('are_you_sure_confirm_order'),
+                      actionYes: () {
+                        Get.Get.back();
+                        OrderRequest request = OrderRequest(
+                          couponcode: args.couponcode,
+                          delivery_fee: args.delivery_fee,
+                          subtotal: args.total!.toInt(),
+                          point_map: args.point_map,
+                          discount: args.discount,
+                          shipping_id: args.shipping_id,
+                          total: args.total!.toInt(),
+                          coupon_id: args.coupon_id,
+                          tax: args.tax,
+                          //city_id: args.city_id,
+                          city_id: args.city_id,
+                          cartItems: args.listOfOrder!
+                              .map((e) => ProductOrderRequest(
+                                    price: e.productEntity!.price != null
+                                        ? e.productEntity!.price!
+                                        : 0,
+                                    brand_id: 0,
+                                    Is_Glasses: 0,
+                                    type_product: 0,
+                                    product_id: e.productEntity!.id ?? 0,
+                                    // lens_size:  e.lensSize==LensesIpdAddEnum.IPD?"IPD":"ADD",
+                                    quantity: e.count ?? 0,
+                                    //   lens_left_size: e.sizeForLeftEye == LensesSelectedEnum.CPH ? 'cph':e.sizeForLeftEye == LensesSelectedEnum.CYI ?'cyi' :'axis',
+                                    //   lens_right_size: e.sizeForRightEye == LensesSelectedEnum.CPH ? 'cph':e.sizeForLeftEye == LensesSelectedEnum.CYI ?'cyi' :'axis'
+                                  ))
+                              .toList(),
+                          note: args.note,
+                          method_id: _selectedPaymentMethod?.id,
+                          neighborhood_id: args.neighborhood_id,
+                          load_id: args.load_id ?? 112,
+                          delivery_to: args.delivery_to ?? 'home',
+                          dest_name: args.dest_name ?? '',
+                          guard_number: args.guard_number != null
+                              ? args.guard_number!
+                              : '01060999471011',
+                          user_address_id: args.city_id,
+                          card: null,
+                          delivery: args.deliveryOrder,
+                          dest_type: args.dest_type ?? 0,
+                          orginal_price: args.orginal_price,
+                          shipping_fee: args.shipping_fee,
+                        );
+                        print('Order Request ${request.toJson()}');
+                        _bloc.add(GetSendOrderEvent(
+                            cancelToken: _cancelToken, request: request));
+                      },
+                      actionNo: () {
+                        setState(() {
+                          Get.Get.back();
+                        });
+                      },
+                    ),
                   );
-                  print('Order Request ${request.toJson()}');
-
-                  _bloc.add(GetSendOrderEvent(
-                      cancelToken: _cancelToken, request: request));
                 },
                 borderRadius: 8.w,
                 child: Container(
                   child: Center(
                     child: Text(
-                      Translations.of(context!).translate('send_order'),
+                      Translations.of(context).translate('send_order'),
                       style: textStyle.smallTSBasic
                           .copyWith(color: globalColor.white),
                     ),

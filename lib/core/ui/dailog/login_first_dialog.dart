@@ -94,7 +94,20 @@ class _LoginFirstDialogState extends State<LoginFirstDialog>
                             textAlign: TextAlign.center,
                           ),
                         )
-                      : Container(),
+                      : Container(
+                          margin: EdgeInsets.only(
+                              left: EdgeMargin.subMin,
+                              right: EdgeMargin.subMin,
+                              top: EdgeMargin.subMin),
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Text(
+                            '${Translations.of(context).translate('msg_disclaimer2')}',
+                            style: textStyle.minTSBasic.copyWith(
+                                color: globalColor.black,
+                                fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                   VerticalPadding(
                     percentage: 1.5,
                   ),

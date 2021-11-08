@@ -8,12 +8,12 @@ part of 'coupon_code_model.dart';
 
 CouponCodeModel _$CouponCodeModelFromJson(Map<String, dynamic> json) {
   return CouponCodeModel(
-    total: json['total'] as String,
-    couponCode: json['couponcode'] as String,
-    couponId: json['coupon_id'] as int,
-    discount: json['discount'] as String,
-    discountAmount: json['discountamount'] as String,
-  );
+      total: json['total'] as String,
+      couponCode: json['couponcode'] as String,
+      couponId: json['coupon_id'] as int,
+      discount: json['discount'] as String,
+      discountAmount: json['discountamount'] as String,
+      type: json['type'] as int);
 }
 
 Map<String, dynamic> _$CouponCodeModelToJson(CouponCodeModel instance) =>
@@ -23,4 +23,5 @@ Map<String, dynamic> _$CouponCodeModelToJson(CouponCodeModel instance) =>
       'discount': instance.discount,
       'couponcode': instance.couponCode,
       'total': instance.total,
+      'type': instance.type
     };

@@ -7,36 +7,43 @@ part 'register_result_model.g.dart';
 
 @JsonSerializable()
 class RegisterResultModel extends BaseModel<RegisterResult> {
-  final String? name;
-  final String? phone;
-  @JsonKey(name: 'api_token')
-  final String? apiToken;
+  final int id;
+  final String name;
+  final String email;
+  final String photo;
   @JsonKey(name: 'otp_code')
-  final int? otpCode;
-  @JsonKey(name: 'mobile_active')
-  final String? mobileActive;
-  @JsonKey(name: 'device_type')
-  final String? deviceType;
-  final String? photo;
-  final int? id;
-  final int? credit;
-  final int? debit;
-  final String? balance;
-
-  // final String msg;
+  final int otpCode;
+  final String address;
+  final String phone;
+  @JsonKey(name: 'about_me')
+  final String aboutMe;
+  @JsonKey(name: 'access_token')
+  final String accessToken;
+  final bool status;
+  @JsonKey(name: 'token_type')
+  final String tokenType;
+  @JsonKey(name: 'expires_at')
+  final String expiresAt;
+  final String credit;
+  final String debit;
+  final String balance;
 
   RegisterResultModel({
-    required this.phone,
     required this.name,
     required this.id,
-    required this.apiToken,
+    required this.tokenType,
     required this.balance,
     required this.credit,
     required this.debit,
-    required this.deviceType,
-    required this.mobileActive,
+    required this.expiresAt,
     required this.otpCode,
     required this.photo,
+    required this.status,
+    required this.phone,
+    required this.aboutMe,
+    required this.address,
+    required this.accessToken,
+    required this.email,
   });
 
   factory RegisterResultModel.fromJson(Map<String, dynamic> json) =>
@@ -44,15 +51,20 @@ class RegisterResultModel extends BaseModel<RegisterResult> {
 
   @override
   RegisterResult toEntity() => RegisterResult(
-      id: this.id,
-      name: this.name,
-      apiToken: this.apiToken,
-      // balance: this.balance,
-      credit: this.credit,
-      debit: this.debit,
-      deviceType: this.deviceType,
-      mobile: this.phone,
-      mobileActive: this.mobileActive,
-      otpCode: this.otpCode,
-      photo: this.photo);
+        photo: this.photo,
+        otpCode: this.otpCode,
+        accessToken: this.accessToken,
+        debit: this.debit,
+        credit: this.credit,
+        balance: this.balance,
+        expiresAt: this.expiresAt,
+        name: this.name,
+        id: this.id,
+        status: this.status,
+        phone: this.phone,
+        aboutMe: this.aboutMe,
+        address: this.address,
+        tokenType: this.tokenType,
+        email: this.email,
+      );
 }

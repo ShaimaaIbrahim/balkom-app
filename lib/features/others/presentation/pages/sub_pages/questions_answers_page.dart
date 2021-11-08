@@ -15,7 +15,6 @@ import 'package:ojos_app/core/res/width_height.dart';
 import 'package:ojos_app/core/ui/button/arrow_back_button_widget.dart';
 import 'package:ojos_app/core/ui/list/build_list_faqs.dart';
 import 'package:ojos_app/features/others/data/models/questions_answers_model.dart';
-import 'package:ojos_app/xternal_lib/flutter_icon/src/material_icons.dart';
 
 class QuestionsAnswersPage extends StatefulWidget {
   static const routeName = '/others/sub_pages/pages/QuestionsAnswersPage';
@@ -220,8 +219,8 @@ class _QuestionsAnswersItemWidgetState
                       ),
                       Icon(
                         exp.expanded
-                            ? MaterialIcons.keyboard_arrow_up
-                            : MaterialIcons.keyboard_arrow_down,
+                            ? Icons.keyboard_arrow_up
+                            : Icons.keyboard_arrow_down,
                         size: 25.w,
                         color: exp.expanded
                             ? globalColor.primaryColor

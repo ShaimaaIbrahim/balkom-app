@@ -187,33 +187,33 @@ class _CartPageState extends State<CartPage> {
   final _formKey = GlobalKey<FormState>();
 
   // Method for retrieving the current location
-  _getCurrentLocation() async {
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .then((Position position) async {
-      setState(() {
-        _currentPosition = position;
-        print('CURRENT POS: $_currentPosition');
-        mapController.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: LatLng(position.latitude, position.longitude),
-              // target: LatLng(40.732128, -73.999619),
-              zoom: 13.0,
-            ),
-          ),
-        );
-
-        markers.add(Marker(
-            markerId: MarkerId('current_Postion'),
-            infoWindow: InfoWindow(title: 'Current Position'),
-            position: LatLng(position.latitude, position.longitude),
-            icon: pinLocationIcon));
-      });
-      await _getAddress();
-    }).catchError((e) {
-      print(e);
-    });
-  }
+  // _getCurrentLocation() async {
+  //   await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+  //       .then((Position position) async {
+  //     setState(() {
+  //       _currentPosition = position;
+  //       print('CURRENT POS: $_currentPosition');
+  //       mapController.animateCamera(
+  //         CameraUpdate.newCameraPosition(
+  //           CameraPosition(
+  //             target: LatLng(position.latitude, position.longitude),
+  //             // target: LatLng(40.732128, -73.999619),
+  //             zoom: 13.0,
+  //           ),
+  //         ),
+  //       );
+  //
+  //       markers.add(Marker(
+  //           markerId: MarkerId('current_Postion'),
+  //           infoWindow: InfoWindow(title: 'Current Position'),
+  //           position: LatLng(position.latitude, position.longitude),
+  //           icon: pinLocationIcon));
+  //     });
+  //     await _getAddress();
+  //   }).catchError((e) {
+  //     print(e);
+  //   });
+  // }
 
   void setCustomMapPin() async {
     pinLocationIcon = await BitmapDescriptor.fromAssetImage(
@@ -245,6 +245,7 @@ class _CartPageState extends State<CartPage> {
   bool _isCouponApply = false;
   CouponCodeEntity _couponInfoSuccess = CouponCodeEntity(
       discountAmount: '0.0',
+      type: 0,
       couponCode: '00',
       total: '0',
       couponId: 0,
@@ -363,8 +364,8 @@ class _CartPageState extends State<CartPage> {
                                             VerticalPadding(
                                               percentage: 2.0,
                                             ),
-                                            _isCouponApply &&
-                                                    _couponInfoSuccess != null
+                                            _isCouponApply == true &&
+                                                    _couponInfoSuccess.type == 2
                                                 ? Container(
                                                     padding:
                                                         const EdgeInsets.only(
@@ -732,7 +733,7 @@ class _CartPageState extends State<CartPage> {
                     _copontValidation,
                   );
                 },
-                hintText: '- - - - -',
+                hintText: '- - - - - -',
                 hintStyle: textStyle.smallTSBasic.copyWith(
                     color: globalColor.grey, fontWeight: FontWeight.bold),
                 style: textStyle.smallTSBasic.copyWith(
@@ -745,7 +746,7 @@ class _CartPageState extends State<CartPage> {
                     _copontValidation = true;
                     _copon = value;
                   });
-                  if (value.isNotEmpty && value.length == 5) {
+                  if (value.isNotEmpty && value.length == 6) {
                     _couponBloc.add(ApplyCouponEvent(
                         cancelToken: _cancelToken,
                         couponCode: _copon,
@@ -829,6 +830,13 @@ class _CartPageState extends State<CartPage> {
       required double width,
       required double height,
       required CartProvider cartProvider}) {
+    var discount = 0;
+    if (_isCouponApply == true) {
+      discount = cartProvider.getTotalPricesAfterDiscount() -
+          int.parse(_couponInfoSuccess.discount);
+    } else {
+      discount = cartProvider.getTotalPricesAfterDiscount();
+    }
     return Container(
       width: width,
       child: Column(
@@ -842,21 +850,29 @@ class _CartPageState extends State<CartPage> {
           VerticalPadding(
             percentage: 1.0,
           ),
-          _paymentMethods.id == 1
-              ? _buildPricesInfoItem(
-                  height: height,
-                  width: width,
-                  value: _isCouponApply
-                      ? _couponInfoSuccess.total
-                      : cartProvider.getTotalPricesAfterDiscount().toString(),
-                  title: Translations.of(context)
-                      .translate('price_after_discount'))
-              : _buildPricesInfoItem(
-                  height: height,
-                  width: width,
-                  value: '0.0',
-                  title: Translations.of(context)
-                      .translate('payment_fees_on_receipt'))
+          _buildPricesInfoItem(
+              height: height,
+              width: width,
+              value: discount.toString(),
+              title:
+                  Translations.of(context).translate('price_after_discount')),
+          VerticalPadding(
+            percentage: 1.0,
+          ),
+          _buildPricesInfoItem(
+              height: height,
+              width: width,
+              value: '0.0',
+              title: Translations.of(context)
+                  .translate('payment_fees_on_receipt')),
+          VerticalPadding(
+            percentage: 1.0,
+          ),
+          _buildPricesInfoItem(
+              height: height,
+              width: width,
+              value: '0.0',
+              title: Translations.of(context).translate('order_delivery_fee'))
         ],
       ),
     );
@@ -1232,7 +1248,8 @@ class _CartPageState extends State<CartPage> {
                             subtotal: cartProvider
                                 .getTotalPricesAfterDiscount()
                                 .toInt(),
-                            discount: _isCouponApply == true
+                            discount: _isCouponApply == true &&
+                                    _couponInfoSuccess.type == 1
                                 ? int.parse(_couponInfoSuccess.discount)
                                 : 0,
                             total: cartProvider
@@ -1242,7 +1259,10 @@ class _CartPageState extends State<CartPage> {
                             coupon_id: _isCouponApply
                                 ? _couponInfoSuccess.couponId
                                 : 0,
-                            delivery_fee: 0,
+                            delivery_fee: _isCouponApply == true &&
+                                    _couponInfoSuccess.type == 2
+                                ? 0
+                                : 0,
                             couponcode: _copon,
                             note: appConfig.notNullOrEmpty(_phone)
                                 ? _phone
