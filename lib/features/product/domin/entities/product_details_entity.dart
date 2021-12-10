@@ -13,7 +13,7 @@ class ProductDetailsEntity extends BaseEntity {
   final String? image;
   double? price;
   final String? discountType;
-  final double? discountPrice;
+  double? discountPrice;
   final String? frameShape;
   final int? type;
   final bool? isNew;

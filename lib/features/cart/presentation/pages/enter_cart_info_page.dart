@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ojos_app/core/appConfig.dart';
+import 'package:intl/intl.dart';
 import 'package:ojos_app/core/bloc/application_bloc.dart';
 import 'package:ojos_app/core/errors/connection_error.dart';
 import 'package:ojos_app/core/errors/custom_error.dart';
@@ -379,8 +380,18 @@ class _EnterCartInfoPageState extends State<EnterCartInfoPage> {
                                                             'are_you_sure_confirm_order'),
                                                     actionYes: () {
                                                       Get.Get.back();
+                                                      final DateTime now =
+                                                          DateTime.now();
+                                                      final DateFormat
+                                                          formatter =
+                                                          DateFormat(
+                                                              'yyyy-MM-dd');
+                                                      final String formatted =
+                                                          formatter.format(now);
+
                                                       OrderRequest request =
                                                           OrderRequest(
+                                                        order_date: formatted,
                                                         subtotal: args.subtotal,
                                                         total:
                                                             args.total!.toInt(),

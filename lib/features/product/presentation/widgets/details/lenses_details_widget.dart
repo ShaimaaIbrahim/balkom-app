@@ -92,6 +92,10 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
     isAuth =
         BlocProvider.of<ApplicationBloc>(context).state.isUserAuthenticated ||
             BlocProvider.of<ApplicationBloc>(context).state.isUserVerified;
+
+    double discountPrice =
+        (widget.product!.price ?? 0.0) - (widget.product!.discountPrice ?? 0.0);
+
     return Container(
       child: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
@@ -106,7 +110,7 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
                   context: context,
                   width: width,
                   height: height,
-                  discountPrice: widget.productDetails!.discountPrice,
+                  discountPrice: discountPrice,
                   discountType: widget.productDetails!.discountTypeInt,
                   product: widget.productDetails,
                   productEntity: widget.product),
@@ -115,7 +119,7 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
                   width: width,
                   height: height,
                   price: widget.productDetails!.price,
-                  discountPrice: widget.productDetails!.discountPrice,
+                  discountPrice: discountPrice,
                   discountType: widget.productDetails!.discountTypeInt,
                   name: widget.productDetails!.name,
                   companyName: widget.productDetails!.shopInfo!.name),
@@ -1310,7 +1314,7 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
               child: Flexible(
             child: RichText(
               text: TextSpan(
-                text: '${discountPrice.toString()}',
+                text: '${price.toString()}',
                 style: textStyle.smallTSBasic.copyWith(
                     fontWeight: FontWeight.bold,
                     decoration: TextDecoration.lineThrough,
@@ -1329,7 +1333,7 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
               child: Flexible(
             child: RichText(
               text: TextSpan(
-                text: price.toString(),
+                text: discountPrice.toString(),
                 style: textStyle.smallTSBasic.copyWith(
                     fontWeight: FontWeight.bold,
                     color: globalColor.primaryColor),

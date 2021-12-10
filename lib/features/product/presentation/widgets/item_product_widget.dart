@@ -240,8 +240,9 @@ class _ItemProductHomeWidgetState extends State<ItemProductWidget> {
                                       children: [
                                         _buildPriceWidget(
                                             price: widget.product!.price!,
-                                            discountPrice:
-                                                priceAfterDiscount.toString()),
+                                            discountPrice: widget
+                                                .product!.discountPrice!
+                                                .toString()),
                                         VerticalPadding(
                                           percentage: 0.5,
                                         ),

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:ojos_app/core/constants.dart';
 import 'package:ojos_app/features/cart/data/models/attrbut_cmodel.dart';
 import 'package:ojos_app/features/cart/domin/entities/negabor_entity.dart';
+import 'package:ojos_app/features/others/data/models/about_app_result_model.dart';
+import 'package:ojos_app/features/others/domain/entity/about_app_result.dart';
 
 Future<List<NegaItem>> getNega({city_id = 1}) async {
   Dio dio = Dio();
@@ -12,6 +14,19 @@ Future<List<NegaItem>> getNega({city_id = 1}) async {
     print(response.data);
 
     return NegaModel.fromJson(response.data).result;
+  } else {
+    throw "Cant get Data";
+  }
+}
+
+Future<AboutAppResultModel> getSettings() async {
+  Dio dio = Dio();
+  Response response = await dio.get(API_ABOUT_APP);
+
+  if (response.statusCode == 200) {
+    print(response.data);
+
+    return AboutAppResultModel.fromJson(response.data);
   } else {
     throw "Cant get Data";
   }

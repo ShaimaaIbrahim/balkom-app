@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart' as Get;
+import 'package:intl/intl.dart';
 import 'package:ojos_app/core/appConfig.dart';
 import 'package:ojos_app/core/errors/connection_error.dart';
 import 'package:ojos_app/core/errors/custom_error.dart';
@@ -390,7 +391,11 @@ class _CheckAndPayPageState extends State<CheckAndPayPage> {
                           .translate('are_you_sure_confirm_order'),
                       actionYes: () {
                         Get.Get.back();
+                        final DateTime now = DateTime.now();
+                        final DateFormat formatter = DateFormat('yyyy-MM-dd');
+                        final String formatted = formatter.format(now);
                         OrderRequest request = OrderRequest(
+                          order_date: formatted,
                           couponcode: args.couponcode,
                           delivery_fee: args.delivery_fee,
                           subtotal: args.total!.toInt(),

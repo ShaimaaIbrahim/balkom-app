@@ -209,13 +209,13 @@ class _CartPageState extends State<OrderDetailsPage> {
                   child: Column(
                     children: [
                       _buildOrderInfoWidget(
-                        context: context,
-                        name: args.paymentmehtod!,
-                        height: height,
-                        width: width,
-                        price: args.total.toString(),
-                        orderNumber: args.order_number!,
-                      ),
+                          context: context,
+                          name: args.paymentmehtod!,
+                          height: height,
+                          width: width,
+                          price: args.total.toString(),
+                          orderNumber: args.order_number!,
+                          date: args.order_date!),
                       VerticalPadding(
                         percentage: 2.0,
                       ),
@@ -278,206 +278,14 @@ _getCount(List<OrderItemEntity> list) {
   return count;
 }
 
-/*
-  _buildPricesWidget({BuildContext context, double width, double height}) {
-    return Container(
-      width: width,
-      child: Column(
-        children: [
-          _buildPricesInfoItem(
-              height: height,
-              width: width,
-              value: '',
-              title:
-                  Translations.of(context).translate('total_original_price')),
-          VerticalPadding(
-            percentage: 1.0,
-          ),
-          _buildPricesInfoItem(
-              height: height,
-              width: width,
-              value: '25',
-              title: Translations.of(context)
-                  .translate('payment_fees_on_receipt')),
-        ],
-      ),
-    );
-  }
-*/
-
-/* _buildPricesInfoItem({
-    double height,
-    double width,
-    String title,
-    String value,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: globalColor.white,
-        borderRadius: BorderRadius.all(Radius.circular(12.w)),
-        // border:
-        // Border.all(color: globalColor.primaryColor.withOpacity(0.3), width: 0.5),
-      ),
-      padding: const EdgeInsets.only(
-        left: EdgeMargin.sub,
-        right: EdgeMargin.sub,
-      ),
-      height: height,
-      width: width,
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              title ?? '',
-              style: textStyle.middleTSBasic.copyWith(
-                  color: globalColor.black, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  value ?? '',
-                  style: textStyle.bigTSBasic.copyWith(
-                      color: globalColor.goldColor,
-                      fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  '${Translations.of(context).translate('rail')}',
-                  style: textStyle.middleTSBasic.copyWith(
-                      color: globalColor.primaryColor,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }*/
-
-/*  _buildTotalWidget({
-    BuildContext context,
-    double width,
-    double height,
-    TextEditingController controller,
-    bool textValidation,
-    String text,
-  }) {
-    return ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(12.w)),
-      child: Container(
-        decoration: BoxDecoration(
-          color: globalColor.white,
-          borderRadius: BorderRadius.all(Radius.circular(12.w)),
-          border:
-              Border.all(color: globalColor.grey.withOpacity(0.3), width: 0.5),
-        ),
-        //   margin: const EdgeInsets.only(left: EdgeMargin.verySub,),
-        height: height,
-        width: width,
-
-        child: Row(
-          children: [
-            Expanded(
-              flex: 5,
-              child: Container(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    EdgeMargin.subMin,
-                    EdgeMargin.verySub,
-                    EdgeMargin.subMin,
-                    EdgeMargin.verySub,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        Translations.of(context).translate('final_total'),
-                        style: textStyle.smallTSBasic
-                            .copyWith(color: globalColor.black),
-                      ),
-                      HorizontalPadding(
-                        percentage: 1.0,
-                      ),
-                      Text(
-                        '',
-                        style: textStyle.normalTSBasic.copyWith(
-                            color: globalColor.goldColor,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      HorizontalPadding(
-                        percentage: 1.0,
-                      ),
-                      Text(
-                        '${Translations.of(context).translate('rail')}',
-                        style: textStyle.middleTSBasic
-                            .copyWith(color: globalColor.primaryColor),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              width: 1.0,
-              color: globalColor.grey.withOpacity(0.3),
-            ),
-            Expanded(
-              flex: 3,
-              child: Container(
-                color: globalColor.primaryColor,
-                padding: const EdgeInsets.fromLTRB(
-                  EdgeMargin.subMin,
-                  EdgeMargin.verySub,
-                  EdgeMargin.subMin,
-                  EdgeMargin.verySub,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        child: FittedBox(
-                          child: Text(
-                            Translations.of(context).translate(
-                                'adoption_of_the_basket_and_payment'),
-                            style: textStyle.smallTSBasic
-                                .copyWith(color: globalColor.white),
-                          ),
-                        ),
-                        alignment: AlignmentDirectional.center,
-                      ),
-                    ),
-                    Container(
-                      child: Icon(
-                        utils.getLang() != 'ar'
-                            ? MaterialIcons.keyboard_arrow_right
-                            : MaterialIcons.keyboard_arrow_left,
-                        color: globalColor.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }*/
-
-_buildOrderInfoWidget({
-  required BuildContext context,
-  required double width,
-  required double height,
-  required String name,
-  required String orderNumber,
-  required String price,
-  // String date
-}) {
+_buildOrderInfoWidget(
+    {required BuildContext context,
+    required double width,
+    required double height,
+    required String name,
+    required String orderNumber,
+    required String price,
+    required String date}) {
   return Container(
     padding: const EdgeInsets.fromLTRB(
       EdgeMargin.subMin,
@@ -560,6 +368,25 @@ _buildOrderInfoWidget({
                           ),
                           Text(
                             orderNumber,
+                            style: textStyle.minTSBasic
+                                .copyWith(color: globalColor.primaryColor),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            Translations.of(context).translate('order_date') +
+                                ':',
+                            style: textStyle.minTSBasic
+                                .copyWith(color: globalColor.black),
+                          ),
+                          HorizontalPadding(
+                            percentage: 1.0,
+                          ),
+                          Text(
+                            date,
                             style: textStyle.minTSBasic
                                 .copyWith(color: globalColor.primaryColor),
                           ),
@@ -1105,9 +932,7 @@ _buildPriceSummeryWidget({
                   context: context,
                   title:
                       Translations.of(context).translate('order_delivery_fee'),
-                  value: order.delivery_fee != null
-                      ? order.delivery_fee!.toDouble().toString()
-                      : "0.0"),
+                  value: order.delivery_fee!.toDouble().toString()),
               _buildPriceItem(
                 width: width,
                 height: height,
@@ -1132,7 +957,8 @@ getTotal(GeneralOrderItemEntity order) {
   if (order.delivery_fee == null) order.delivery_fee = 0;
   if (order.discount == null) order.discount = 0;
 
-  return ((order.orginal_price! + order.delivery_fee!) - order.discount!)
+  return ((order.orginal_price! + order.delivery_fee! + order.shipping_fee!) -
+          order.discount!)
       .abs()
       .toString();
 }

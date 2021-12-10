@@ -59,6 +59,7 @@ GeneralOrderItemModel _$GeneralOrderItemModelFromJson(
         ? null
         : UserAddressModel.fromJson(
             json['user_address'] as Map<String, dynamic>),
+    order_date: json['order_date'] ?? '',
   );
 }
 

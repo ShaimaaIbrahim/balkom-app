@@ -30,11 +30,11 @@ import '../../../../main.dart';
 class ItemOrderWidget extends StatefulWidget {
 
   final GeneralOrderItemEntity? orderItem;
-
   final Function? onUpdate;
   final OrderBloc? orderBloc;
   final Map<String, String>? filterparams;
   final CancelToken? cancelToken;
+
   const ItemOrderWidget({this.orderItem, this.onUpdate,
     this.cancelToken, required this.orderBloc, this.filterparams});
 
@@ -387,9 +387,8 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                   ),
                                 ),
                               ),
-                              /*widget.orderItem!.status == "pending"
-                                  ? Container()
-                                  :*/ InkWell(
+                              widget.orderItem!.status == "pending"
+                                  ? InkWell(
                                       onTap: () {
                                         showDialog(
                                           context: context,
@@ -421,12 +420,6 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                       child: Container(
                                         child: Center(
                                           child: Container(
-                                            // decoration: BoxDecoration(
-                                            //     color: globalColor.white,
-                                            //     borderRadius: BorderRadius.circular(12.0.w),
-                                            //     border: Border.all(
-                                            //         color: globalColor.grey.withOpacity(0.3),
-                                            //         width: 0.5)),
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.fromLTRB(
@@ -449,7 +442,7 @@ class _ItemOrderWidgetState extends State<ItemOrderWidget> {
                                           ),
                                         ),
                                       ),
-                                    ),
+                                    ): Container(),
                             ],
                           ),
                         ),

@@ -42,6 +42,7 @@ import 'package:ojos_app/features/cart/presentation/args/check_and_pay_args.dart
 import 'package:ojos_app/features/cart/presentation/blocs/coupon_bloc.dart';
 import 'package:ojos_app/features/cart/presentation/widgets/item_product_cart_widget.dart';
 import 'package:ojos_app/features/order/domain/entities/city_order_entity.dart';
+import 'package:ojos_app/features/others/data/models/about_app_result_model.dart';
 import 'package:ojos_app/features/user_management/presentation/widgets/user_management_text_field_widget.dart';
 import 'package:ojos_app/xternal_lib/model_progress_hud.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -66,6 +67,7 @@ class _CartPageState extends State<CartPage> {
   bool _copontValidation = false;
   String _copon = '';
   TextEditingController coponEditingController = TextEditingController();
+  SettingsAppResultModel? settings;
 
   /// phone parameters
   bool _phoneValidation = false;
@@ -125,6 +127,7 @@ class _CartPageState extends State<CartPage> {
     super.initState();
     _getShippingCarriers(0);
     _getCities(0);
+    getSettings().then((value) => {settings = value.settings});
 
     getNega(city_id: _city.id ?? 1);
     coponEditingController = new TextEditingController();
@@ -314,7 +317,7 @@ class _CartPageState extends State<CartPage> {
                         builder: (context, cartProvider, child) {
                       if (cartProvider.getItems() != null &&
                           cartProvider.getItems()!.isNotEmpty)
-                        return _city.id == -1
+                        return _city.id == -1 || settings == null
                             ? Center(
                                 child: CircularProgressIndicator(
                                 valueColor: new AlwaysStoppedAnimation<Color>(
@@ -570,7 +573,8 @@ class _CartPageState extends State<CartPage> {
                                                         height: 50.h,
                                                         context: context,
                                                         cartProvider:
-                                                            cartProvider),
+                                                            cartProvider,
+                                                        settings: settings!),
                                                   ),
                                             VerticalPadding(
                                               percentage: 2.0,
@@ -583,6 +587,18 @@ class _CartPageState extends State<CartPage> {
                                                   context: context,
                                                   width: width,
                                                   height: 50.h,
+                                                  delivery_fee:
+                                                      _couponInfoSuccess.type ==
+                                                              2
+                                                          ? 0
+                                                          : int.parse(settings!
+                                                              .fee_delivery!),
+                                                  shipping_fee:
+                                                      _couponInfoSuccess.type ==
+                                                              2
+                                                          ? 0
+                                                          : int.parse(settings!
+                                                              .fee_delivery!),
                                                   cartProvider: cartProvider),
                                             ),
                                             VerticalPadding(
@@ -829,7 +845,8 @@ class _CartPageState extends State<CartPage> {
       {required BuildContext context,
       required double width,
       required double height,
-      required CartProvider cartProvider}) {
+      required CartProvider cartProvider,
+      required SettingsAppResultModel settings}) {
     var discount = 0;
     if (_isCouponApply == true) {
       discount = cartProvider.getTotalPricesAfterDiscount() -
@@ -862,7 +879,7 @@ class _CartPageState extends State<CartPage> {
           _buildPricesInfoItem(
               height: height,
               width: width,
-              value: '0.0',
+              value: settings.fee_delivery!,
               title: Translations.of(context)
                   .translate('payment_fees_on_receipt')),
           VerticalPadding(
@@ -871,7 +888,7 @@ class _CartPageState extends State<CartPage> {
           _buildPricesInfoItem(
               height: height,
               width: width,
-              value: '0.0',
+              value: settings.fee_delivery!,
               title: Translations.of(context).translate('order_delivery_fee'))
         ],
       ),
@@ -1173,10 +1190,23 @@ class _CartPageState extends State<CartPage> {
       {BuildContext? context,
       double? width,
       double? height,
+      required int delivery_fee,
+      required int shipping_fee,
       TextEditingController? controller,
       bool? textValidation,
       String? text,
       CartProvider? cartProvider}) {
+    var discount = 0;
+
+    if (_isCouponApply == true && _couponInfoSuccess.type == 1) {
+      discount = cartProvider!.getTotalPricesAfterDiscount() -
+          int.parse(_couponInfoSuccess.discount);
+    } else {
+      discount = cartProvider!.getTotalPricesAfterDiscount();
+    }
+
+    var finalPrice = discount + delivery_fee + shipping_fee;
+
     return ClipRRect(
       borderRadius: BorderRadius.all(Radius.circular(12.w)),
       child: Container(
@@ -1186,10 +1216,9 @@ class _CartPageState extends State<CartPage> {
           border:
               Border.all(color: globalColor.grey.withOpacity(0.3), width: 0.5),
         ),
-        //   margin: const EdgeInsets.only(left: EdgeMargin.verySub,),
+        //margin: const EdgeInsets.only(left: EdgeMargin.verySub,),
         height: height,
         width: width,
-
         child: Row(
           children: [
             Expanded(
@@ -1214,7 +1243,7 @@ class _CartPageState extends State<CartPage> {
                         percentage: 1.0,
                       ),
                       Text(
-                        '${cartProvider!.getTotalPricesint()}',
+                        '$finalPrice',
                         style: textStyle.normalTSBasic.copyWith(
                             color: globalColor.goldColor,
                             fontWeight: FontWeight.bold),
@@ -1244,17 +1273,13 @@ class _CartPageState extends State<CartPage> {
                     Get.Get.toNamed(EnterCartInfoPage.routeName,
                         arguments: CheckAndPayArgs(
                             listOfOrder: cartProvider.listOfCart,
-                            //  shipping_time: int.parse(_city.shiping_time!),
                             subtotal: cartProvider
                                 .getTotalPricesAfterDiscount()
                                 .toInt(),
-                            discount: _isCouponApply == true &&
-                                    _couponInfoSuccess.type == 1
-                                ? int.parse(_couponInfoSuccess.discount)
-                                : 0,
-                            total: cartProvider
-                                .getTotalPricesAfterDiscount()
-                                .toDouble(),
+                            total: 0,
+                            // total: cartProvider
+                            //     .getTotalPricesAfterDiscount()
+                            //     .toDouble(),
                             city_id: _city.id,
                             coupon_id: _isCouponApply
                                 ? _couponInfoSuccess.couponId
@@ -1262,6 +1287,14 @@ class _CartPageState extends State<CartPage> {
                             delivery_fee: _isCouponApply == true &&
                                     _couponInfoSuccess.type == 2
                                 ? 0
+                                : int.parse(settings!.fee_delivery!),
+                            shipping_fee: _isCouponApply == true &&
+                                    _couponInfoSuccess.type == 2
+                                ? 0
+                                : int.parse(settings!.fee_delivery!),
+                            discount: _isCouponApply == true &&
+                                    _couponInfoSuccess.type == 1
+                                ? int.parse(_couponInfoSuccess.discount)
                                 : 0,
                             couponcode: _copon,
                             note: appConfig.notNullOrEmpty(_phone)
@@ -1273,10 +1306,9 @@ class _CartPageState extends State<CartPage> {
                                 ? int.parse(_couponInfoSuccess.total)
                                 : cartProvider.getTotalPricesAfterDiscount(),
                             point_map: _city.name,
-                            shipping_fee: 0,
                             paymentMethods: _paymentMethods.id,
                             shipping_id: _shippingCarriers.id ?? 1,
-                            tax: 15,
+                            tax: int.parse(settings!.default_tax!),
                             totalPrice:
                                 cartProvider.getTotalPricesint().toString(),
                             neighborhood_id: negaboor.id,

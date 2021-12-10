@@ -8,6 +8,7 @@ import 'order_item_entity.dart';
 import 'user_address_entity.dart';
 
 class GeneralOrderItemEntity extends BaseEntity {
+  final String? order_date;
   final int? id;
   final String? uid;
   final String? order_number;
@@ -61,6 +62,7 @@ class GeneralOrderItemEntity extends BaseEntity {
   final List<OrderItemEntity>? order_items;
 
   GeneralOrderItemEntity({
+    required this.order_date,
     required this.delivery_fee,
     required this.subtotal,
     required this.guard_number,

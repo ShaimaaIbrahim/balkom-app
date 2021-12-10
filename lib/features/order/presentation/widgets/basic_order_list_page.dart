@@ -476,7 +476,7 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
               ),
             ),
           ),
-          recipient || on_way || delivered || in_progress
+          in_progress
               ? Expanded(
                   child: Container(
                   height: 1.0,
@@ -499,7 +499,7 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
               onTap: () {
                 setState(() {
                   in_progress = true;
-                  recipient = true;
+                  recipient = false;
                   delivered = false;
                   on_way = false;
                   state = "accepted";
@@ -526,7 +526,7 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
               ),
             ),
           ),
-          on_way || delivered
+          on_way
               ? Expanded(
                   child: Container(
                   height: 1.0,
@@ -555,8 +555,8 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
 
                   state = "shipped";
                   on_way = true;
-                  recipient = true;
-                  in_progress = true;
+                  recipient = false;
+                  in_progress = false;
                   delivered = false;
                   loading = true;
                 });
@@ -606,9 +606,9 @@ class _BasicOrderListPageState extends State<BasicOrderListPage>
 
                   state = "completed";
                   delivered = true;
-                  on_way = true;
-                  recipient = true;
-                  in_progress = true;
+                  on_way = false;
+                  recipient = false;
+                  in_progress = false;
                   loading = true;
                 });
               },

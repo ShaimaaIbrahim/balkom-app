@@ -22,6 +22,7 @@ class GeneralOrderItemModel extends BaseModel<GeneralOrderItemEntity> {
   final int? id;
   final String? uid;
   final String? order_number;
+  final String? order_date;
   final int? user_id;
   final int? coupon_id;
   final int? tax;
@@ -71,6 +72,7 @@ class GeneralOrderItemModel extends BaseModel<GeneralOrderItemEntity> {
   final CityOrderModel? city;
   final List<OrderItemModel>? order_items;
   GeneralOrderItemModel({
+    required this.order_date,
     this.delivery_fee,
     this.subtotal,
     required this.dest_name,
@@ -198,5 +200,6 @@ class GeneralOrderItemModel extends BaseModel<GeneralOrderItemEntity> {
         load_id: this.load_id,
         delivery_fee: this.delivery_fee,
         subtotal: this.subtotal,
+        order_date: this.order_date,
       );
 }

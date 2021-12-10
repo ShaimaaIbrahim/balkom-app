@@ -41,6 +41,7 @@ OrderRequest _$OrderRequestFromJson(Map<String, dynamic> json) {
     dest_name: json["dest_name"],
     guard_number: json["guard_number"],
     dest_type: json["dest_type"],
+    order_date: json['order_date'],
   );
 }
 
@@ -70,6 +71,7 @@ Map<String, dynamic> _$OrderRequestToJson(OrderRequest instance) =>
       'subtotal': instance.subtotal,
       'cartItems': instance.cartItems,
       'method_id': instance.method_id,
+      'order_date': instance.order_date
     };
 
 ProductOrderRequest _$ProductOrderRequestFromJson(Map<String, dynamic> json) {

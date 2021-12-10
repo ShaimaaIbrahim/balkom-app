@@ -5,6 +5,7 @@ part 'order_request.g.dart';
 
 @JsonSerializable()
 class OrderRequest {
+  final String? order_date;
   final int? user_address_id;
   final int? shipping_id;
   final int? city_id;
@@ -34,7 +35,8 @@ class OrderRequest {
   final List<ProductOrderRequest>? cartItems;
   final int? method_id;
   OrderRequest(
-      {required this.tax,
+      {required this.order_date,
+      required this.tax,
       required this.total,
       required this.shipping_fee,
       required this.orginal_price,
