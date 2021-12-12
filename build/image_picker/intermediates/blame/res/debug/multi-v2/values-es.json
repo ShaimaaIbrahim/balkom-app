@@ -1,0 +1,34 @@
+{
+    "logs": [
+        {
+            "outputFile": "C:\\Users\\marktec\\AndroidStudioProjects\\balkom-app\\build\\image_picker\\intermediates\\res\\merged\\debug\\values-es\\values-es.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\marktec\\.gradle\\caches\\transforms-2\\files-2.1\\7c65d9ea536f2745ba282b6df0173a7c\\core-1.1.0\\res\\values-es\\values-es.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "C:\\Users\\marktec\\AndroidStudioProjects\\balkom-app\\build\\image_picker\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-es\\values-es.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\marktec\\.gradle\\caches\\transforms-2\\files-2.1\\7c65d9ea536f2745ba282b6df0173a7c\\core-1.1.0\\res\\values-es\\values-es.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    }
+                }
+            ]
+        }
+    ]
+}

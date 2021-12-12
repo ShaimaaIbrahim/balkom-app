@@ -39,7 +39,7 @@ class GeneralOrderItemEntity extends BaseEntity {
   final String? desttype;
   final String? destname;
   final String? guard_number;
-  final int? shipping_fee;
+   int? shipping_fee;
   final int? payment_id;
   final int? shipping_id;
   final String? note;

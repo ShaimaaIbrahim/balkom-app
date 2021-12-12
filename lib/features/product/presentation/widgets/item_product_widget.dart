@@ -358,32 +358,12 @@ class _ItemProductHomeWidgetState extends State<ItemProductWidget> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            discountPrice != null && discountPrice.isNotEmpty
-                ? Container(
+
+            Container(
                     child: FittedBox(
                     child: RichText(
                       text: TextSpan(
-                        text: discountPrice,
-                        style: textStyle.middleTSBasic.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: globalColor.primaryColor),
-                        children: <TextSpan>[
-                          new TextSpan(
-                              text:
-                                  ' ${Translations.of(context).translate('rail')}',
-                              style: textStyle.smallTSBasic
-                                  .copyWith(color: globalColor.black)),
-                        ],
-                      ),
-                    ),
-                  ))
-                : Container(),
-            discountPrice != null && discountPrice != 0.0
-                ? Container(
-                    child: FittedBox(
-                    child: RichText(
-                      text: TextSpan(
-                        text: '${price.toString()}',
+                        text: price.toString(),
                         style: textStyle.middleTSBasic.copyWith(
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.lineThrough,
@@ -397,25 +377,26 @@ class _ItemProductHomeWidgetState extends State<ItemProductWidget> {
                         ],
                       ),
                     ),
-                  ))
-                : Container(
-                    child: FittedBox(
-                    child: RichText(
-                      text: TextSpan(
-                        text: price.toString(),
-                        style: textStyle.middleTSBasic.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: globalColor.primaryColor),
-                        children: <TextSpan>[
-                          new TextSpan(
-                              text:
-                                  ' ${Translations.of(context).translate('rail')}',
-                              style: textStyle.smallTSBasic
-                                  .copyWith(color: globalColor.black)),
-                        ],
-                      ),
-                    ),
                   )),
+            Container(
+                child: FittedBox(
+                  child: RichText(
+                    text: TextSpan(
+                      text: '${(price-int.parse(discountPrice)).abs()}',
+                      style: textStyle.middleTSBasic.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: globalColor.primaryColor),
+                      children: <TextSpan>[
+                        new TextSpan(
+                            text:
+                            ' ${Translations.of(context).translate('rail')}',
+                            style: textStyle.smallTSBasic
+                                .copyWith(color: globalColor.black)),
+                      ],
+                    ),
+                  ),
+                )),
+
           ],
         ),
       ),

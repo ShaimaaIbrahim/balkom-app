@@ -932,7 +932,7 @@ _buildPriceSummeryWidget({
                   context: context,
                   title:
                       Translations.of(context).translate('order_delivery_fee'),
-                  value: order.delivery_fee!.toDouble().toString()),
+                  value: order.delivery_fee !=null ? order.delivery_fee!.toDouble().toString(): '0'),
               _buildPriceItem(
                 width: width,
                 height: height,
@@ -956,6 +956,7 @@ getTotal(GeneralOrderItemEntity order) {
   if (order.orginal_price == null) order.orginal_price = 0;
   if (order.delivery_fee == null) order.delivery_fee = 0;
   if (order.discount == null) order.discount = 0;
+  if(order.shipping_fee==null) order.shipping_fee =0;
 
   return ((order.orginal_price! + order.delivery_fee! + order.shipping_fee!) -
           order.discount!)

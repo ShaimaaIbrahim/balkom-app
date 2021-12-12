@@ -75,31 +75,31 @@ class VideoHomeResult extends BaseEntity {
 }
 
 class SettingsAppResult extends BaseEntity {
-  final String? enable_stripe;
+ // final String? enable_stripe;
   final String? default_tax;
   final String? default_currency;
-  final String? enable_paypal;
+ // final String? enable_paypal;
   final String? google_maps_key;
   final String? fee_delivery;
-  final String? currency_right;
+ // final String? currency_right;
 
   SettingsAppResult({
-    required this.currency_right,
+  //  required this.currency_right,
     required this.default_currency,
     required this.default_tax,
-    required this.enable_paypal,
-    required this.enable_stripe,
+    // required this.enable_paypal,
+    // required this.enable_stripe,
     required this.fee_delivery,
     required this.google_maps_key,
   });
 
   @override
   List<Object> get props => [
-        currency_right ?? '',
+       // currency_right ?? '',
         default_currency ?? '',
         default_tax ?? '',
-        enable_paypal ?? '',
-        enable_stripe ?? '',
+        // enable_paypal ?? '',
+        // enable_stripe ?? '',
         fee_delivery ?? '',
         google_maps_key ?? '',
       ];

@@ -89,12 +89,12 @@ class CartProvider with ChangeNotifier {
       for (CartEntity item in listOfCart) {
         if ((item.productEntity!.discountPrice != null) ||
             item.productEntity!.discountPrice != 0.0) {
-          total += ((item.productEntity!.discountPrice ?? 0.0) -
+          total += ((item.productEntity!.price! ) -
                       (item.productEntity!.discountPrice!))
                   .abs() *
               (item.count!);
         } else {
-          total += (item.productEntity!.discountPrice!) * (item.count!);
+          total += (item.productEntity!.price!) * (item.count!);
         }
       }
     }
@@ -105,11 +105,11 @@ class CartProvider with ChangeNotifier {
     double total = 0;
     if (listOfCart.isNotEmpty) {
       for (CartEntity item in listOfCart) {
-        if (item.productEntity!.discountPrice == null) {
-          item.productEntity!.discountPrice = 0.0;
-          total += (item.productEntity!.discountPrice!).abs() * (item.count!);
+        if (item.productEntity!.price == null) {
+          item.productEntity!.price = 0.0;
+          total += (item.productEntity!.price!).abs() * (item.count!);
         } else {
-          total += (item.productEntity!.discountPrice!) * (item.count!);
+          total += (item.productEntity!.price!) * (item.count!);
         }
       }
     }

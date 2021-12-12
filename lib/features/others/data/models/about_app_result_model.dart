@@ -56,11 +56,11 @@ class AboutAppResultModel extends BaseModel<AboutAppResult> {
       settings: this.settings != null
           ? this.settings?.toEntity()
           : SettingsAppResult(
-              currency_right: null,
+             // currency_right: null,
               default_currency: null,
               default_tax: null,
-              enable_paypal: null,
-              enable_stripe: null,
+              // enable_paypal: null,
+              // enable_stripe: null,
               fee_delivery: null,
               google_maps_key: null),
       site_desc: this.site_desc,
@@ -134,11 +134,11 @@ class SettingsAppResultModel extends BaseModel<SettingsAppResult> {
   @override
   SettingsAppResult toEntity() {
     return SettingsAppResult(
-      currency_right: this.currency_right,
+     // currency_right: this.currency_right,
       default_currency: this.default_currency,
       default_tax: this.default_tax,
-      enable_paypal: this.enable_paypal,
-      enable_stripe: this.enable_stripe,
+ /*     enable_paypal: this.enable_paypal,
+      enable_stripe: this.enable_stripe,*/
       fee_delivery: this.fee_delivery,
       google_maps_key: this.google_maps_key,
     );

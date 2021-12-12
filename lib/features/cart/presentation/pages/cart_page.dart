@@ -43,6 +43,8 @@ import 'package:ojos_app/features/cart/presentation/blocs/coupon_bloc.dart';
 import 'package:ojos_app/features/cart/presentation/widgets/item_product_cart_widget.dart';
 import 'package:ojos_app/features/order/domain/entities/city_order_entity.dart';
 import 'package:ojos_app/features/others/data/models/about_app_result_model.dart';
+import 'package:ojos_app/features/others/domain/entity/about_app_result.dart';
+import 'package:ojos_app/features/others/domain/usecases/get_about_app.dart';
 import 'package:ojos_app/features/user_management/presentation/widgets/user_management_text_field_widget.dart';
 import 'package:ojos_app/xternal_lib/model_progress_hud.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -67,7 +69,11 @@ class _CartPageState extends State<CartPage> {
   bool _copontValidation = false;
   String _copon = '';
   TextEditingController coponEditingController = TextEditingController();
-  SettingsAppResultModel? settings;
+  SettingsAppResult settings = SettingsAppResult(
+      default_tax: null,
+      default_currency: 'rial',
+      google_maps_key: 'pp',
+      fee_delivery: '25');
 
   /// phone parameters
   bool _phoneValidation = false;
@@ -127,7 +133,7 @@ class _CartPageState extends State<CartPage> {
     super.initState();
     _getShippingCarriers(0);
     _getCities(0);
-    getSettings().then((value) => {settings = value.settings});
+    getSettings();
 
     getNega(city_id: _city.id ?? 1);
     coponEditingController = new TextEditingController();
@@ -317,7 +323,7 @@ class _CartPageState extends State<CartPage> {
                         builder: (context, cartProvider, child) {
                       if (cartProvider.getItems() != null &&
                           cartProvider.getItems()!.isNotEmpty)
-                        return _city.id == -1 || settings == null
+                        return _city.id == -1 || settings.default_tax == null
                             ? Center(
                                 child: CircularProgressIndicator(
                                 valueColor: new AlwaysStoppedAnimation<Color>(
@@ -554,14 +560,7 @@ class _CartPageState extends State<CartPage> {
                                             VerticalPadding(
                                               percentage: 2.0,
                                             ),
-                                            state is CouponDoneState
-                                                ? SizedBox.shrink()
-                                                : VerticalPadding(
-                                                    percentage: 2.0,
-                                                  ),
-                                            state is CouponDoneState
-                                                ? SizedBox.shrink()
-                                                : Container(
+                                        Container(
                                                     padding:
                                                         const EdgeInsets.only(
                                                             left:
@@ -574,7 +573,7 @@ class _CartPageState extends State<CartPage> {
                                                         context: context,
                                                         cartProvider:
                                                             cartProvider,
-                                                        settings: settings!),
+                                                        settings: settings),
                                                   ),
                                             VerticalPadding(
                                               percentage: 2.0,
@@ -591,13 +590,13 @@ class _CartPageState extends State<CartPage> {
                                                       _couponInfoSuccess.type ==
                                                               2
                                                           ? 0
-                                                          : int.parse(settings!
+                                                          : int.parse(settings
                                                               .fee_delivery!),
                                                   shipping_fee:
                                                       _couponInfoSuccess.type ==
                                                               2
                                                           ? 0
-                                                          : int.parse(settings!
+                                                          : int.parse(settings
                                                               .fee_delivery!),
                                                   cartProvider: cartProvider),
                                             ),
@@ -846,7 +845,7 @@ class _CartPageState extends State<CartPage> {
       required double width,
       required double height,
       required CartProvider cartProvider,
-      required SettingsAppResultModel settings}) {
+      required SettingsAppResult settings}) {
     var discount = 0;
     if (_isCouponApply == true) {
       discount = cartProvider.getTotalPricesAfterDiscount() -
@@ -1269,13 +1268,15 @@ class _CartPageState extends State<CartPage> {
               flex: 3,
               child: InkWell(
                 onTap: () {
+                  int priceDiscount =
+                  (cartProvider.getTotalPricesAfterDiscount() -
+                      cartProvider.getTotalPricesint())
+                      .abs();
                   if (_formKey.currentState!.validate()) {
                     Get.Get.toNamed(EnterCartInfoPage.routeName,
                         arguments: CheckAndPayArgs(
                             listOfOrder: cartProvider.listOfCart,
-                            subtotal: cartProvider
-                                .getTotalPricesAfterDiscount()
-                                .toInt(),
+                            subtotal: priceDiscount,
                             total: 0,
                             // total: cartProvider
                             //     .getTotalPricesAfterDiscount()
@@ -1287,11 +1288,11 @@ class _CartPageState extends State<CartPage> {
                             delivery_fee: _isCouponApply == true &&
                                     _couponInfoSuccess.type == 2
                                 ? 0
-                                : int.parse(settings!.fee_delivery!),
+                                : int.parse(settings.fee_delivery!),
                             shipping_fee: _isCouponApply == true &&
                                     _couponInfoSuccess.type == 2
                                 ? 0
-                                : int.parse(settings!.fee_delivery!),
+                                : int.parse(settings.fee_delivery!),
                             discount: _isCouponApply == true &&
                                     _couponInfoSuccess.type == 1
                                 ? int.parse(_couponInfoSuccess.discount)
@@ -1301,16 +1302,14 @@ class _CartPageState extends State<CartPage> {
                                 ? _phone
                                 : Translations.of(context)
                                     .translate('there_is_no'),
-                            orginal_price: cartProvider.getTotalPricesint(),
-                            price_discount: _isCouponApply
-                                ? int.parse(_couponInfoSuccess.total)
-                                : cartProvider.getTotalPricesAfterDiscount(),
+                            orginal_price: 0,
+                            price_discount: priceDiscount,
                             point_map: _city.name,
                             paymentMethods: _paymentMethods.id,
                             shipping_id: _shippingCarriers.id ?? 1,
-                            tax: int.parse(settings!.default_tax!),
+                            tax: int.parse(settings.default_tax!),
                             totalPrice:
-                                cartProvider.getTotalPricesint().toString(),
+                                '0',
                             neighborhood_id: negaboor.id,
                             load_id: loadedAt.id ?? 110,
                             delivery_to: deliveryTo.key,
@@ -2149,6 +2148,27 @@ class _CartPageState extends State<CartPage> {
         ),
       ),
     ]);
+  }
+  Future<void> getSettings() async {
+    if (mounted) {
+      final result = await GetAboutApp(locator<CoreRepository>())(
+        GetAboutAppParams(cancelToken: _cancelToken),
+      );
+
+      if (result.data != null) {
+        setState(() {
+          settings = result.data!.settings!;
+          print('settings is (((((((((((((((((((((( ${settings.default_tax}');
+        });
+      } else {
+        appConfig.check().then((internet) {
+          if (internet != null && internet) {
+            getSettings();
+          }
+          // No-Internet Case
+        });
+      }
+    }
   }
 }
 

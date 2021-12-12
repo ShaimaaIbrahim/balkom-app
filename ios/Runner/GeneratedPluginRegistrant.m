@@ -2,6 +2,8 @@
 //  Generated file. Do not edit.
 //
 
+// clang-format off
+
 #import "GeneratedPluginRegistrant.h"
 
 #if __has_include(<connectivity/FLTConnectivityPlugin.h>)
@@ -68,12 +70,6 @@
 #import <location/LocationPlugin.h>
 #else
 @import location;
-#endif
-
-#if __has_include(<open_whatsapp/FlutterOpenWhatsappPlugin.h>)
-#import <open_whatsapp/FlutterOpenWhatsappPlugin.h>
-#else
-@import open_whatsapp;
 #endif
 
 #if __has_include(<package_info_plus/FLTPackageInfoPlusPlugin.h>)
@@ -144,7 +140,6 @@
   [FLTGoogleMapsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTGoogleMapsPlugin"]];
   [FLTImagePickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTImagePickerPlugin"]];
   [LocationPlugin registerWithRegistrar:[registry registrarForPlugin:@"LocationPlugin"]];
-  [FlutterOpenWhatsappPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterOpenWhatsappPlugin"]];
   [FLTPackageInfoPlusPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTPackageInfoPlusPlugin"]];
   [FLTPathProviderPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTPathProviderPlugin"]];
   [PermissionHandlerPlugin registerWithRegistrar:[registry registrarForPlugin:@"PermissionHandlerPlugin"]];
