@@ -25,9 +25,14 @@ import 'package:ojos_app/core/res/width_height.dart';
 import 'package:ojos_app/core/ui/button/arrow_back_button_widget.dart';
 import 'package:ojos_app/core/ui/widget/image/image_caching.dart';
 import 'package:ojos_app/core/usecases/get_cities.dart';
+import 'package:ojos_app/features/cart/data/models/retrieve_page_arguments.dart';
+import 'package:ojos_app/features/cart/presentation/pages/order_products.dart';
+import 'package:ojos_app/features/cart/presentation/pages/retrieve_page.dart';
 import 'package:ojos_app/features/order/data/models/order_detaill.dart';
+import 'package:ojos_app/features/order/data/models/order_products_arguments.dart';
 import 'package:ojos_app/features/order/domain/entities/city_order_entity.dart';
 import 'package:ojos_app/features/order/domain/entities/general_order_item_entity.dart';
+import 'package:ojos_app/features/order/domain/entities/pop_result.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../../main.dart';
 import '../../domain/entities/order_item_entity.dart';
@@ -198,6 +203,7 @@ class _CartPageState extends State<OrderDetailsPage> {
     double height = globalSize.setHeightPercentage(100, context) -
         appBar.preferredSize.height -
         MediaQuery.of(context).viewPadding.top;
+
     return Scaffold(
         appBar: appBar,
         key: _scaffoldKey,
@@ -227,6 +233,61 @@ class _CartPageState extends State<OrderDetailsPage> {
                             height: height,
                             context: context,
                             args: args),
+                      ),
+                      VerticalPadding(
+                        percentage: 2.0,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          EdgeMargin.subMin,
+                          EdgeMargin.verySub,
+                          EdgeMargin.subMin,
+                          EdgeMargin.verySub,
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            // Get.Get.toNamed(OrderProducts.routeName,
+                            //     arguments: OrderProductsArguments(
+                            //         products: args.order_items));
+                            //todo
+                            Navigator.of(context).pushNamed(OrderProducts.routeName,arguments:
+                            OrderProductsArguments(products: args.order_items)).then((results) {
+                              if (results is PopWithResults) {
+                                PopWithResults popResult = results;
+                                if (popResult.toPage == RetrievePage.routeName) {
+                                    Get.Get.toNamed(RetrievePage.routeName, arguments: RetrievePageArguments(
+                                      id: results.results['product_id']
+                                    ));
+                                } else {
+                                  // pop to previous page
+                                  Navigator.of(context).pop(results);
+                                }
+                              }
+                            });
+                          },
+                          child: Container(
+                            width: width,
+                            alignment: Alignment.topRight,
+                            decoration: BoxDecoration(
+                              color: globalColor.white,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(12.w)),
+                              border: Border.all(
+                                  color: globalColor.grey.withOpacity(0.3),
+                                  width: 0.5),
+                            ),
+                            padding: const EdgeInsets.fromLTRB(
+                              EdgeMargin.subMin,
+                              EdgeMargin.verySub,
+                              EdgeMargin.subMin,
+                              EdgeMargin.verySub,
+                            ),
+                            child: Text(
+                              Translations.of(context)
+                                  .translate('all_products'),
+                            ),
+                          ),
+                        ),
                       ),
                       VerticalPadding(
                         percentage: 2.0,
@@ -932,7 +993,9 @@ _buildPriceSummeryWidget({
                   context: context,
                   title:
                       Translations.of(context).translate('order_delivery_fee'),
-                  value: order.delivery_fee !=null ? order.delivery_fee!.toDouble().toString(): '0'),
+                  value: order.delivery_fee != null
+                      ? order.delivery_fee!.toDouble().toString()
+                      : '0'),
               _buildPriceItem(
                 width: width,
                 height: height,
@@ -956,7 +1019,7 @@ getTotal(GeneralOrderItemEntity order) {
   if (order.orginal_price == null) order.orginal_price = 0;
   if (order.delivery_fee == null) order.delivery_fee = 0;
   if (order.discount == null) order.discount = 0;
-  if(order.shipping_fee==null) order.shipping_fee =0;
+  if (order.shipping_fee == null) order.shipping_fee = 0;
 
   return ((order.orginal_price! + order.delivery_fee! + order.shipping_fee!) -
           order.discount!)

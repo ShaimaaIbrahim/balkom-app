@@ -5,12 +5,12 @@ part 'login_request.g.dart';
 
 @JsonSerializable()
 class LoginRequest {
-  final String mobile;
+  final String email;
   final String password;
   final String device_token;
 
-  LoginRequest({
-    required this.mobile,
+  LoginRequest( {
+    required this.email,
     required this.password,
     required this.device_token,
   });

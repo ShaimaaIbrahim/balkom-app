@@ -68,24 +68,24 @@ class LoginFailure extends LoginState {
 }
 
 class LoginEvent extends Equatable {
-  final String? username;
+  final String? email;
   final String? password;
   final String? device_token;
   final bool? isRememberMe;
   final CancelToken? cancelToken;
 
   LoginEvent({
-    required this.username,
+    required this.email,
     required this.password,
     required this.device_token,
     required this.isRememberMe,
     this.cancelToken,
-  })  : assert(username != null),
+  })  : assert(email != null),
         assert(password != null);
 
   @override
   List<Object> get props => [
-        username!,
+        email!,
         password!,
         cancelToken!,
       ];
@@ -104,7 +104,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       LoginParams(
         isRememberMe: event.isRememberMe!,
         data: LoginRequest(
-            mobile: event.username!,
+            email: event.email!,
             password: event.password!,
             device_token: event.device_token!),
         cancelToken: event.cancelToken,

@@ -17,6 +17,7 @@ const API_BASE = 'https://bilqom.com/api/auth';
 //==========================
 
 const GMS = '+966';
+const GET_CATEGORIES= "$API_BASE/categories/";
 
 const API_AUTH = '$API_BASE';
 const API_AUTH_REGISTER = '$API_AUTH/register';

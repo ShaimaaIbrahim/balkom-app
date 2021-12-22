@@ -390,5 +390,14 @@
   "canceled": "Canceled",
   "are_you_sure_confirm_order": "Are you sure confirm order?",
   "confirm_order": "Confirm Order.",
-  "order_date": "Order Date"
+  "order_date": "Order Date",
+  "retrieve": "retrieve",
+  "add_place": "Add place",
+  "add_reason": "Add reason",
+  "add_phone": "Add phone",
+  "add_name": "Add name",
+  "add_your_product": "Add your product",
+  "products_not_found": "Not Found Products",
+  "all_products": "All products"
+
 }

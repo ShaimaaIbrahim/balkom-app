@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,6 +28,7 @@ import 'package:ojos_app/core/validators/required_validator.dart';
 import 'package:ojos_app/features/user_management/domain/repositories/user_repository.dart';
 import 'package:ojos_app/features/user_management/presentation/args/verify_page_args.dart';
 import 'package:ojos_app/features/user_management/presentation/blocs/register_bloc.dart';
+import 'package:ojos_app/features/user_management/presentation/pages/sign_in_page.dart';
 import 'package:ojos_app/features/user_management/presentation/pages/verify_page.dart';
 import 'package:ojos_app/features/user_management/presentation/widgets/user_management_background.dart';
 import 'package:ojos_app/features/user_management/presentation/widgets/user_management_text_field_widget.dart';
@@ -73,7 +75,7 @@ class _SignUpBoxState extends State<SignUpBox> {
 
   /// phone parameters
   bool _phoneValidation = false;
-  String _phone = '';
+  String _email = '';
   final TextEditingController phoneEditingController =
       new TextEditingController();
 
@@ -236,13 +238,13 @@ class _SignUpBoxState extends State<SignUpBox> {
                                         ),
                                       ),
                                       label: Translations.of(context)
-                                          .translate('phone_number'),
-                                      keyboardType: TextInputType.phone,
+                                          .translate('email'),
+                                      keyboardType: TextInputType.emailAddress,
                                       borderRadius: widthC * .02,
                                       onChanged: (value) {
                                         setState(() {
                                           _phoneValidation = true;
-                                          _phone = value;
+                                          _email = value;
                                         });
                                       },
                                       borderColor: globalColor.white,
@@ -340,7 +342,7 @@ class _SignUpBoxState extends State<SignUpBox> {
                                                   _bloc.add(
                                                     RegisterEvent(
                                                       name: _fullName,
-                                                      mobile: _phone,
+                                                      email: _email,
                                                       password: _password,
                                                       device_token: token!,
                                                       cancelToken:
@@ -392,10 +394,34 @@ class _SignUpBoxState extends State<SignUpBox> {
           ),
           listener: (context, state) async {
             if (state is RegisterSuccess) {
-              Get.Get.toNamed(VerifyPage.routeName,
-                  arguments: VerifyPageArgs(
-                      userName: state.data.phone!,
-                      otpCode: state.data.otpCode));
+              // Get.Get.toNamed(VerifyPage.routeName,
+              //     arguments: VerifyPageArgs(
+              //         userName: state.data.phone!,
+              //         otpCode: state.data.otpCode));
+
+              try {
+                UserCredential userCredential = await FirebaseAuth.instance
+                    .createUserWithEmailAndPassword(
+                        email: _email, password: _password);
+                User? user = FirebaseAuth.instance.currentUser;
+
+                if (user != null && !user.emailVerified) {
+                  await user.sendEmailVerification();
+                  Get.Get.toNamed(
+                    SignInPage.routeName,
+                  );
+                }
+              } on FirebaseAuthException catch (e) {
+                if (e.code == 'weak-password') {
+                  ErrorViewer.showCustomError(
+                      context, 'The password provided is too weak.');
+                } else if (e.code == 'email-already-in-use') {
+                  ErrorViewer.showCustomError(
+                      context, 'The account already exists for that email.');
+                }
+              } catch (e) {
+                ErrorViewer.showCustomError(context, e.toString());
+              }
             }
             if (state is RegisterFailure) {
               final error = state.error;

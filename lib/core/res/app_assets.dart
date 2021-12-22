@@ -9,6 +9,9 @@ class AppAssets {
   static String home_btnv_png = 'assets/images/logo/logo_icon.png';
   static String logo = 'assets/images/image/logo.png';
 
+  static String retrieve = 'assets/images/icons/svg/retrieve.svg';
+  static String maroof = 'assets/images/maroof.png';
+
   static final String splashLogo = 'assets/images/logo/splash_logo.svg';
 
   static final String phoneSvg = 'assets/images/icons/svg/phone_svg.svg';

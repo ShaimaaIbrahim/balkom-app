@@ -57,25 +57,25 @@ class RegisterFailure extends RegisterState {
 
 class RegisterEvent extends Equatable {
   final String name;
-  final String mobile;
+  final String email;
   final String password;
   final String device_token;
   final CancelToken? cancelToken;
 
   RegisterEvent({
-    required this.mobile,
+    required this.email,
     required this.name,
     required this.password,
     required this.device_token,
     this.cancelToken,
-  })  : assert(mobile != null),
+  })  : assert(email != null),
         assert(name != null),
         assert(password != null);
 
   @override
   List<Object> get props => [
         name,
-        mobile,
+        email,
         password,
         device_token,
         cancelToken!,
@@ -94,8 +94,9 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     final result = await RegisterUseCase(locator<UserRepository>())(
       RegisterParams(
         bodyParam: RegisterRequest(
+          phone: event.email,
             name: event.name,
-            mobile: event.mobile,
+            email: event.email,
             password: event.password,
             device_token: event.device_token),
         cancelToken: event.cancelToken,

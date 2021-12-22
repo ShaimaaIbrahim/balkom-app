@@ -379,7 +379,15 @@
   "canceled": "ملغي",
   "are_you_sure_confirm_order": "هل انت متأكد من ارسال الطلب؟",
   "confirm_order": "ارسال الطلب",
-  "order_date": "تاريخ الطلب"
+  "order_date": "تاريخ الطلب",
+  "retrieve": "استرجاع",
+  "add_place": "اكتب مكانك",
+  "add_reason": "اكتب السبب",
+  "add_phone": "اكتب هاتفك",
+  "add_name": "اكتب اسمك",
+  "add_your_product": "أضف منتج",
+  "products_not_found": "المنتجات غير موجودة",
+  "all_products": "جميع المنتجات"
 
 
 }

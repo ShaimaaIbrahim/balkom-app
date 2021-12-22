@@ -30,15 +30,20 @@ import 'package:ojos_app/core/ui/button/icon_button_widget.dart';
 import 'package:ojos_app/core/ui/dailog/confirm_dialog.dart';
 import 'package:ojos_app/core/ui/dailog/login_first_dialog.dart';
 import 'package:ojos_app/core/ui/dailog/soon_dailog.dart';
+import 'package:ojos_app/core/ui/items_shimmer/base_shimmer.dart';
 import 'package:ojos_app/core/ui/items_shimmer/home/offer_item_shimmer.dart';
 import 'package:ojos_app/core/ui/items_shimmer/item_category_shimmer.dart';
 import 'package:ojos_app/core/ui/list/build_list_product.dart';
 import 'package:ojos_app/core/ui/widget/title_with_view_all_widget.dart';
 import 'package:ojos_app/features/cart/presentation/pages/cart_page.dart';
 import 'package:ojos_app/features/home/data/models/category_model.dart';
+import 'package:ojos_app/features/home/data/models/gategory_respone.dart';
 import 'package:ojos_app/features/home/data/models/product_model.dart';
+import 'package:ojos_app/features/home/domain/services/home_api.dart';
 import 'package:ojos_app/features/home/presentation/args/products_view_all_args.dart';
+import 'package:ojos_app/features/home/presentation/blocs/CATEGORIES_BLOC.dart';
 import 'package:ojos_app/features/home/presentation/blocs/offer_bloc.dart';
+import 'package:ojos_app/features/home/presentation/blocs/products_bloc.dart';
 import 'package:ojos_app/features/home/presentation/pages/products_view_all_page.dart';
 import 'package:ojos_app/features/home/presentation/widget/item_category.dart';
 import 'package:ojos_app/features/home/presentation/widget/item_offer_bottom_widget.dart';
@@ -50,6 +55,7 @@ import 'package:ojos_app/features/others/presentation/pages/favorite_page.dart';
 import 'package:ojos_app/features/others/presentation/pages/offers_page.dart';
 import 'package:ojos_app/features/others/presentation/pages/settings_page.dart';
 import 'package:ojos_app/features/product/domin/entities/product_entity.dart';
+import 'package:ojos_app/features/product/domin/usecases/get_products.dart';
 import 'package:ojos_app/features/product/presentation/widgets/item_product_home_widget.dart';
 import 'package:ojos_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:ojos_app/features/reviews/presentation/pages/reviews_page.dart';
@@ -101,7 +107,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   var _cancelToken = CancelToken();
   var _offerBloc = OfferBloc();
-  var _sectionHomeBloc = SectionHomeBloc();
+  //var _sectionHomeBloc = SectionHomeBloc();
+  var _categoriesBloc = CategoryBloc();
+  var _productBloc = ProductsBloc();
   List<CategoryEntity>? _listOfCategory;
   CategoryEntity? _category1;
   CategoryEntity? _category2;
@@ -165,17 +173,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   bool? isAuth;
   bool isOpen = false;
+  HomeApi api = HomeApi();
 
   @override
   void initState() {
     super.initState();
     _offerBloc.add(SetupOfferEvent(cancelToken: _cancelToken));
-    _sectionHomeBloc.add(GetSectionHomeEvent(cancelToken: _cancelToken));
+   // _sectionHomeBloc.add(GetSectionHomeEvent(cancelToken: _cancelToken));
+    _categoriesBloc.add(SetupCategoryEvent(cancelToken: _cancelToken));
     _listOfCategory = [];
     _category1 = null;
     _category2 = null;
     _category3 = null;
     _category4 = null;
+
+    api.feachCategories();
 
     // _getCategories(1);
     // _menuController =
@@ -374,10 +386,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             VerticalPadding(
                               percentage: .5,
                             ),
-
-                            _buildProductsCategorySection(
-                                context: context, width: width, height: height),
-
+                             _buildCategoriesHome(
+                                 width: width, height: height
+                             ),
                             _buildBottomAdsTwo(
                                 context: context, width: width, height: height),
 
@@ -404,7 +415,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void dispose() {
     _cancelToken.cancel();
     _offerBloc.close();
-    _sectionHomeBloc.close();
+    //_sectionHomeBloc.close();
     //_menuController.dispose();
     super.dispose();
   }
@@ -1349,33 +1360,36 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   _buildProductsCategorySection(
       {required BuildContext context,
       required double width,
-      required double height}) {
-    return BlocListener<SectionHomeBloc, SectionHomeState>(
-      bloc: _sectionHomeBloc,
+      required double height,
+      required CategoryEntity item}) {
+    _productBloc.add(SetupProductsEvent(id: item.id.toString(), cancelToken: _cancelToken));
+    return _buildWidgetProduct(
+      //    list: [],
+      id: item.id,
+      height: height,
+      title: item.name!,
+      width: width,
+      context: context,
+    );
+  }
+
+  _buildWidgetProduct(
+      {required BuildContext context,
+      required double width,
+      required double height,
+      required String title,
+      required int id}) {
+
+    return BlocListener<ProductsBloc, ProductsState>(
+      bloc: _productBloc,
       listener: (BuildContext context, state) async {
         if (state is SectionHomeDoneState) {
-          // _navigateTo(context, state.extraGlassesEntity);
-          // if(state.list!=null && state.list.isNotEmpty){
-          //   if(mounted){
-          //     _coulumnSection.add(_buildWidgetProduct(
-          //       list: state.list,
-          //       id: state.id,
-          //       height: height,
-          //       title: state.name,
-          //       width: width,
-          //       context: context,
-          //     ));
-          //     setState(() {
-          //       //_keySection = GlobalKey();
-          //     });
-          //   }
-          // }
         }
       },
-      child: BlocBuilder<SectionHomeBloc, SectionHomeState>(
-          bloc: _sectionHomeBloc,
+      child: BlocBuilder<ProductsBloc, ProductsState>(
+          bloc: _productBloc,
           builder: (BuildContext context, state) {
-            if (state is SectionHomeFailureState) {
+            if (state is ProductsFailureState) {
               return Container(
                 width: width,
                 child: Center(
@@ -1386,16 +1400,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         child: Text(
                             (state.error is ConnectionError)
                                 ? Translations.of(context)
-                                    .translate('err_connection')
+                                .translate('err_connection')
                                 : Translations.of(context)
-                                    .translate('err_unexpected'),
+                                .translate('err_unexpected'),
                             style: textStyle.normalTSBasic
                                 .copyWith(color: globalColor.accentColor)),
                       ),
                       RaisedButton(
                         onPressed: () {
-                          _sectionHomeBloc.add(
-                              GetSectionHomeEvent(cancelToken: _cancelToken));
+                          _productBloc.add(
+                              SetupProductsEvent(cancelToken: _cancelToken, id: id.toString()));
                         },
                         elevation: 1.0,
                         child: Text(Translations.of(context).translate('retry'),
@@ -1408,79 +1422,83 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
               );
             }
-            if (state is SectionHomeDoneState) {
-              return Column(
-                children: state.sectionArgsHome!.map<Widget>(
-                  (option) {
-                    if (option != null &&
-                        option.list != null &&
-                        option.list.isNotEmpty)
-                      return _buildWidgetProduct(
-                        list: option.list,
-                        id: option.id,
-                        height: height,
-                        title: option.name,
+            if (state is ProductsDoneState) {
+              return Container(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: EdgeMargin.small, right: EdgeMargin.small),
+                      child: TitleWithViewAllWidget(
                         width: width,
-                        context: context,
-                      );
-
-                    return Container();
-                  },
-                ).toList(),
+                        title: title,
+                        onClickView: () {
+                          if (id != null)
+                            Get.Get.toNamed(ProductsVeiwAllPage.routeName,
+                                arguments: ProductsViewAllArgs(
+                                    params: {'category_id': id.toString()}));
+                        },
+                        strViewAll: 'view_all',
+                      ),
+                    ),
+                    state.products!.length==0 ?  Container(
+                      height: globalSize.setWidthPercentage(30, context),
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Center(
+                        child: Text(Translations.of(context).translate('products_not_found',),  style: TextStyle(color: globalColor.primaryColor)),
+                      ),
+                    ):  Container(
+                      height: globalSize.setWidthPercentage(60, context),
+                      alignment: AlignmentDirectional.centerStart,
+                      child: ListView.builder(
+                          physics: BouncingScrollPhysics(),
+                          itemCount:  state.products!.length,
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ItemProductHomeWidget(
+                              height: globalSize.setWidthPercentage(60, context),
+                              width: globalSize.setWidthPercentage(47, context),
+                              product: state.products![index],
+                            );
+                          }),
+                    ),
+                  ],
+                ),
               );
             }
 
-            return Container(
-              width: width,
+            return BaseShimmerWidget(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: EdgeMargin.small, right: EdgeMargin.small, bottom: EdgeMargin.small),
+                    child: TitleWithViewAllWidget(
+                      width: width,
+                      title: title,
+                      onClickView: () {
+                        if (id != null)
+                          Get.Get.toNamed(ProductsVeiwAllPage.routeName,
+                              arguments: ProductsViewAllArgs(
+                                  params: {'category_id': id.toString()}));
+                      },
+                      strViewAll: 'view_all',
+                    ),
+                  ),
+                  Container(
+                    width: width,
+                    height: 5.h,
+                    color: Colors.grey[200],
+                  ),
+                ],
+              ),
             );
           }),
     );
-  }
 
-  _buildWidgetProduct(
-      {required BuildContext context,
-      required double width,
-      required double height,
-      required String title,
-      required List<ProductEntity> list,
-      required int id}) {
-    return Container(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(
-                left: EdgeMargin.small, right: EdgeMargin.small),
-            child: TitleWithViewAllWidget(
-              width: width,
-              title: title,
-              onClickView: () {
-                if (id != null)
-                  Get.Get.toNamed(ProductsVeiwAllPage.routeName,
-                      arguments: ProductsViewAllArgs(
-                          params: {'category_id': id.toString()}));
-              },
-              strViewAll: 'view_all',
-            ),
-          ),
-          Container(
-            height: globalSize.setWidthPercentage(60, context),
-            alignment: AlignmentDirectional.centerStart,
-            child: ListView.builder(
-                physics: BouncingScrollPhysics(),
-                itemCount: list.length,
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (BuildContext context, int index) {
-                  return ItemProductHomeWidget(
-                    height: globalSize.setWidthPercentage(60, context),
-                    width: globalSize.setWidthPercentage(47, context),
-                    product: list[index],
-                  );
-                }),
-          ),
-        ],
-      ),
-    );
+
+
   }
 
   _buildDiscountAds1(
@@ -1816,6 +1834,87 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           }),
     );
   }
+
+  _buildCategoriesHome(
+  {
+    required double width,
+    required double height
+}
+      ) {
+    return BlocListener<CategoryBloc, CategoryState>(
+      bloc: _categoriesBloc,
+      listener: (BuildContext context, state) async {
+        if (state is OfferDoneState) {
+          // _navigateTo(context, state.extraGlassesEntity);
+        }
+      },
+      child: BlocBuilder<CategoryBloc, CategoryState>(
+          bloc: _categoriesBloc,
+          builder: (BuildContext context, state) {
+            if (state is CategoryFailureState) {
+              return Container(
+                width: width,
+                height: 134.h,
+                child: Center(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text(
+                            (state.error is ConnectionError)
+                                ? Translations.of(context)
+                                .translate('err_connection')
+                                : Translations.of(context)
+                                .translate('err_unexpected'),
+                            style: textStyle.normalTSBasic
+                                .copyWith(color: globalColor.accentColor)),
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          _categoriesBloc
+                              .add(SetupCategoryEvent(cancelToken: _cancelToken));
+                        },
+                        elevation: 1.0,
+                        child: Text(Translations.of(context).translate('retry'),
+                            style: textStyle.smallTSBasic
+                                .copyWith(color: globalColor.white)),
+                        color: Theme.of(context).accentColor,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+            if (state is CategoryDoneState) {
+              return ListView.builder(
+                itemCount:  state.categories!.length,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder:
+                    (BuildContext context, int index) {
+                  return _buildProductsCategorySection(
+                      item: state.categories![index],
+                      context: context,
+                      width: width,
+                      height: height);
+                },
+              );
+            }
+            return Container(
+              width: width,
+              height: 184.h,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                    EdgeMargin.small, 0.0, EdgeMargin.small, 0.0),
+                child: HomeAdsItemShimmer(
+                  height: 184,
+                  width: width,
+                ),
+              ),
+            );
+          }),
+    );
+  }
 }
 
 class GetDrawer extends StatelessWidget {
@@ -1862,6 +1961,7 @@ enum MenuSpecItem {
   ReviewsPage,
   OffersPage,
   SettingsPage,
+  RETRIVEPAGE,
   SignInPage,
   SignOut
 }

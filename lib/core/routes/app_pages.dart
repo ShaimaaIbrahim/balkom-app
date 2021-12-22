@@ -3,6 +3,8 @@ import 'package:ojos_app/features/brand/presentation/pages/brand_page.dart';
 import 'package:ojos_app/features/cart/presentation/pages/cart_page.dart';
 import 'package:ojos_app/features/cart/presentation/pages/check_pay_page.dart';
 import 'package:ojos_app/features/cart/presentation/pages/enter_cart_info_page.dart';
+import 'package:ojos_app/features/cart/presentation/pages/order_products.dart';
+import 'package:ojos_app/features/cart/presentation/pages/retrieve_page.dart';
 import 'package:ojos_app/features/home/presentation/pages/chewie_video_player.dart';
 import 'package:ojos_app/features/home/presentation/pages/home_page.dart';
 import 'package:ojos_app/features/home/presentation/pages/products_view_all_page.dart';
@@ -208,6 +210,10 @@ class AppPages {
       name: OrderDetailsPage.routeName,
       page: () => OrderDetailsPage(),
     ),
+    GetPage(
+      name: OrderProducts.routeName,
+      page: () => OrderProducts(),
+    ),
 
     GetPage(
       name: LensesCompanyPage.routeName,
@@ -222,7 +228,10 @@ class AppPages {
       name: SearchPage.routeName,
       page: () => SearchPage(),
     ),
-
+    GetPage(
+      name: RetrievePage.routeName,
+      page: () => RetrievePage(),
+    ),
     /// test pages
     // GetPage(
     //   name: MainTestPage.routeName,

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -73,7 +74,7 @@ class SignInBox extends StatefulWidget {
 class _SignInBoxState extends State<SignInBox> {
   /// phone parameters
   bool _phoneValidation = false;
-  String _phone = '';
+  String _email = '';
   final TextEditingController phoneEditingController =
       new TextEditingController();
 
@@ -180,13 +181,13 @@ class _SignInBoxState extends State<SignInBox> {
                                         ),
                                       ),
                                       label: Translations.of(context)
-                                          .translate('phone_number'),
-                                      keyboardType: TextInputType.phone,
+                                          .translate('email'),
+                                      keyboardType: TextInputType.emailAddress,
                                       borderRadius: widthC * .02,
                                       onChanged: (value) {
                                         setState(() {
                                           _phoneValidation = true;
-                                          _phone = value;
+                                          _email = value;
                                         });
                                       },
                                       borderColor: globalColor.grey,
@@ -285,7 +286,7 @@ class _SignInBoxState extends State<SignInBox> {
                                                   .notNullOrEmpty(token)) {
                                                 _bloc.add(
                                                   LoginEvent(
-                                                    username: _phone,
+                                                    email: _email,
                                                     password: _password,
                                                     device_token: token,
                                                     isRememberMe: true,
@@ -360,12 +361,24 @@ class _SignInBoxState extends State<SignInBox> {
               //   ),
               // );
               ///todo fcm update token
-              BlocProvider.of<ApplicationBloc>(context)
-                    ..add(SetUserDataLoginEvent())
-                  // ..add(GetFCMTokenAndUpdateItEvent())
+              try {
+                UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                  email: _email,
+                  password: _password
+                );
+                BlocProvider.of<ApplicationBloc>(context)
+                  ..add(SetUserDataLoginEvent());
+                // ..add(GetFCMTokenAndUpdateItEvent())
 
-                  ;
-              Get.Get.offAllNamed(MainRootPage.routeName);
+                Get.Get.offAllNamed(MainRootPage.routeName);
+              } on FirebaseAuthException catch (e) {
+                if (e.code == 'user-not-found') {
+                  ErrorViewer.showCustomError(context, 'No user found for that email.');
+                } else if (e.code == 'wrong-password') {
+                  ErrorViewer.showCustomError(context, 'Wrong password provided for that user.');
+                }
+              }
+
             }
             if (state is LoginSuccessButNeedVerify) {
               BlocProvider.of<ApplicationBloc>(context)

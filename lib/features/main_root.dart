@@ -12,7 +12,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart' as Get;
 import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ojos_app/core/bloc/application_bloc.dart';
 import 'package:ojos_app/core/bloc/application_events.dart';
@@ -45,6 +44,7 @@ import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../main.dart';
+import 'cart/presentation/pages/retrieve_page.dart';
 import 'home/presentation/pages/home_page.dart';
 import 'others/domain/entity/about_app_result.dart';
 import 'others/domain/usecases/get_about_app.dart';
@@ -53,32 +53,8 @@ import 'others/presentation/pages/offers_page.dart';
 import 'others/presentation/pages/settings_page.dart';
 import 'others/presentation/pages/sub_pages/terms_condetion.dart';
 import 'others/presentation/pages/sub_pages/use_policy_page.dart';
-import 'dart:ui';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:ojos_app/core/bloc/root_page_bloc.dart';
-import 'package:ojos_app/core/localization/translations.dart';
-import 'package:ojos_app/core/notification/notifications_service.dart';
-import 'package:ojos_app/core/res/app_assets.dart';
-import 'package:ojos_app/core/res/global_color.dart';
-import 'package:ojos_app/core/res/screen/screen_helper.dart';
-import 'package:ojos_app/core/res/text_style.dart';
-import 'package:ojos_app/features/brand/presentation/pages/brand_page.dart';
-import 'package:ojos_app/features/cart/presentation/pages/cart_page.dart';
-import 'package:ojos_app/features/order/presentation/pages/my_order_page.dart';
-import 'package:ojos_app/features/section/presentation/pages/section_page.dart';
-
-import 'home/presentation/pages/home_page.dart';
 
 var _cancelToken = CancelToken();
 
@@ -370,6 +346,10 @@ class _MainRootPageState extends State<MainRootPage>
         }
 
         break;
+      case MenuSpecItem.ReviewsPage:
+        Get.Get.toNamed(RetrievePage.routeName);
+        break;
+
       case MenuSpecItem.OffersPage:
         Get.Get.toNamed(OffersPage.routeName);
         break;
@@ -562,6 +542,18 @@ class _MainRootPageState extends State<MainRootPage>
       // getMaterialResideMenuItem('rated_drawer', AppAssets.review_drawer,
       //     state: MenuSpecItem.ReviewsPage),
 
+      InkWell(
+        onTap: () {
+          Get.Get.toNamed(RetrievePage.routeName);
+        },
+        child: getMaterialResideMenuItem('retrieve', AppAssets.retrieve,
+            tralingfunc: (){
+              Get.Get.toNamed(RetrievePage.routeName);
+
+            }, state: MenuSpecItem.RETRIVEPAGE),
+
+      ),
+
       getMaterialResideMenuItem('Terms_and_Conditions', AppAssets.user_privacy,
           tralingfunc: () {
         Get.Get.toNamed(TermsCondetion.routeName);
@@ -583,7 +575,16 @@ class _MainRootPageState extends State<MainRootPage>
               width: 2000,
             )),
       ),
-
+      Container(
+        height: 10.h,
+      ),
+      Center(
+        child: Image.asset(
+          AppAssets.maroof,
+          width: 120.w,
+          height: 100.h,
+        ),
+      ),
       // getMaterialResideMenuItem('settings', AppAssets.settings_drawer,
       //     state: MenuSpecItem.SettingsPage),
       // Divider(
@@ -591,9 +592,8 @@ class _MainRootPageState extends State<MainRootPage>
       //   color: globalColor.grey.withOpacity(0.5),
       // ),
       Container(
-        height: 50,
+        height: 20.h,
       ),
-
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -610,7 +610,7 @@ class _MainRootPageState extends State<MainRootPage>
                       child: CircleAvatar(
                         child: Padding(
                           padding: const EdgeInsets.all(4.0),
-                          child: Image.asset(AppAssets.twitter,
+                          child: SvgPicture.asset(AppAssets.twitter,
                               color: Colors.white),
                         ),
                         /* child: Icon(
@@ -631,7 +631,7 @@ class _MainRootPageState extends State<MainRootPage>
                       child: CircleAvatar(
                         child: Padding(
                           padding: const EdgeInsets.all(4.0),
-                          child: Image.asset(AppAssets.instagram,
+                          child: SvgPicture.asset(AppAssets.instagram,
                               color: Colors.white),
                         ),
                         backgroundColor: globalColor.primaryColor,

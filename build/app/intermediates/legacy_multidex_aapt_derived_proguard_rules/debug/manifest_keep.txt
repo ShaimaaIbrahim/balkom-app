@@ -1,4 +1,4 @@
-# Referenced at C:\Users\marktec\AndroidStudioProjects\balkom-app\build\app\intermediates\merged_manifests\debug\arm64-v8a\AndroidManifest.xml:45
+# Referenced at C:\Users\marktec\AndroidStudioProjects\balkom-app\build\app\intermediates\merged_manifests\debug\AndroidManifest.xml:45
 -keep class androidx.core.app.CoreComponentFactory { <init>(); }
-# Referenced at C:\Users\marktec\AndroidStudioProjects\balkom-app\build\app\intermediates\merged_manifests\debug\arm64-v8a\AndroidManifest.xml:45
+# Referenced at C:\Users\marktec\AndroidStudioProjects\balkom-app\build\app\intermediates\merged_manifests\debug\AndroidManifest.xml:45
 -keep class com.tatbeqakum.bilqomapp.Application { <init>(); }
