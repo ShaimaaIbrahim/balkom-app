@@ -22,7 +22,6 @@ class ItemOfferMiddlePageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (offerItem!.is_glasses != null && offerItem!.is_glasses!)
           Get.Get.toNamed(ProductDetailsPage.routeName,
               preventDuplicates: false,
               arguments: ProductDetailsArguments(
@@ -49,46 +48,6 @@ class ItemOfferMiddlePageWidget extends StatelessWidget {
                 isNew: false,
                 lensesFree: null,
                 image: null,
-                colorInfo: null,
-                rate: null,
-                isGlasses: null,
-                sizeModeInfo: null,
-                sizeFaceInfo: null,
-                shapeFaceInfo: null,
-                shapeframeinfo: null,
-                shopId: null,
-                shopInfo: null,
-                typeProduct: null,
-                photoInfo: null,
-                isFavorite: null,
-              )));
-        else
-          Get.Get.toNamed(LensesDetailsPage.routeName,
-              preventDuplicates: false,
-              arguments: ProductDetailsArguments(
-                  product: ProductEntity(
-                categoryId: null,
-                name: offerItem!.name,
-                id: offerItem!.productId,
-                gender: null,
-                discountPrice: null,
-                discountTypeInt: null,
-                discountType: null,
-                type: null,
-                frameShape: null,
-                price: null,
-                description: null,
-                availability: null,
-                brandId: null,
-                productReviews: null,
-                brandInfo: null,
-                featured: null,
-                genderId: null,
-                isReview: null,
-                hasCouponCode: null,
-                isNew: false,
-                lensesFree: null,
-                image: offerItem!.image,
                 colorInfo: null,
                 rate: null,
                 isGlasses: null,

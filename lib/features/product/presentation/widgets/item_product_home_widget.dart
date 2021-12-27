@@ -54,12 +54,8 @@ class _ItemProductHomeWidgetState extends State<ItemProductHomeWidget> {
       child: InkWell(
         onTap: () {
           print('click');
-          if (widget.product!.isGlasses != null && widget.product!.isGlasses!)
+
             Get.Get.toNamed(ProductDetailsPage.routeName,
-                preventDuplicates: false,
-                arguments: ProductDetailsArguments(product: widget.product!));
-          else
-            Get.Get.toNamed(LensesDetailsPage.routeName,
                 preventDuplicates: false,
                 arguments: ProductDetailsArguments(product: widget.product!));
         },

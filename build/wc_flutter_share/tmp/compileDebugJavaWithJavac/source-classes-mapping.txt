@@ -1,0 +1,2 @@
+com/wisecrab/wc_flutter_share/BuildConfig.java
+ com.wisecrab.wc_flutter_share.BuildConfig

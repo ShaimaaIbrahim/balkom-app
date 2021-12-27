@@ -12,6 +12,8 @@ class AppAssets {
   static String retrieve = 'assets/images/icons/svg/retrieve.svg';
   static String maroof = 'assets/images/maroof.png';
 
+  static String dollar = 'assets/images/icons/png/dollar.png';
+
   static final String splashLogo = 'assets/images/logo/splash_logo.svg';
 
   static final String phoneSvg = 'assets/images/icons/svg/phone_svg.svg';

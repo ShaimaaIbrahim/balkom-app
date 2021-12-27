@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ojos_app/core/localization/translations.dart';
 import 'package:ojos_app/core/res/app_assets.dart';
 import 'package:ojos_app/core/res/edge_margin.dart';
@@ -14,6 +13,9 @@ import 'package:ojos_app/core/ui/button/arrow_back_button_widget.dart';
 import 'package:ojos_app/core/ui/list/build_list_wallet_transactions.dart';
 import 'package:ojos_app/core/ui/widget/title_with_view_all_widget.dart';
 import 'package:ojos_app/features/home/data/models/category_model.dart';
+import 'package:ojos_app/features/wallet/data/api_response/wallet_response.dart';
+import 'package:ojos_app/features/wallet/data/domain/services/wallet_api.dart';
+import 'package:ojos_app/features/wallet/presentation/widgets/wallet_list_item.dart';
 
 class WalletPage extends StatefulWidget {
   static const routeName = '/wallet/pages/WalletPage';
@@ -23,6 +25,9 @@ class WalletPage extends StatefulWidget {
 }
 
 class _WalletPageState extends State<WalletPage> {
+  WalletApi _walletApi = WalletApi();
+  WalletResponse? walletResponse;
+
   List<CategoryModel> _itemsCategory = [
     CategoryModel(
         id: 1, imageUrl: AppAssets.section_sun_glasses, title: 'نظارات شمسية'),
@@ -44,13 +49,16 @@ class _WalletPageState extends State<WalletPage> {
     CategoryModel(id: 2, imageUrl: AppAssets.section_lens, title: 'عدسات'),
   ];
 
+  CancelToken _cancelToken = CancelToken();
+
   @override
   void initState() {
+    getClientWallet();
+
     super.initState();
   }
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  var _cancelToken = CancelToken();
 
   @override
   Widget build(BuildContext context) {
@@ -79,45 +87,39 @@ class _WalletPageState extends State<WalletPage> {
         appBar: appBar,
         key: _scaffoldKey,
         backgroundColor: globalColor.scaffoldBackGroundGreyColor,
-        body: Container(
-            height: height,
-            child: SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              child: Container(
-                child: Column(
-                  children: [
-                    // VerticalPadding(
-                    //   percentage: 2.0,
-                    // ),
-                    // Container(
-                    //     padding: const EdgeInsets.only(
-                    //         left: EdgeMargin.min, right: EdgeMargin.min),
-                    //     child: _buildCoponTextWidget(
-                    //         context: context, width: width, height: 63.h)),
-                    // VerticalPadding(
-                    //   percentage: 2.0,
-                    // ),
-                    // Container(
-                    //     padding: const EdgeInsets.only(
-                    //         left: EdgeMargin.min, right: EdgeMargin.min),
-                    //     child: _buildPayMethodTextWidget(
-                    //         context: context, width: width, height: 41.h)),
-                    //
-                    // VerticalPadding(
-                    //   percentage: 2.0,
-                    // ),
-
-                    _buildProcessOnWalletList(
-                        context: context, width: width, height: 41.h),
-
-                    VerticalPadding(
-                      percentage: 4.0,
+        body: walletResponse == null
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Container(
+                //height: height,
+                child: SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: width,
+                          child: ListView.separated(
+                              itemCount: walletResponse!.data!.length,
+                              shrinkWrap: true,
+                              itemBuilder: (BuildContext context, int index) {
+                                return WalletListItem(
+                                    width: width,
+                                    data: walletResponse!.data![index]);
+                              }, separatorBuilder: (BuildContext context, int index) {
+                                return Divider();
+                          },),
+                        ),
+                        VerticalPadding(
+                          percentage: 4.0,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            )));
+                  ),
+                )));
   }
+
 /*
   _buildCoponTextWidget({
     BuildContext context,
@@ -307,5 +309,13 @@ class _WalletPageState extends State<WalletPage> {
   void dispose() {
     _cancelToken.cancel();
     super.dispose();
+  }
+
+  void getClientWallet() {
+    _walletApi.getClientWallet(true, null, _cancelToken).then((value) {
+      setState(() {
+        this.walletResponse = value;
+      });
+    });
   }
 }

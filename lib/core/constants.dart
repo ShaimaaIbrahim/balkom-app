@@ -28,6 +28,7 @@ const API_AUTH_CHANGE_PASSWORD = '$API_AUTH/change/password';
 const API_AUTH_RESET_PASSWORD = '$API_AUTH/reset/password';
 const API_AUTH_FORGOT_PASSWORD = '$API_AUTH/forgot/password';
 
+const API_GET_client_WALLET  = '$API_AUTH/client-wallet';
 //===============================
 //    Profile & Update Profile
 //===============================

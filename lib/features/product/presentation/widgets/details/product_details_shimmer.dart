@@ -78,8 +78,8 @@ class _ProductDetailsShimmerState extends State<ProductDetailsShimmer> {
                   context: context,
                   width: width,
                   height: height,
-                  discountPrice: widget.product!.discountPrice!,
-                  discountType: widget.product!.discountTypeInt!,
+                  // discountPrice: widget.product!.discountPrice!,
+                  // discountType: widget.product!.discountTypeInt!,
                   product: widget.product!),
               _buildTitleAndPriceWidget(
                 context: context,
@@ -112,8 +112,8 @@ class _ProductDetailsShimmerState extends State<ProductDetailsShimmer> {
       {required BuildContext context,
       required double width,
       required double height,
-      required int discountType,
-      required double? discountPrice,
+      // required int discountType,
+      // required double? discountPrice,
       required ProductEntity product}) {
     return Container(
       width: width,
@@ -158,59 +158,59 @@ class _ProductDetailsShimmerState extends State<ProductDetailsShimmer> {
                           boxFit: BoxFit.fill,
                         ),
                       ),
-                Positioned(
-                  bottom: 4.0,
-                  left: 4.0,
-                  child: discountType != null
-                      ? Container(
-                          decoration: BoxDecoration(
-                              color: globalColor.white,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(12.w)),
-                              border: Border.all(
-                                  color: globalColor.grey.withOpacity(0.3),
-                                  width: 0.5)),
-                          padding: const EdgeInsets.fromLTRB(
-                              EdgeMargin.subSubMin,
-                              EdgeMargin.verySub,
-                              EdgeMargin.subSubMin,
-                              EdgeMargin.verySub),
-                          child: discountType == 1
-                              ? Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      '${discountPrice ?? '-'} ${Translations.of(context).translate('rail')}',
-                                      style: textStyle.smallTSBasic.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: globalColor.primaryColor),
-                                    ),
-                                    Text(
-                                        ' ${Translations.of(context).translate('discount')}',
-                                        style: textStyle.minTSBasic.copyWith(
-                                            color: globalColor.black)),
-                                  ],
-                                )
-                              : Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      '${discountPrice ?? '-'} %',
-                                      style: textStyle.smallTSBasic.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: globalColor.primaryColor),
-                                    ),
-                                    Text(
-                                        ' ${Translations.of(context).translate('discount')}',
-                                        style: textStyle.minTSBasic.copyWith(
-                                            color: globalColor.black)),
-                                  ],
-                                ),
-                        )
-                      : Container(),
-                ),
+                // Positioned(
+                //   bottom: 4.0,
+                //   left: 4.0,
+                //   child: discountType != null
+                //       ? Container(
+                //           decoration: BoxDecoration(
+                //               color: globalColor.white,
+                //               borderRadius:
+                //                   BorderRadius.all(Radius.circular(12.w)),
+                //               border: Border.all(
+                //                   color: globalColor.grey.withOpacity(0.3),
+                //                   width: 0.5)),
+                //           padding: const EdgeInsets.fromLTRB(
+                //               EdgeMargin.subSubMin,
+                //               EdgeMargin.verySub,
+                //               EdgeMargin.subSubMin,
+                //               EdgeMargin.verySub),
+                //           child: discountType == 1
+                //               ? Row(
+                //                   crossAxisAlignment: CrossAxisAlignment.center,
+                //                   mainAxisSize: MainAxisSize.min,
+                //                   children: [
+                //                     Text(
+                //                       '${discountPrice ?? '-'} ${Translations.of(context).translate('rail')}',
+                //                       style: textStyle.smallTSBasic.copyWith(
+                //                           fontWeight: FontWeight.bold,
+                //                           color: globalColor.primaryColor),
+                //                     ),
+                //                     Text(
+                //                         ' ${Translations.of(context).translate('discount')}',
+                //                         style: textStyle.minTSBasic.copyWith(
+                //                             color: globalColor.black)),
+                //                   ],
+                //                 )
+                //               : Row(
+                //                   mainAxisSize: MainAxisSize.min,
+                //                   crossAxisAlignment: CrossAxisAlignment.center,
+                //                   children: [
+                //                     Text(
+                //                       '${discountPrice ?? '-'} %',
+                //                       style: textStyle.smallTSBasic.copyWith(
+                //                           fontWeight: FontWeight.bold,
+                //                           color: globalColor.primaryColor),
+                //                     ),
+                //                     Text(
+                //                         ' ${Translations.of(context).translate('discount')}',
+                //                         style: textStyle.minTSBasic.copyWith(
+                //                             color: globalColor.black)),
+                //                   ],
+                //                 ),
+                //         )
+                //       : Container(),
+                // ),
               ],
             ),
             product.photoInfo != null && product.photoInfo!.isNotEmpty

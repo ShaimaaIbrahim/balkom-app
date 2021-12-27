@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\marktec\\.gradle\\caches\\transforms-2\\files-2.1\\e15f7eb7c19689801577bfbeec25a0db\\jetified-play-services-basement-17.1.0\\res\\values-ta\\values.xml",
+                    "source": "C:\\Users\\marktec\\.gradle\\caches\\transforms-2\\files-2.1\\c96a9b406d9786b5fd187877028669b2\\jetified-play-services-basement-17.6.0\\res\\values-ta\\values.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "0",
@@ -38,24 +38,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\marktec\\.gradle\\caches\\transforms-2\\files-2.1\\486fc2ca7ecef0923afb668bd1a63ac3\\jetified-play-services-base-17.1.0\\res\\values-ta\\values.xml",
-                    "from": {
-                        "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
-                        "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
-                        "startOffsets": "245,348,532,657,761,972,1098,1237,1363,1602,1707,1891,2024,2237,2419,2507,2596",
-                        "endColumns": "102,183,124,103,210,125,138,125,238,104,183,132,212,181,87,88,105",
-                        "endOffsets": "347,531,656,760,971,1097,1236,1362,1601,1706,1890,2023,2236,2418,2506,2595,2701"
-                    },
-                    "to": {
-                        "startLines": "2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "105,212,396,525,633,844,974,1117,1467,1706,1815,1999,2136,2349,2535,2627,2720",
-                        "endColumns": "106,183,128,107,210,129,142,129,238,108,183,136,212,185,91,92,109",
-                        "endOffsets": "207,391,520,628,839,969,1112,1242,1701,1810,1994,2131,2344,2530,2622,2715,2825"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\marktec\\.gradle\\caches\\transforms-2\\files-2.1\\97800864ad8189c1946996ce68414a41\\jetified-firebase-messaging-22.0.0\\res\\values-ta\\values.xml",
+                    "source": "C:\\Users\\marktec\\.gradle\\caches\\transforms-2\\files-2.1\\c6580a1bb0f42a1691d00e292680f9ad\\jetified-firebase-messaging-23.0.0\\res\\values-ta\\values.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "0",
@@ -69,6 +52,23 @@
                         "startOffsets": "2830",
                         "endColumns": "74",
                         "endOffsets": "2900"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\marktec\\.gradle\\caches\\transforms-2\\files-2.1\\02db3028f6b02cc79b42ca89a4b3006f\\jetified-play-services-base-17.6.0\\res\\values-ta\\values.xml",
+                    "from": {
+                        "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
+                        "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                        "startOffsets": "245,348,532,657,761,972,1098,1237,1363,1602,1707,1891,2024,2237,2419,2507,2596",
+                        "endColumns": "102,183,124,103,210,125,138,125,238,104,183,132,212,181,87,88,105",
+                        "endOffsets": "347,531,656,760,971,1097,1236,1362,1601,1706,1890,2023,2236,2418,2506,2595,2701"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "105,212,396,525,633,844,974,1117,1467,1706,1815,1999,2136,2349,2535,2627,2720",
+                        "endColumns": "106,183,128,107,210,129,142,129,238,108,183,136,212,185,91,92,109",
+                        "endOffsets": "207,391,520,628,839,969,1112,1242,1701,1810,1994,2131,2344,2530,2622,2715,2825"
                     }
                 }
             ]

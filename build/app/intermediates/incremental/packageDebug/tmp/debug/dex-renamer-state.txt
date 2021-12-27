@@ -1,4 +1,4 @@
-#Wed Dec 22 16:51:17 EET 2021
+#Mon Dec 27 17:41:03 EET 2021
 base.2=C\:\\Users\\marktec\\AndroidStudioProjects\\balkom-app\\build\\app\\intermediates\\dex\\debug\\out\\classes3.dex
 path.2=classes3.dex
 base.1=C\:\\Users\\marktec\\AndroidStudioProjects\\balkom-app\\build\\app\\intermediates\\dex\\debug\\out\\classes2.dex

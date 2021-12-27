@@ -15,13 +15,14 @@ import 'package:ojos_app/core/ui/items_shimmer/item_general_shimmer.dart';
 import 'package:ojos_app/core/ui/widget/image/image_caching.dart';
 import 'package:ojos_app/core/ui/widget/title_with_view_all_widget.dart';
 import 'package:ojos_app/features/product/domin/entities/image_info_entity.dart';
+import 'package:ojos_app/features/product/domin/entities/product_details_entity.dart';
 import 'package:ojos_app/features/product/domin/entities/product_entity.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class LensesDetailsShimmer extends StatefulWidget {
   final double? width;
   final double? height;
-  final ProductEntity? product;
+  final ProductDetailsEntity? product;
 
   const LensesDetailsShimmer({
     this.height,
@@ -296,7 +297,7 @@ class _LensesDetailsShimmerState extends State<LensesDetailsShimmer> {
       required double height,
       required int? discountType,
       required double? discountPrice,
-      required ProductEntity product}) {
+      required ProductDetailsEntity product}) {
     return Container(
       width: width,
       height: 236.h,

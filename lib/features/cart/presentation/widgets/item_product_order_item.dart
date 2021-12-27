@@ -28,11 +28,12 @@ import 'dart:math' as math;
 
 class ItemProductOrderWidget extends StatefulWidget {
   final OrderItemEntity? product;
+  final int? orderId;
   final double? width;
   final double? height;
 
   // final double height;
-  const ItemProductOrderWidget({this.product, this.width, required this.height});
+  const ItemProductOrderWidget({this.product, this.width, required this.height, required this.orderId});
 
   @override
   _ItemProductOrderWidgetState createState() => _ItemProductOrderWidgetState();
@@ -61,7 +62,8 @@ class _ItemProductOrderWidgetState extends State<ItemProductOrderWidget> {
             PopWithResults(
               fromPage: OrderProducts.routeName,
               toPage: RetrievePage.routeName,
-              results: {"product_id": widget.product!.id},
+              results: {"product_id": widget.product!.id, "order_id" : widget.orderId},
+
             ),
           );
         },

@@ -5,6 +5,7 @@ import 'package:ojos_app/features/product/domin/entities/product_info_item_entit
 
 class OrderProductsArguments{
   final List<OrderItemEntity>? products;
+  final int? orderId;
 
-  OrderProductsArguments({this.products});
+  OrderProductsArguments({this.products, this.orderId});
 }

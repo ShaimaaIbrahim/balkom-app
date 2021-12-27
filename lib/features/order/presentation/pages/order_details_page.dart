@@ -249,14 +249,14 @@ class _CartPageState extends State<OrderDetailsPage> {
                             // Get.Get.toNamed(OrderProducts.routeName,
                             //     arguments: OrderProductsArguments(
                             //         products: args.order_items));
-                            //todo
                             Navigator.of(context).pushNamed(OrderProducts.routeName,arguments:
-                            OrderProductsArguments(products: args.order_items)).then((results) {
+                            OrderProductsArguments(products: args.order_items, orderId : args.id)).then((results) {
                               if (results is PopWithResults) {
                                 PopWithResults popResult = results;
                                 if (popResult.toPage == RetrievePage.routeName) {
                                     Get.Get.toNamed(RetrievePage.routeName, arguments: RetrievePageArguments(
-                                      id: results.results['product_id']
+                                      product_id: results.results['product_id'],
+                                      order_id: results.results['order_id']
                                     ));
                                 } else {
                                   // pop to previous page

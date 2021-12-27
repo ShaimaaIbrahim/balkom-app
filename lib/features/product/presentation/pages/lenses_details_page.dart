@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:ojos_app/core/appConfig.dart';
 import 'package:ojos_app/core/localization/translations.dart';
 import 'package:ojos_app/core/res/app_assets.dart';
 import 'package:ojos_app/core/res/global_color.dart';
@@ -15,7 +16,9 @@ import 'package:ojos_app/core/ui/widget/general_widgets/error_widgets.dart';
 import 'package:ojos_app/core/ui/widget/network/network_widget.dart';
 import 'package:ojos_app/features/cart/presentation/pages/cart_page.dart';
 import 'package:ojos_app/features/home/data/models/product_model.dart';
+import 'package:ojos_app/features/product/domin/entities/ProductLinkDetailsArguments.dart';
 import 'package:ojos_app/features/product/domin/entities/product_details_entity.dart';
+import 'package:ojos_app/features/product/domin/entities/product_entity.dart';
 import 'package:ojos_app/features/product/domin/repositories/product_repository.dart';
 import 'package:ojos_app/features/product/domin/usecases/get_product_details.dart';
 import 'package:ojos_app/features/product/presentation/args/product_details_args.dart';
@@ -40,6 +43,7 @@ class _LensesDetailsPageState extends State<LensesDetailsPage> {
   ];
   PageController controller =
       PageController(initialPage: 0, keepPage: true, viewportFraction: 1);
+  ProductDetailsEntity? product;
   var currentPageValue = 0;
 
   final TextEditingController addEditingController =
@@ -91,9 +95,11 @@ class _LensesDetailsPageState extends State<LensesDetailsPage> {
     ];
   }
 
-  final args = Get.Get.arguments as ProductDetailsArguments;
+  final args = Get.Get.arguments as ProductLinkDetailsArguments;
+
   @override
   void initState() {
+    getProductDetails();
     super.initState();
   }
 
@@ -138,48 +144,52 @@ class _LensesDetailsPageState extends State<LensesDetailsPage> {
         backgroundColor: globalColor.scaffoldBackGroundGreyColor,
         appBar: appBar,
         key: _globalKey,
-        body: Container(
-            height: height,
-            // padding: const EdgeInsets.fromLTRB(EdgeMargin.subMin,
-            //     EdgeMargin.sub, EdgeMargin.subMin, EdgeMargin.sub),
-            child: RefreshIndicator(
-              onRefresh: () async {
-                setState(() {
-                  _globalKey = GlobalKey();
-                });
-                return null;
-              },
-              child: NetworkWidget<ProductDetailsEntity>(
-                connectionErrorWidgetBuilder: (_, __) {
-                  return ConnectionErrorWidget(callback: reBuildPage);
-                },
-                unknownErrorWidgetBuilder: (_, __) {
-                  return UnexpectedErrorWidget(callback: reBuildPage);
-                },
-                builder: (context, data) {
-                  return LensesDetailsWidget(
-                    width: width,
-                    height: height,
-                    product: args.product,
-                    productDetails: data,
-                    cancelToken: _cancelToken,
-                  );
-                },
-                loadingWidgetBuilder: (context) {
-                  return LensesDetailsShimmer(
-                    width: width,
-                    height: height,
-                    product: args.product,
-                  );
-                },
-                fetcher: () {
-                  return GetProductDetails(locator<ProductRepository>())(
-                    GetProductDetailsParams(
-                        id: args.product.id ?? 1, cancelToken: _cancelToken),
-                  );
-                },
-              ),
-            )));
+        body: product == null
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Container(
+                height: height,
+                // padding: const EdgeInsets.fromLTRB(EdgeMargin.subMin,
+                //     EdgeMargin.sub, EdgeMargin.subMin, EdgeMargin.sub),
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    setState(() {
+                      _globalKey = GlobalKey();
+                    });
+                    return null;
+                  },
+                  child: NetworkWidget<ProductDetailsEntity>(
+                    connectionErrorWidgetBuilder: (_, __) {
+                      return ConnectionErrorWidget(callback: reBuildPage);
+                    },
+                    unknownErrorWidgetBuilder: (_, __) {
+                      return UnexpectedErrorWidget(callback: reBuildPage);
+                    },
+                    builder: (context, data) {
+                      return LensesDetailsWidget(
+                        width: width,
+                        height: height,
+                        // product: args.product,
+                        productDetails: data,
+                        cancelToken: _cancelToken,
+                      );
+                    },
+                    loadingWidgetBuilder: (context) {
+                      return LensesDetailsShimmer(
+                        width: width,
+                        height: height,
+                        product: product,
+                      );
+                    },
+                    fetcher: () {
+                      return GetProductDetails(locator<ProductRepository>())(
+                        GetProductDetailsParams(
+                            id: args.id , cancelToken: _cancelToken),
+                      );
+                    },
+                  ),
+                )));
   }
 
   void reBuildPage() {
@@ -192,5 +202,26 @@ class _LensesDetailsPageState extends State<LensesDetailsPage> {
   void dispose() {
     super.dispose();
     _cancelToken.cancel();
+  }
+
+  Future<void> getProductDetails() async {
+    if (mounted) {
+      final result = await GetProductDetails(locator<ProductRepository>())(
+          GetProductDetailsParams(cancelToken: _cancelToken, id: args.id));
+
+      if (result.data != null) {
+        setState(() {
+          product = result.data!;
+          print('settings is (((((((((((((((((((((( ${product!.description!}');
+        });
+      } else {
+        appConfig.check().then((internet) {
+          if (internet != null && internet) {
+            getProductDetails();
+          }
+          // No-Internet Case
+        });
+      }
+    }
   }
 }

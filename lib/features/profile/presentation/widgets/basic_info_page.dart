@@ -33,8 +33,7 @@ class BasicInfoPage extends StatefulWidget {
   _BasicInfoPageState createState() => _BasicInfoPageState();
 }
 
-class _BasicInfoPageState extends State<BasicInfoPage>
-    with AutomaticKeepAliveClientMixin<BasicInfoPage> {
+class _BasicInfoPageState extends State<BasicInfoPage> with AutomaticKeepAliveClientMixin<BasicInfoPage> {
   var _cancelToken = CancelToken();
 
   /// message parameters

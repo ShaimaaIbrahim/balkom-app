@@ -409,6 +409,7 @@ class _CheckAndPayPageState extends State<CheckAndPayPage> {
                           city_id: args.city_id,
                           cartItems: args.listOfOrder!
                               .map((e) => ProductOrderRequest(
+
                                     price: e.productEntity!.price != null
                                         ? e.productEntity!.price!
                                         : 0,

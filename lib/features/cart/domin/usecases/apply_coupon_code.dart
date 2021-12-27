@@ -26,8 +26,7 @@ class ApplyCouponCode extends UseCase<CouponCodeEntity, ApplyCouponCodeParams> {
   ApplyCouponCode(this.repository);
 
   @override
-  Future<Result<BaseError, CouponCodeEntity>> call(
-      ApplyCouponCodeParams params) {
+  Future<Result<BaseError, CouponCodeEntity>> call(ApplyCouponCodeParams params) {
     return repository.applyCouponCode(
       total: params.total,
       couponCode: params.couponCode,

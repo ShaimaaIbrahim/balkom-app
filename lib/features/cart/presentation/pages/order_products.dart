@@ -62,6 +62,7 @@ class _OrderProductsState extends State<OrderProducts> {
             itemBuilder: (BuildContext context, int index) {
               return ItemProductOrderWidget(
                 height: heightC,
+                orderId: args.orderId,
                 product: args.products![index],
               );
             },

@@ -31,6 +31,11 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin firebase_core, io.flutter.plugins.firebase.core.FlutterFirebaseCorePlugin", e);
     }
     try {
+      flutterEngine.getPlugins().add(new io.flutter.plugins.firebase.dynamiclinks.FlutterFirebaseDynamicLinksPlugin());
+    } catch(Exception e) {
+      Log.e(TAG, "Error registering plugin firebase_dynamic_links, io.flutter.plugins.firebase.dynamiclinks.FlutterFirebaseDynamicLinksPlugin", e);
+    }
+    try {
       flutterEngine.getPlugins().add(new io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingPlugin());
     } catch(Exception e) {
       Log.e(TAG, "Error registering plugin firebase_messaging, io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingPlugin", e);
@@ -44,6 +49,11 @@ public final class GeneratedPluginRegistrant {
       flutterEngine.getPlugins().add(new io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin());
     } catch(Exception e) {
       Log.e(TAG, "Error registering plugin flutter_plugin_android_lifecycle, io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin", e);
+    }
+    try {
+      flutterEngine.getPlugins().add(new com.example.fluttershare.FlutterSharePlugin());
+    } catch(Exception e) {
+      Log.e(TAG, "Error registering plugin flutter_share, com.example.fluttershare.FlutterSharePlugin", e);
     }
     try {
       flutterEngine.getPlugins().add(new io.github.ponnamkarthik.toast.fluttertoast.FlutterToastPlugin());
@@ -124,6 +134,11 @@ public final class GeneratedPluginRegistrant {
       flutterEngine.getPlugins().add(new creativemaybeno.wakelock.WakelockPlugin());
     } catch(Exception e) {
       Log.e(TAG, "Error registering plugin wakelock, creativemaybeno.wakelock.WakelockPlugin", e);
+    }
+    try {
+      flutterEngine.getPlugins().add(new com.wisecrab.wc_flutter_share.WcFlutterSharePlugin());
+    } catch(Exception e) {
+      Log.e(TAG, "Error registering plugin wc_flutter_share, com.wisecrab.wc_flutter_share.WcFlutterSharePlugin", e);
     }
   }
 }

@@ -2,22 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:ojos_app/core/datasources/local/datasources/cached_extra_glasses_dao.dart';
-import 'package:ojos_app/core/entities/extra_glasses_entity.dart';
-import 'package:ojos_app/core/entities/offer_entity.dart';
-import 'package:ojos_app/core/errors/base_error.dart';
-import 'package:ojos_app/core/params/no_params.dart';
-import 'package:ojos_app/core/repositories/core_repository.dart';
-import 'package:ojos_app/core/responses/empty_response.dart';
-import 'package:ojos_app/core/usecases/get_extra_glasses.dart';
-import 'package:ojos_app/core/usecases/get_offers.dart';
-import 'package:ojos_app/features/cart/domin/entities/coupon_code_entity.dart';
-import 'package:ojos_app/features/cart/domin/repositories/cartr_repository.dart';
-import 'package:ojos_app/features/cart/domin/usecases/apply_coupon_code.dart';
-import 'package:ojos_app/features/cart/domin/usecases/apply_retrieve.dart';
 import 'package:ojos_app/features/user_management/domain/repositories/user_repository.dart';
 
-import '../../../../main.dart';
 
 @immutable
 abstract class RetrieveState extends Equatable {}
@@ -72,6 +58,7 @@ class ApplyRetrieveEvent extends RetrieveEvent {
   final String? name;
   final String? phone;
   final String? productId;
+  final String? orderId;
 
   ApplyRetrieveEvent({
     this.place,
@@ -80,6 +67,7 @@ class ApplyRetrieveEvent extends RetrieveEvent {
     this.phone,
     this.productId,
     this.cancelToken,
+    this.orderId,
   });
 
   @override
@@ -91,7 +79,6 @@ class RetrieveBloc extends Bloc<RetrieveEvent, RetrieveState> {
 
   @override
   Stream<RetrieveState> mapEventToState(RetrieveEvent event) async* {
-
     //  dio.options.headers['_method'] = 'post';
 
     if (event is ApplyRetrieveEvent) {
@@ -101,8 +88,8 @@ class RetrieveBloc extends Bloc<RetrieveEvent, RetrieveState> {
         final token = await UserRepository.authToken;
         dio.options.headers["Authorization"] = "Bearer $token";
       }
-      dio.options.headers['content-Type'] = 'application/json';
-      dio.options.contentType = "application/json";
+      // dio.options.headers['content-Type'] = 'application/json';
+      // dio.options.contentType = "application/json";
       dio.options.headers['Accept'] = 'application/json';
 
       Response result = await dio.post(
@@ -111,9 +98,10 @@ class RetrieveBloc extends Bloc<RetrieveEvent, RetrieveState> {
         data: {
           'phone': event.phone!,
           'reason': event.reason!,
-          'order_id': '3',
+          'order_id': 3,
           'place': event.place!,
           'name': event.name!,
+          'product_id': 1
         },
         onSendProgress: (int sent, int total) {
           print('$sent $total');

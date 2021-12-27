@@ -398,6 +398,8 @@
   "add_name": "Add name",
   "add_your_product": "Add your product",
   "products_not_found": "Not Found Products",
-  "all_products": "All products"
+  "all_products": "All products",
+  "retrieved_successfully": "retrieved successfully",
+  "add_product_please": "add product please"
 
 }

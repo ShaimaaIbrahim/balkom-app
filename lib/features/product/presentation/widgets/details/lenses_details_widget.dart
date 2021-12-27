@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,6 +21,8 @@ import 'package:ojos_app/core/res/width_height.dart';
 import 'package:ojos_app/core/ui/dailog/add_to_cart_dialog.dart';
 import 'package:ojos_app/core/ui/dailog/login_first_dialog.dart';
 import 'package:ojos_app/core/ui/widget/image/image_caching.dart';
+import 'package:wc_flutter_share/wc_flutter_share.dart';
+import 'package:http/http.dart' as http;
 import 'package:ojos_app/core/ui/widget/title_with_view_all_widget.dart';
 import 'package:ojos_app/features/product/domin/entities/cart_entity.dart';
 import 'package:ojos_app/features/product/domin/entities/general_item_entity.dart';
@@ -27,6 +33,7 @@ import 'package:ojos_app/features/product/domin/repositories/product_repository.
 import 'package:ojos_app/features/product/domin/usecases/add_remove_favorite.dart';
 import 'package:ojos_app/features/user_management/domain/repositories/user_repository.dart';
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../../../main.dart';
@@ -37,14 +44,14 @@ import '../lens_select_size_widget.dart';
 class LensesDetailsWidget extends StatefulWidget {
   final double? width;
   final double? height;
-  final ProductEntity? product;
+  //final ProductEntity? product;
   final ProductDetailsEntity? productDetails;
   final CancelToken cancelToken;
 
   const LensesDetailsWidget(
       {required this.height,
       required this.width,
-      required this.product,
+     // required this.product,
       required this.productDetails,
       required this.cancelToken});
 
@@ -76,6 +83,7 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
   LensesIpdAddEnum? _selectedForAddIPD;
 
   bool? isAuth;
+  Dio _dio = Dio();
 
   @override
   void initState() {
@@ -94,7 +102,7 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
             BlocProvider.of<ApplicationBloc>(context).state.isUserVerified;
 
     double discountPrice =
-        (widget.product!.price ?? 0.0) - (widget.product!.discountPrice ?? 0.0);
+        (widget.productDetails!.price ?? 0.0) - (widget.productDetails!.discountPrice ?? 0.0);
 
     return Container(
       child: SingleChildScrollView(
@@ -113,7 +121,7 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
                   discountPrice: discountPrice,
                   discountType: widget.productDetails!.discountTypeInt,
                   product: widget.productDetails,
-                  productEntity: widget.product),
+                 ),
               _buildTitleAndPriceWidget(
                   context: context,
                   width: width,
@@ -175,8 +183,7 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
       required double height,
       required int? discountType,
       required double? discountPrice,
-      required ProductDetailsEntity? product,
-      required ProductEntity? productEntity}) {
+      required ProductDetailsEntity? product}) {
     return Container(
       width: width,
       height: 236.h,
@@ -273,6 +280,19 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
                         )
                       : Container(),
                 ),
+                // Positioned(
+                //   bottom: 10.w,
+                //   left: 30.w,
+                //   child: InkWell(
+                //       onTap: () {
+                //         _shareDynamicLinkProduct(product.id, context);
+                //       },
+                //       child: Icon(
+                //         Icons.share,
+                //         color: Colors.white,
+                //         size: 30.w,
+                //       )),
+                // ),
                 Positioned(right: 4, top: 4, child: _buildAddFavoriteWidget()),
               ],
             ),
@@ -1162,7 +1182,7 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
       onTap: () async {
         final result = await AddOrRemoveFavorite(locator<ProductRepository>())(
           AddOrRemoveFavoriteParams(
-              cancelToken: widget.cancelToken, productId: widget.product!.id!),
+              cancelToken: widget.cancelToken, productId: widget.productDetails!.id!),
         );
         if (result.hasDataOnly) {
           if (mounted)
@@ -1368,6 +1388,44 @@ class _LensesDetailsWidgetState extends State<LensesDetailsWidget> {
         ],
       ),
     );
+  }
+
+  Future<void> _shareDynamicLinkProduct(id, BuildContext context) async {
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      uriPrefix: 'https://tatbeqakum.page.link/showProduct',
+      link: Uri.parse('https://tatbikakum.bilkom.product_details.com?product_id=$id'),
+      androidParameters: const AndroidParameters(
+        packageName: 'com.tatbeqakum.bilqomapp',
+        minimumVersion: 0,
+      ),
+      // iosParameters: const IOSParameters(
+      //   bundleId: 'io.invertase.testing',
+      //   minimumVersion: '0',
+      // ),
+    );
+    try {
+     Uri link = await dynamicLinks.buildLink(parameters);
+
+      final ByteData bytes = await rootBundle.load(AppAssets.logo);
+
+      // if(widget.product!.image == null){
+      //
+      // }
+      // http.Response response = await http.get(
+      //  Uri.parse(widget.product!.image!)
+      // );
+      await WcFlutterShare.share(
+        sharePopupTitle: 'share',
+        subject: 'This is subject',
+        text: link.toString(),
+        fileName: 'share.png',
+        mimeType: 'image/png',
+        bytesOfFile: bytes.buffer.asUint8List(),
+      );
+      print('shaimaaaaaaaaa uri dynamic link ${link}');
+    } catch (e) {
+      print('shaimaaaaaaaaa error uri dynamic link ${e.toString()}');
+    }
   }
 
 /*  _buildPrice2Widget(

@@ -40,6 +40,7 @@ import 'package:ojos_app/features/reviews/presentation/pages/reviews_page.dart';
 import 'package:ojos_app/features/section/presentation/pages/section_page.dart';
 import 'package:ojos_app/features/user_management/domain/repositories/user_repository.dart';
 import 'package:ojos_app/features/user_management/presentation/pages/sign_in_page.dart';
+import 'package:ojos_app/features/wallet/presentation/pages/wallet_page.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -318,10 +319,14 @@ class _MainRootPageState extends State<MainRootPage>
         tabController!.animateTo(3);
         break;
       case MenuSpecItem.WalletPage:
-        showDialog(
-          context: context,
-          builder: (ctx) => SoonDialog(),
-        );
+        if (await UserRepository.hasToken && isAuth!) {
+          Get.Get.toNamed(WalletPage.routeName);
+        } else {
+          showDialog(
+            context: context,
+            builder: (ctx) => LoginFirstDialog(title: false),
+          );
+        }
 
         break;
       case MenuSpecItem.FavoritePage:
@@ -335,9 +340,9 @@ class _MainRootPageState extends State<MainRootPage>
         }
 
         break;
-      case MenuSpecItem.ReviewsPage:
+      case MenuSpecItem.RETRIVEPAGE:
         if (await UserRepository.hasToken && isAuth!) {
-          Get.Get.toNamed(ReviewPage.routeName);
+          Get.Get.toNamed(RetrievePage.routeName);
         } else {
           showDialog(
             context: context,
@@ -346,6 +351,7 @@ class _MainRootPageState extends State<MainRootPage>
         }
 
         break;
+
       case MenuSpecItem.ReviewsPage:
         Get.Get.toNamed(RetrievePage.routeName);
         break;
@@ -547,11 +553,10 @@ class _MainRootPageState extends State<MainRootPage>
           Get.Get.toNamed(RetrievePage.routeName);
         },
         child: getMaterialResideMenuItem('retrieve', AppAssets.retrieve,
-            tralingfunc: (){
-              Get.Get.toNamed(RetrievePage.routeName);
-
-            }, state: MenuSpecItem.RETRIVEPAGE),
-
+            /*  tralingfunc: () {
+          Get.Get.toNamed(RetrievePage.routeName);
+        }*/
+            state: MenuSpecItem.RETRIVEPAGE),
       ),
 
       getMaterialResideMenuItem('Terms_and_Conditions', AppAssets.user_privacy,

@@ -21,20 +21,16 @@ import 'package:ojos_app/features/reviews/presentation/pages/add_reviews_page.da
 class ItemReviewWidget extends StatelessWidget {
   final double? width;
   final ProductEntity? review;
+
   const ItemReviewWidget({this.width, this.review});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (review!.isGlasses != null)
-          Get.Get.toNamed(ProductDetailsPage.routeName,
-              preventDuplicates: false,
-              arguments: ProductDetailsArguments(product: review!));
-        else
-          Get.Get.toNamed(LensesDetailsPage.routeName,
-              preventDuplicates: false,
-              arguments: ProductDetailsArguments(product: review!));
+        Get.Get.toNamed(ProductDetailsPage.routeName,
+            preventDuplicates: false,
+            arguments: ProductDetailsArguments(product: review!));
       },
       child: Container(
         // padding: const EdgeInsets.only(

@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+import 'package:wc_flutter_share/wc_flutter_share.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -164,6 +168,128 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
               children: [
                 product!.photoInfo != null && product.photoInfo!.isNotEmpty
                     ? PageView(
+                  controller: controller,
+                  scrollDirection: Axis.horizontal,
+                  physics: BouncingScrollPhysics(),
+                  children: product.photoInfo!
+                      .map((item) => Stack(
+                    children: [
+                      Container(
+                        width: width,
+                        height: 236.h,
+                        child: ImageCacheWidget(
+                          imageUrl: item.image!,
+                          imageWidth: width,
+                          imageHeight: 236.h,
+                          boxFit: BoxFit.fill,
+                        ),
+                      ),
+                    ],
+                  ))
+                      .toList(),
+                )
+                    : Container(
+                  width: width,
+                  height: 236.h,
+                  child: ImageCacheWidget(
+                    imageUrl: product.image ?? '',
+                    imageWidth: width,
+                    imageHeight: 236.h,
+                    boxFit: BoxFit.fill,
+                  ),
+                ),
+                Positioned(
+                  bottom: 4.0,
+                  left: 4.0,
+                  child: discountType != null
+                      ? Container(
+                    decoration: BoxDecoration(
+                        color: globalColor.white,
+                        borderRadius:
+                        BorderRadius.all(Radius.circular(12.w)),
+                        border: Border.all(
+                            color: globalColor.grey.withOpacity(0.3),
+                            width: 0.5)),
+                    padding: const EdgeInsets.fromLTRB(
+                        EdgeMargin.subSubMin,
+                        EdgeMargin.verySub,
+                        EdgeMargin.subSubMin,
+                        EdgeMargin.verySub),
+                    child: discountType == 1
+                        ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${discountPrice ?? '-'} ${Translations.of(context).translate('rail')}',
+                          style: textStyle.smallTSBasic.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: globalColor.primaryColor),
+                        ),
+                        Text(
+                            ' ${Translations.of(context).translate('discount')}',
+                            style: textStyle.minTSBasic.copyWith(
+                                color: globalColor.black)),
+                      ],
+                    )
+                        : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${discountPrice ?? '-'} %',
+                          style: textStyle.smallTSBasic.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: globalColor.primaryColor),
+                        ),
+                        Text(
+                            ' ${Translations.of(context).translate('discount')}',
+                            style: textStyle.minTSBasic.copyWith(
+                                color: globalColor.black)),
+                      ],
+                    ),
+                  )
+                      : Container(),
+                ),
+                Positioned(
+                  bottom: 10.w,
+                  left: 30.w,
+                  child: InkWell(
+                      onTap: () {
+                        _shareDynamicLinkProduct(product.id, context);
+                      },
+                      child: Icon(
+                        Icons.share,
+                        color: Colors.white,
+                        size: 30.w,
+                      )),
+                ),
+                Positioned(right: 4, top: 4, child: _buildAddFavoriteWidget()),
+              ],
+            ),
+            product.photoInfo != null && product.photoInfo!.isNotEmpty
+                ? Positioned(
+                bottom: 10,
+                child: _buildPageIndicator2(
+                    width: width, list: product.photoInfo!))
+                : Container()
+          ],
+        ),
+      ),
+    );
+    /*return Container(
+      width: width,
+      height: 236.h,
+      padding: const EdgeInsets.fromLTRB(EdgeMargin.sub, EdgeMargin.verySub,
+          EdgeMargin.sub, EdgeMargin.verySub),
+      child: ClipRRect(
+        borderRadius: BorderRadius.all(Radius.circular(12.w)),
+        child: Stack(
+          children: [
+            Stack(
+              children: [
+                product!.photoInfo != null && product.photoInfo!.isNotEmpty
+                    ? PageView(
                         controller: controller,
                         scrollDirection: Axis.horizontal,
                         physics: BouncingScrollPhysics(),
@@ -194,7 +320,7 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
                           boxFit: BoxFit.fill,
                         ),
                       ),
-                /*       Positioned(
+                *//*       Positioned(
                   bottom: 4.0,
                   right: 4.0,
                   child: Container(
@@ -231,7 +357,12 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
                       ),
                     ),
                   ),
-                ),*/
+                ),*//*
+                Positioned(
+                  bottom: 4.w,
+                  right: 4.w,
+                  child: Icon(Icons.share),
+                ),
                 Positioned(
                   bottom: 4.0,
                   left: 4.0,
@@ -297,7 +428,7 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
           ],
         ),
       ),
-    );
+    );*/
   }
 
   _buildAddFavoriteWidget() {
@@ -467,48 +598,103 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
     return Container(
       width: width,
       padding:
-          const EdgeInsets.fromLTRB(EdgeMargin.min, 0.0, EdgeMargin.min, 0.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                child: Text(
-                  '${name ?? ''}',
-                  style: textStyle.middleTSBasic.copyWith(
-                    color: globalColor.black,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-                alignment: AlignmentDirectional.centerStart,
-              ),
-              SizedBox(height: 8.0),
-              Container(
-                padding: const EdgeInsets.fromLTRB(
-                    EdgeMargin.subSubMin,
-                    EdgeMargin.verySub,
-                    EdgeMargin.subSubMin,
-                    EdgeMargin.verySub),
-                child: _buildPrice2Widget(
-                    price: price,
-                    width: width,
-                    discountPrice: discountPrice ?? 0.0),
-              ),
-            ],
-          ),
-          Spacer(),
-          _buildAddCartWidget(
-              context: context,
+      const EdgeInsets.fromLTRB(EdgeMargin.min, 0.0, EdgeMargin.min, 0.0),
+      child: Stack(children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
               width: width,
-              height: height,
-              productEntity: widget.productDetails,
-              isAuth: isAuth)
-        ],
-      ),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 7),
+                    Container(
+                      child: Text(
+                        '${name ?? ''}',
+                        style: textStyle.middleTSBasic.copyWith(
+                          color: globalColor.black,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      alignment: AlignmentDirectional.centerStart,
+                    ),
+                  ]),
+            ),
+            SizedBox(height: 5.0),
+            Container(
+              padding: const EdgeInsets.fromLTRB(EdgeMargin.subSubMin,
+                  EdgeMargin.verySub, EdgeMargin.subSubMin, EdgeMargin.verySub),
+              child: _buildPrice2Widget(
+                discountPrice: discountPrice ?? 0.0,
+                price: price,
+                width: width,
+              ),
+            ),
+          ],
+        ),
+        Positioned(
+          left: 5,
+          top: 7,
+          child: Align(
+              alignment: Alignment.centerLeft,
+              child: _buildAddCartWidget(
+                  context: context,
+                  width: width,
+                  height: height,
+                  isAuth: isAuth,
+                  productEntity: widget.productDetails)),
+        )
+      ]),
     );
+    // return Container(
+    //   width: width,
+    //   padding:
+    //       const EdgeInsets.fromLTRB(EdgeMargin.min, 0.0, EdgeMargin.min, 0.0),
+    //   child: Row(
+    //     mainAxisAlignment: MainAxisAlignment.start,
+    //     children: [
+    //       Column(
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: [
+    //           Container(
+    //             child: Text(
+    //               '${name ?? ''}',
+    //               style: textStyle.middleTSBasic.copyWith(
+    //                 color: globalColor.black,
+    //               ),
+    //               overflow: TextOverflow.ellipsis,
+    //               maxLines: 1,
+    //             ),
+    //             alignment: AlignmentDirectional.centerStart,
+    //           ),
+    //           SizedBox(height: 8.0),
+    //           Container(
+    //             padding: const EdgeInsets.fromLTRB(
+    //                 EdgeMargin.subSubMin,
+    //                 EdgeMargin.verySub,
+    //                 EdgeMargin.subSubMin,
+    //                 EdgeMargin.verySub),
+    //             child: _buildPrice2Widget(
+    //                 price: price,
+    //                 width: width,
+    //                 discountPrice: discountPrice ?? 0.0),
+    //           ),
+    //         ],
+    //       ),
+    //       Spacer(),
+    //       _buildAddCartWidget(
+    //           context: context,
+    //           width: width,
+    //           height: height,
+    //           productEntity: widget.productDetails,
+    //           isAuth: isAuth)
+    //     ],
+    //   ),
+    // );
   }
 
   _onSelectSize(GeneralItemEntity size, bool isSelected) {
@@ -872,5 +1058,42 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
         ],
       ),
     );
+  }
+  Future<void> _shareDynamicLinkProduct(id, BuildContext context) async {
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      uriPrefix: 'https://tatbeqakum.page.link/showProduct',
+      link: Uri.parse('https://tatbikakum.bilkom.product_details.com?product_id=$id'),
+      androidParameters: const AndroidParameters(
+        packageName: 'com.tatbeqakum.bilqomapp',
+        minimumVersion: 0,
+      ),
+      // iosParameters: const IOSParameters(
+      //   bundleId: 'io.invertase.testing',
+      //   minimumVersion: '0',
+      // ),
+    );
+    try {
+      Uri link = await dynamicLinks.buildLink(parameters);
+
+      final ByteData bytes = await rootBundle.load(AppAssets.logo);
+
+      // if(widget.product!.image == null){
+      //
+      // }
+      // http.Response response = await http.get(
+      //  Uri.parse(widget.product!.image!)
+      // );
+      await WcFlutterShare.share(
+        sharePopupTitle: 'share',
+        subject: 'This is subject',
+        text: link.toString(),
+        fileName: 'share.png',
+        mimeType: 'image/png',
+        bytesOfFile: bytes.buffer.asUint8List(),
+      );
+      print('shaimaaaaaaaaa uri dynamic link ${link}');
+    } catch (e) {
+      print('shaimaaaaaaaaa error uri dynamic link ${e.toString()}');
+    }
   }
 }

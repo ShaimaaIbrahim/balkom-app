@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:ojos_app/app.dart';
 import 'package:ojos_app/core/bloc/simple_bloc_delegate.dart';
 import 'package:ojos_app/core/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ojos_app/features/product/presentation/pages/lenses_details_page.dart';
+import 'package:ojos_app/features/product/presentation/pages/product_details_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'core/datasources/concrete_core_remote_data_source.dart';
@@ -27,6 +30,7 @@ import 'features/order/domain/repositories/order_repository.dart';
 import 'features/product/data/datasources/concrete_product_remote_data_source.dart';
 import 'features/product/data/datasources/product_remote_data_source.dart';
 import 'features/product/data/repositories/concrete_product_repository.dart';
+import 'features/product/domin/entities/ProductLinkDetailsArguments.dart';
 import 'features/product/domin/repositories/product_repository.dart';
 import 'features/profile/data/datasources/concrete_profile_remote_data_source.dart';
 import 'features/profile/data/datasources/profile_remote_data_source.dart';
@@ -36,11 +40,13 @@ import 'features/user_management/data/datasources/concrete_user_remote_data_sour
 import 'features/user_management/data/datasources/user_remote_data_source.dart';
 import 'features/user_management/data/repositories/concrete_user_repository.dart';
 import 'features/user_management/domain/repositories/user_repository.dart';
+import 'package:get/get.dart' as Get;
 
 //0951971272
 //12345678
 final uuid = Uuid();
 final locator = GetIt.instance;
+FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
 
 void setupLocator() {
   // Handle DI stuffs.
@@ -115,14 +121,62 @@ void main() async {
   String lang = await _getLanguage();
 
   setupLocator();
+
   setupBloc();
   print(lang);
   await appSharedPrefs.init();
   CoreRepository.prefs = await SharedPreferences.getInstance();
   await Firebase.initializeApp();
-  await firebaseMessaging.getToken().then((value) => print("theeeeeeeeeeeeeeee    "+value!));
+  await firebaseMessaging
+      .getToken()
+      .then((value) => print("theeeeeeeeeeeeeeee    " + value!));
 
+  handleDynamicLinks();
   runApp(MyApp(lang: lang));
+}
+
+void handleDynamicLinks() async {
+  PendingDynamicLinkData? data =  await FirebaseDynamicLinks.instance.getInitialLink();
+  //_handlerDeepLink(data);
+
+  dynamicLinks.onLink.listen((dynamicLinkData) {
+    Get.Get.toNamed(LensesDetailsPage.routeName, arguments: ProductLinkDetailsArguments(
+        id: int.parse(dynamicLinkData.link.query.split('=')[1])
+    ));
+    print(
+        'shaimaaaa   deep link is  ////////////////////////////////////////////////////////////////////////'
+        '//////////////////////////////////////////////////////////////////'
+        '/////////////////////////////////////////////////////////////////'
+        '///////////////////////////////////////////////////////////////////'
+        '////////////////////////////////////////////////////////////////////'
+        '//////////////////'
+        '////////'
+        '/'
+        '//////////////////////// ///////////////'
+        '//////////////'
+        '///////////////////////////////////////////////////////${dynamicLinkData.link.path}');
+    print(
+        'shaimaaaa   deep link is  ////////////////////////////////////////////////////////////////////////'
+            '//////////////////////////////////////////////////////////////////'
+            '/////////////////////////////////////////////////////////////////'
+            '///////////////////////////////////////////////////////////////////'
+            '////////////////////////////////////////////////////////////////////'
+            '//////////////////'
+            '////////'
+            '/'
+            '//////////////////////// ///////////////'
+            '//////////////'
+            '///////////////////////////////////////////////////////${dynamicLinkData.link.queryParameters['product_id']}');
+  }).onError((e) {
+    print('shaimnaaaaaaa  error occured on dynamic link ${e.toString()}');
+  });
+}
+
+void _handlerDeepLink(PendingDynamicLinkData? data) {
+  Uri deepLink = data!.link;
+  if (deepLink != null) {
+    print('shaimaa deep link is  ${deepLink}');
+  }
 }
 
 Future<String> _getLanguage() async {

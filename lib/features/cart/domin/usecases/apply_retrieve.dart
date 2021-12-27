@@ -27,20 +27,25 @@ class ApplyRetrieveParams extends BaseParams {
   }) : super(cancelToken: cancelToken);
 }
 
-// class ApplyRetrieve extends UseCase<Object, ApplyRetrieveParams> {
-//   final CartRepository repository;
-//
-//   ApplyRetrieve(this.repository);
-//
-//   @override
-//   Future<Result<BaseError, Object>> call(ApplyRetrieveParams params) {
-//     return repository.applyRetrieve(
-//       name: params.name,
-//       phone: params.phone,
-//       reason: params.reason,
-//       productId: params.productId,
-//       cancelToken: params.cancelToken,
-//       place: params.place,
-//     );
-//   }
-// }
+class ApplyRetrieve extends UseCase<Object, ApplyRetrieveParams> {
+  final CartRepository repository;
+
+  ApplyRetrieve(this.repository);
+
+  @override
+  Future<Result<BaseError, Object>> call(ApplyRetrieveParams params) {
+    // TODO: implement call
+    throw UnimplementedError();
+  }
+
+}
+/*
+    return repository.applyRetrieve(
+      name: params.name,
+      phone: params.phone,
+      reason: params.reason,
+      productId: params.productId,
+      cancelToken: params.cancelToken,
+      place: params.place,
+    );
+ */

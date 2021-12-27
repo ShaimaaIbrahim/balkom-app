@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wisecrab.wc_flutter_share" >
+
+    <uses-sdk android:minSdkVersion="16" />
+
+    <application>
+        <provider
+            android:name="com.wisecrab.wc_flutter_share.WcFlutterShareFileProvider"
+            android:authorities="${applicationId}.fileprovider.github.com/com/wisecrab/wc-flutter-share"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/wc_flutter_share_filepaths" />
+        </provider>
+    </application>
+
+</manifest>

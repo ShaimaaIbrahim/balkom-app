@@ -387,7 +387,9 @@
   "add_name": "اكتب اسمك",
   "add_your_product": "أضف منتج",
   "products_not_found": "المنتجات غير موجودة",
-  "all_products": "جميع المنتجات"
+  "all_products": "جميع المنتجات",
+  "retrieved_successfully": "تم الاسترجاع بنجاح",
+  "add_product_please": "أضف المنتج من فضلك\n"
 
 
 }
