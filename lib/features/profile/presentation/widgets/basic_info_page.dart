@@ -241,7 +241,7 @@ class _BasicInfoPageState extends State<BasicInfoPage> with AutomaticKeepAliveCl
                             },
                             hintText: '',
                             label: Translations.of(context)
-                                .translate('phone_number'),
+                                .translate('email'),
                             keyboardType: TextInputType.phone,
                             readOnly: true,
                             borderRadius: widget.width! * .02,
