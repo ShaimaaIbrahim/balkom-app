@@ -345,8 +345,7 @@ class _SignUpBoxState extends State<SignUpBox> {
                                                       email: _email,
                                                       password: _password,
                                                       device_token: token!,
-                                                      cancelToken:
-                                                          _registerCancelToken,
+                                                      cancelToken: _registerCancelToken,
                                                     ),
                                                   );
                                                 } else {
